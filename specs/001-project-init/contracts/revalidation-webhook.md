@@ -7,17 +7,23 @@
 
 Point d'entrée pour le webhook Sanity qui déclenche la revalidation ISR des pages dont le contenu a changé.
 
+## Authentification
+
+Sanity signe chaque requête avec un HMAC-SHA256 envoyé dans le header `sanity-webhook-signature` au format `t=<timestamp>,v1=<hmac>`. La vérification est assurée par `parseBody()` de `next-sanity/webhook` qui valide la signature contre `REVALIDATION_SECRET`.
+
+Le secret est configuré dans le champ "Secret" du webhook Sanity Cloud (sanity.io/manage > API > Webhooks).
+
 ## Requête
 
 **Méthode** : `POST`
-**Authentification** : Header ou query param contenant le secret partagé (`REVALIDATION_SECRET`)
 
-**Corps** (envoyé par Sanity automatiquement) :
+**Header** : `sanity-webhook-signature: t=<unix-timestamp>,v1=<base64url-hmac>`
+
+**Corps** (envoyé par Sanity automatiquement, configurable via "Projection") :
 ```json
 {
   "_type": "string",
-  "_id": "string",
-  "slug": "string | undefined"
+  "_id": "string"
 }
 ```
 
@@ -31,10 +37,10 @@ Point d'entrée pour le webhook Sanity qui déclenche la revalidation ISR des pa
 }
 ```
 
-**Secret invalide (401)** :
+**Signature invalide (401)** :
 ```json
 {
-  "message": "Invalid secret"
+  "message": "Invalid signature"
 }
 ```
 
@@ -45,7 +51,20 @@ Point d'entrée pour le webhook Sanity qui déclenche la revalidation ISR des pa
 }
 ```
 
+## Configuration du webhook Sanity Cloud
+
+| Champ | Valeur |
+|-------|--------|
+| Name | `Revalidate` |
+| URL | `https://estuaire.fr/api/revalidate` |
+| Secret | Meme valeur que `REVALIDATION_SECRET` dans Coolify |
+| Dataset | `production` |
+| Trigger on | Create, Update, Delete |
+| Projection | `{_type, _id}` |
+
 ## Notes
 
-- Ce contrat est défini ici pour référence, mais l'implémentation complète de la revalidation viendra avec la première feature qui affiche du contenu Sanity
-- Pour l'initialisation, seul le squelette de la route est créé
+- Le webhook ne sert qu'en **production** — en dev, Next.js ne cache pas les pages (pas de revalidation nécessaire)
+- Le webhook sera créé sur le projet Sanity `showcase` (prod), pas `showcase-dev`
+- La variable `REVALIDATION_SECRET` n'est pas nécessaire en `.env.development`
+- L'implémentation complète de la revalidation viendra avec la première feature qui affiche du contenu Sanity

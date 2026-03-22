@@ -19,12 +19,12 @@
 
 **Objectif** : Scaffolding du projet, dépendances et fichiers de configuration
 
-- [ ] T001 Initialiser package.json avec les dépendances du projet : next, react, react-dom, next-sanity, @sanity/image-url, @sanity/vision, @portabletext/react (prod) et typescript, @types/react, @types/node, tailwindcss, @tailwindcss/postcss, @biomejs/biome (dev). Configurer les scripts npm : `dev` (`next dev --turbo`), `build` (`next build`), `start` (`next start`), `lint` (`biome check .`), `format` (`biome check --write .`) dans package.json
-- [ ] T002 [P] Configurer TypeScript strict mode avec path alias `@/` vers `./src/` dans tsconfig.json
-- [ ] T003 [P] Configurer Next.js avec `output: 'standalone'` et `images.remotePatterns` pour `cdn.sanity.io` dans next.config.ts
-- [ ] T004 [P] Configurer le plugin PostCSS `@tailwindcss/postcss` dans postcss.config.mjs
-- [ ] T005 [P] Configurer Biome avec les domaines `next` et `react` en mode `recommended`, formatter activé dans biome.json
-- [ ] T006 Mettre à jour .gitignore : ignorer tous les fichiers `.env*` sauf `.env.development` (git-crypt) et `.env.example` (documentation). Pattern : `.env*` puis `!.env.development` et `!.env.example`
+- [x] T001 Initialiser package.json avec les dépendances du projet : next, react, react-dom, next-sanity, @sanity/image-url, @sanity/vision, @portabletext/react (prod) et typescript, @types/react, @types/node, tailwindcss, @tailwindcss/postcss, @biomejs/biome (dev). Configurer les scripts npm : `dev` (`next dev --turbo`), `build` (`next build`), `start` (`next start`), `lint` (`biome check .`), `format` (`biome check --write .`) dans package.json
+- [x] T002 [P] Configurer TypeScript strict mode avec path alias `@/` vers `./src/` dans tsconfig.json
+- [x] T003 [P] Configurer Next.js avec `output: 'standalone'` et `images.remotePatterns` pour `cdn.sanity.io` dans next.config.ts
+- [x] T004 [P] Configurer le plugin PostCSS `@tailwindcss/postcss` dans postcss.config.mjs
+- [x] T005 [P] Configurer Biome avec les domaines `next` et `react` en mode `recommended`, formatter activé dans biome.json
+- [x] T006 Mettre à jour .gitignore : ignorer tous les fichiers `.env*` sauf `.env.development` (git-crypt) et `.env.example` (documentation). Pattern : `.env*` puis `!.env.development` et `!.env.example`
 
 ---
 
@@ -34,13 +34,13 @@
 
 **⚠️ CRITIQUE** : Aucune user story ne peut commencer avant la fin de cette phase
 
-- [ ] T007 [P] Créer le fichier CSS global avec import Tailwind v4 (`@import "tailwindcss"`) et bloc `@theme` minimal dans src/app/globals.css
-- [ ] T008 [P] Créer le fichier de configuration Sanity Studio avec `'use client'`, `basePath: '/studio'`, plugins `structureTool()` et `visionTool()`, schémas importés depuis `@/sanity/schemas` dans sanity.config.ts
-- [ ] T009 [P] Créer le client Sanity avec `projectId`, `dataset`, `apiVersion`, `useCdn` dans src/lib/sanity/client.ts
-- [ ] T010 [P] Créer le wrapper `sanityFetch()` avec support ISR cache tags dans src/lib/sanity/sanity-fetch.ts
-- [ ] T011 [P] Créer le fichier de requêtes GROQ (export vide pour l'instant) dans src/lib/sanity/queries.ts
-- [ ] T012 [P] Créer l'index des schémas Sanity (tableau vide exporté) dans src/sanity/schemas/index.ts
-- [ ] T013 Créer le layout racine avec import CSS, metadata de base (title, description), et structure HTML dans src/app/layout.tsx
+- [x] T007 [P] Créer le fichier CSS global avec import Tailwind v4 (`@import "tailwindcss"`) et bloc `@theme` minimal dans src/app/globals.css
+- [x] T008 [P] Créer le fichier de configuration Sanity Studio avec `'use client'`, `basePath: '/studio'`, plugins `structureTool()` et `visionTool()`, schémas importés depuis `@/sanity/schemas` dans sanity.config.ts
+- [x] T009 [P] Créer le client Sanity avec `projectId`, `dataset`, `apiVersion`, `useCdn` dans src/lib/sanity/client.ts
+- [x] T010 [P] Créer le wrapper `sanityFetch()` avec support ISR cache tags dans src/lib/sanity/sanity-fetch.ts
+- [x] T011 [P] Créer le fichier de requêtes GROQ (export vide pour l'instant) dans src/lib/sanity/queries.ts
+- [x] T012 [P] Créer l'index des schémas Sanity (tableau vide exporté) dans src/sanity/schemas/index.ts
+- [x] T013 Créer le layout racine avec import CSS, metadata de base (title, description), et structure HTML dans src/app/layout.tsx
 
 **Checkpoint** : Le serveur de dev doit démarrer sans erreurs. La fondation est prête.
 
@@ -54,9 +54,9 @@
 
 ### Implémentation
 
-- [ ] T014 [US1] Créer la page d'accueil provisoire en Server Component avec le nom Estuaire, message "bientôt disponible", metadata (title, description, Open Graph) dans src/app/(site)/page.tsx
-- [ ] T015 [P] [US1] Créer la page 404 stylisée cohérente avec l'identité visuelle dans src/app/not-found.tsx
-- [ ] T016 [US1] Créer le Dockerfile multi-stage (deps → builder → runner) basé sur le pattern officiel Next.js standalone, utilisateur non-root, copie de `.next/standalone`, `.next/static` et `public` dans Dockerfile
+- [x] T014 [US1] Créer la page d'accueil provisoire en Server Component avec le nom Estuaire, message "bientôt disponible", metadata (title, description, Open Graph) dans src/app/(site)/page.tsx
+- [x] T015 [P] [US1] Créer la page 404 stylisée cohérente avec l'identité visuelle dans src/app/not-found.tsx
+- [x] T016 [US1] Créer le Dockerfile multi-stage (deps → builder → runner) basé sur le pattern officiel Next.js standalone, utilisateur non-root, copie de `.next/standalone`, `.next/static` et `public` dans Dockerfile
 
 **Checkpoint** : La homepage s'affiche en local, `npm run build` produit une sortie standalone, le Dockerfile build avec succès
 
@@ -70,8 +70,8 @@
 
 ### Implémentation
 
-- [ ] T017 [US2] Créer la route Studio avec composant `NextStudio`, export metadata et viewport depuis `next-sanity/studio`, directive `'use client'` dans src/app/studio/[[...tool]]/page.tsx
-- [ ] T018 [P] [US2] Créer le squelette de la route API de revalidation : vérification du secret, réponse JSON success/error, corps minimal dans src/app/api/revalidate/route.ts
+- [x] T017 [US2] Créer la route Studio avec composant `NextStudio`, export metadata et viewport depuis `next-sanity/studio`, directive `'use client'` dans src/app/studio/[[...tool]]/page.tsx
+- [x] T018 [P] [US2] Créer le squelette de la route API de revalidation : vérification du secret, réponse JSON success/error, corps minimal dans src/app/api/revalidate/route.ts
 
 **Checkpoint** : Le Studio se charge à `/studio`, la connexion Sanity fonctionne, la route `/api/revalidate` répond correctement
 
@@ -85,10 +85,10 @@
 
 ### Implémentation
 
-- [ ] T019 [US3] ⚠️ **ACTION MANUELLE (lead dev)** : Initialiser git-crypt (`git-crypt init`), déclarer `.env.development` dans `.gitattributes`, créer `.env.development` avec les vrais secrets Sanity `showcase-dev`, exporter la clé (`git-crypt export-key`), commiter. Procédure détaillée dans quickstart.md section "Premier setup"
-- [ ] T020 [P] [US3] Créer le fichier `.env.example` documentant toutes les variables attendues avec commentaires explicatifs (publiques et serveur) dans .env.example
-- [ ] T021 [P] [US3] Configurer les règles `permissions.deny` dans `.claude/settings.json` pour bloquer la lecture des fichiers `.env*` sauf `.env.example`, ET ajouter une interdiction explicite dans CLAUDE.md (section "Do NOT") : toute tentative de lecture de `.env.development` ou de fichiers `.env*` (hors `.env.example`) est strictement interdite
-- [ ] T022 [US3] Valider que git-crypt fonctionne : vérifier que `.env.development` est en clair localement et chiffré dans git (`git-crypt status`)
+- [x] T019 [US3] ⚠️ **ACTION MANUELLE (lead dev)** : Initialiser git-crypt (`git-crypt init`), déclarer `.env.development` dans `.gitattributes`, créer `.env.development` avec les vrais secrets Sanity `showcase-dev`, exporter la clé (`git-crypt export-key`), commiter. Procédure détaillée dans quickstart.md section "Premier setup"
+- [x] T020 [P] [US3] Créer le fichier `.env.example` documentant toutes les variables attendues avec commentaires explicatifs (publiques et serveur) dans .env.example
+- [x] T021 [P] [US3] Configurer les règles `permissions.deny` dans `.claude/settings.json` pour bloquer la lecture des fichiers `.env*` sauf `.env.example`, ET ajouter une interdiction explicite dans CLAUDE.md (section "Do NOT") : toute tentative de lecture de `.env.development` ou de fichiers `.env*` (hors `.env.example`) est strictement interdite
+- [x] T022 [US3] Valider que git-crypt fonctionne : vérifier que `.env.development` est en clair localement et chiffré dans git (`git-crypt status`)
 
 **Checkpoint** : Un développeur avec la clé git-crypt peut aller du `git clone` au serveur local fonctionnel en moins de 5 minutes
 
@@ -98,11 +98,11 @@
 
 **Objectif** : Vérifications finales affectant toutes les user stories
 
-- [ ] T023 Créer le README.md à la racine du projet (en français, Principe V) : présentation du projet, prérequis (Node, git-crypt), procédure d'installation (clone → git-crypt unlock → npm install → npm run dev), scripts disponibles, structure du projet, gestion des secrets (git-crypt pour dev, Coolify pour prod), lien vers `.env.example` pour les variables attendues
-- [ ] T024 Exécuter `npm run lint` (Biome check) et corriger toute erreur de lint ou formatage restante
-- [ ] T025 Valider le flow README.md complet : clone → git-crypt unlock → npm install → npm run dev → homepage + studio fonctionnels
-- [ ] T026 Vérifier que `npm run build` produit la sortie standalone dans `.next/standalone` et que le Dockerfile build correctement via `docker build .`
-- [ ] T027 Exécuter un audit Lighthouse sur la homepage locale (`localhost:3000`) et vérifier un score 90+ en performance et SEO (SC-005)
+- [x] T023 Créer le README.md à la racine du projet (en français, Principe V) : présentation du projet, prérequis (Node, git-crypt), procédure d'installation (clone → git-crypt unlock → npm install → npm run dev), scripts disponibles, structure du projet, gestion des secrets (git-crypt pour dev, Coolify pour prod), lien vers `.env.example` pour les variables attendues
+- [x] T024 Exécuter `npm run lint` (Biome check) et corriger toute erreur de lint ou formatage restante
+- [x] T025 Valider le flow README.md complet : clone → git-crypt unlock → npm install → npm run dev → homepage + studio fonctionnels
+- [x] T026 Vérifier que `npm run build` produit la sortie standalone dans `.next/standalone` et que le Dockerfile build correctement via `docker build .`
+- [x] T027 Exécuter un audit Lighthouse sur la homepage locale (`localhost:3000`) et vérifier un score 90+ en performance et SEO (SC-005)
 
 ---
 

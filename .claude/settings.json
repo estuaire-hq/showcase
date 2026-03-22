@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(.env.development)",
+      "Read(.env.local)",
+      "Read(.env.production)",
+      "Read(.env)",
+      "Bash(cat .env*)",
+      "Bash(head .env*)",
+      "Bash(tail .env*)",
+      "Bash(less .env*)",
+      "Bash(more .env*)"
+    ]
+  }
+}

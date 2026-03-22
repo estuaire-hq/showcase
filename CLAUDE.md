@@ -18,7 +18,7 @@ Site vitrine Next.js + Sanity pour Mosaique Production / marque Estuaire, deploy
 ```bash
 npm run dev       # Local dev server
 npm run build     # Production build
-npm run lint      # ESLint
+npm run lint      # Biome check (lint + format)
 ```
 
 **Deploy**: `git push` on main → Coolify auto-deploys on OVH VPS. No manual Docker/Coolify config changes without explicit mention.
@@ -58,10 +58,11 @@ src/
 
 ## Environment Variables
 
-- **Single source**: one `.env.local` at the root, never additional `.env` files
+- **Dev source**: `.env.development` at the root — encrypted in git via git-crypt, plaintext on disk after `git-crypt unlock`
+- **Prod source**: Coolify UI only — no `.env.production` file in the repo
 - **Prefixes by domain**: `NEXT_PUBLIC_SANITY_`, `SMTP_`, `NEXT_PUBLIC_SITE_`, `REVALIDATION_`
-- **Documented** in `.env.local.example` with comments for every expected variable
-- Never create additional `.env` files (no `.env.production`, no per-service `.env`)
+- **Documented** in `.env.example` with comments for every expected variable
+- Never create additional `.env` files (no `.env.production`, no `.env.local`, no per-service `.env`)
 
 ## Key Patterns
 
@@ -93,4 +94,5 @@ Sanity webhook → `POST /api/revalidate` → `revalidateTag(tag)`. Each query d
 - Write custom CSS — use Tailwind utilities (exceptions must be justified)
 - Add dependencies without justification
 - Modify Coolify/Docker config without mentioning it
-- Create additional `.env` files (everything goes in `.env.local`)
+- Create additional `.env` files (dev goes in `.env.development`, prod in Coolify UI)
+- Read `.env.development` or any `.env*` file (except `.env.example`) — strictly forbidden, secrets are protected by git-crypt and permissions.deny

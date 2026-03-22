@@ -16,6 +16,15 @@
     - .specify/templates/commands/*.md           ✅ no command files exist yet
   Follow-up TODOs:
     - Animation library (GSAP vs Framer Motion) to be confirmed during first feature spec
+
+  Sync Impact Report (1.0.0 → 1.1.0)
+  ====================================
+  Version change: 1.0.0 → 1.1.0
+  Modified sections:
+    - Variables d'environnement: .env.local → .env.development + git-crypt + Coolify UI
+  Rationale: .env.development is only loaded in dev mode (not during next build),
+    preventing dev secrets from leaking into Docker production images. git-crypt
+    provides transparent encryption in git. Production vars live in Coolify UI.
 -->
 
 # Estuaire Constitution
@@ -127,11 +136,14 @@ Le VPS ne stocke ni contenu ni assets de contenu.
 
 ### Variables d'environnement
 
-- Un seul fichier `.env.local` à la racine — source unique de vérité.
+- Un seul fichier `.env.development` à la racine — source unique de vérité
+  pour le développement local. Chiffré dans git via git-crypt, en clair sur
+  disque après `git-crypt unlock`.
+- Les variables de production vivent exclusivement dans l'UI Coolify.
 - Toutes les variables sont préfixées par domaine :
   `NEXT_PUBLIC_SANITY_*`, `SMTP_*`, `NEXT_PUBLIC_UMAMI_*`, etc.
 - Pas de `.env` par sous-projet ou par service.
-- Un `.env.local.example` documente toutes les variables attendues.
+- Un `.env.example` documente toutes les variables attendues.
 
 ## Development Workflow
 
@@ -140,7 +152,7 @@ Le VPS ne stocke ni contenu ni assets de contenu.
 - **TypeScript strict** : pas de `any` sauf cas documenté.
 - **Server Components par défaut** : `"use client"` justifié au cas par cas.
 - **Schemas Sanity en TypeScript** : types dérivés des schémas.
-- **Formatting** : Prettier + ESLint, exécutés avant chaque commit.
+- **Formatting & Linting** : Biome (lint + format), exécuté avant chaque commit.
 
 ### Conventions Git
 
@@ -187,4 +199,4 @@ Elle prévaut sur toute autre convention implicite.
   complète cette constitution avec les instructions opérationnelles pour
   l'agent de développement.
 
-**Version**: 1.0.0 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-03-10
+**Version**: 1.1.0 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-03-22

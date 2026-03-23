@@ -29,7 +29,8 @@
 			"!**/dist",
 			"!**/build",
 			"!**/.specify",
-			"!**/.claude"
+			"!**/.claude",
+			"!skills-lock.json"
 		]
 	}
 }

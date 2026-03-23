@@ -1,5 +1,5 @@
 import { revalidateTag } from "next/cache";
-import { type NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { parseBody } from "next-sanity/webhook";
 
 export async function POST(request: NextRequest) {
@@ -7,17 +7,14 @@ export async function POST(request: NextRequest) {
 		const { isValidSignature, body } = await parseBody<{
 			_type?: string;
 			_id?: string;
-		}>(request, process.env.REVALIDATION_SECRET);
+		}>(request, process.env.REVALIDATION_SECRET, true);
 
 		if (!isValidSignature) {
-			return NextResponse.json(
-				{ message: "Invalid signature" },
-				{ status: 401 },
-			);
+			return Response.json({ message: "Invalid signature" }, { status: 401 });
 		}
 
 		if (!body) {
-			return NextResponse.json(
+			return Response.json(
 				{ message: "Missing request body" },
 				{ status: 400 },
 			);
@@ -27,15 +24,12 @@ export async function POST(request: NextRequest) {
 			revalidateTag(body._type);
 		}
 
-		return NextResponse.json({
+		return Response.json({
 			revalidated: true,
 			now: new Date().toISOString(),
 		});
 	} catch (error) {
 		console.error("[revalidate]", error);
-		return NextResponse.json(
-			{ message: "Error revalidating" },
-			{ status: 500 },
-		);
+		return Response.json({ message: "Error revalidating" }, { status: 500 });
 	}
 }

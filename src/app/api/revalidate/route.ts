@@ -20,12 +20,15 @@ export async function POST(request: NextRequest) {
 			);
 		}
 
-		if (body._type) {
-			revalidateTag(body._type);
-		}
+		// defineLive attaches a parent "sanity" tag to every sanityFetch call.
+		// Revalidating it invalidates all Sanity-backed caches at once — simplest
+		// and safest approach for a small site.
+		revalidateTag("sanity");
 
 		return Response.json({
 			revalidated: true,
+			type: body._type,
+			id: body._id,
 			now: new Date().toISOString(),
 		});
 	} catch (error) {

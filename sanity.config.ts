@@ -5,6 +5,7 @@ import { defineConfig } from "sanity";
 import { presentationTool } from "sanity/presentation";
 import { structureTool } from "sanity/structure";
 import { schemaTypes } from "@/sanity/schemas";
+import { structure } from "@/sanity/structure";
 
 export default defineConfig({
 	name: "default",
@@ -13,7 +14,7 @@ export default defineConfig({
 	dataset: process.env.NEXT_PUBLIC_SANITY_DATASET ?? "",
 	basePath: "/studio",
 	plugins: [
-		structureTool(),
+		structureTool({ structure }),
 		presentationTool({
 			previewUrl: {
 				previewMode: {

@@ -22,12 +22,17 @@ export default async function RootLayout({
 }: {
 	children: React.ReactNode;
 }) {
+	const { isEnabled: isDraftMode } = await draftMode();
 	return (
 		<html lang="fr">
 			<body className="font-sans antialiased">
 				{children}
-				<SanityLive />
-				{(await draftMode()).isEnabled && <VisualEditing />}
+				{isDraftMode && (
+					<>
+						<SanityLive />
+						<VisualEditing />
+					</>
+				)}
 			</body>
 		</html>
 	);

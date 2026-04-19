@@ -5,8 +5,8 @@ import { VisualEditing } from "next-sanity/visual-editing";
 import { SanityLive } from "@/lib/sanity/live";
 import "./globals.css";
 
-const umamiScriptUrl = process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL;
-const umamiWebsiteId = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
+const umamiScriptUrl = process.env.UMAMI_SCRIPT_URL;
+const umamiWebsiteId = process.env.UMAMI_WEBSITE_ID;
 
 export const metadata: Metadata = {
 	title: {

@@ -25,6 +25,24 @@
   Rationale: .env.development is only loaded in dev mode (not during next build),
     preventing dev secrets from leaking into Docker production images. git-crypt
     provides transparent encryption in git. Production vars live in Coolify UI.
+
+  Sync Impact Report (1.1.0 → 1.2.0)
+  ====================================
+  Version change: 1.1.0 → 1.2.0
+  Added principles:
+    - VI. Intentional Event Tracking
+  Modified sections:
+    - Variables d'environnement: prefix example updated from NEXT_PUBLIC_UMAMI_*
+      to UMAMI_* (alignment with recent code change)
+  Rationale for MINOR bump: new principle introduces a material, testable
+    expectation about analytics instrumentation.
+  Templates requiring updates:
+    - .specify/templates/plan-template.md       ✅ compatible (Constitution Check generic)
+    - .specify/templates/spec-template.md        ✅ compatible (no principle-specific fields)
+    - .specify/templates/tasks-template.md       ✅ compatible (no category changes required)
+  Out-of-scope (moved to CLAUDE.md):
+    - NEXT_PUBLIC_ reservation rule: operational guidance for the dev agent,
+      not a constitutional principle. Lives in CLAUDE.md Environment Variables.
 -->
 
 # Estuaire Constitution
@@ -106,6 +124,32 @@ commits, branches, commentaires de code.
 le client et le contexte métier. L'anglais pour le code assure la cohérence
 avec l'écosystème technique (noms de librairies, API, docs officielles).
 
+### VI. Intentional Event Tracking
+
+Toute interaction utilisateur porteuse de valeur métier DOIT faire l'objet
+d'une décision explicite de tracking via Umami — traçée ou non, et pourquoi.
+Le tracking pageview par défaut ne suffit PAS dès qu'une interaction permet
+de mesurer un résultat (conversion, engagement, frein).
+
+- Les événements custom Umami DOIVENT être implémentés pour, au minimum :
+  - Soumissions de formulaire (succès et échec, distinctement)
+  - Clics sur les CTA principaux (contact, devis, téléphone, email)
+  - Actions métier clés définies au cas par cas (ouverture de projet,
+    lecture vidéo, téléchargement, etc.)
+- Toute nouvelle fonctionnalité interactive DOIT, en phase de spec ou de
+  plan, statuer sur les événements à tracer. L'absence de tracking doit
+  être un choix documenté, pas un oubli.
+- Les événements NE DOIVENT PAS contenir d'information personnellement
+  identifiable (PII) dans leur nom ou leurs propriétés custom.
+- Quand un événement est déclenché par une route serveur (Server Action,
+  API route, webhook), préférer l'API serveur Umami plutôt que de
+  dépendre du tracker client.
+
+**Justification** : un site vitrine sans mesure d'engagement ne peut être
+itéré de façon informée. Tracer les interactions clés permet d'identifier
+ce qui convertit et ce qui est ignoré — sans tomber dans le travers inverse
+d'instrumenter chaque clic au risque de polluer les données et la privacy.
+
 ## Technical Stack & Constraints
 
 ### Stack applicative
@@ -141,7 +185,7 @@ Le VPS ne stocke ni contenu ni assets de contenu.
   disque après `git-crypt unlock`.
 - Les variables de production vivent exclusivement dans l'UI Coolify.
 - Toutes les variables sont préfixées par domaine :
-  `NEXT_PUBLIC_SANITY_*`, `SMTP_*`, `NEXT_PUBLIC_UMAMI_*`, etc.
+  `NEXT_PUBLIC_SANITY_*`, `SMTP_*`, `UMAMI_*`, etc.
 - Pas de `.env` par sous-projet ou par service.
 - Un `.env.example` documente toutes les variables attendues.
 
@@ -199,4 +243,4 @@ Elle prévaut sur toute autre convention implicite.
   complète cette constitution avec les instructions opérationnelles pour
   l'agent de développement.
 
-**Version**: 1.1.0 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-03-22
+**Version**: 1.2.0 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-04-19

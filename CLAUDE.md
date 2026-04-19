@@ -60,7 +60,8 @@ src/
 
 - **Dev source**: `.env.development` at the root — encrypted in git via git-crypt, plaintext on disk after `git-crypt unlock`
 - **Prod source**: Coolify UI only — no `.env.production` file in the repo
-- **Prefixes by domain**: `NEXT_PUBLIC_SANITY_`, `SMTP_`, `NEXT_PUBLIC_SITE_`, `REVALIDATION_`
+- **Prefixes by domain**: `NEXT_PUBLIC_SANITY_`, `SMTP_`, `NEXT_PUBLIC_SITE_`, `REVALIDATION_`, `UMAMI_`
+- **`NEXT_PUBLIC_` rule**: reserved for variables actually consumed client-side. A variable injected into the HTML by a Server Component MUST NOT carry this prefix — Next.js inlines `NEXT_PUBLIC_*` at build time, which breaks runtime flexibility across Docker environments (Coolify).
 - **Documented** in `.env.example` with comments for every expected variable
 - Never create additional `.env` files (no `.env.production`, no `.env.local`, no per-service `.env`)
 

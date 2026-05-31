@@ -1,5 +1,6 @@
 "use client";
 
+import { frFRLocale } from "@sanity/locale-fr-fr";
 import { visionTool } from "@sanity/vision";
 import { defineConfig } from "sanity";
 import { presentationTool } from "sanity/presentation";
@@ -23,6 +24,7 @@ export default defineConfig({
 			},
 		}),
 		visionTool(),
+		frFRLocale(),
 	],
 	schema: {
 		types: schemaTypes,

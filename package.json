@@ -12,6 +12,7 @@
 	"dependencies": {
 		"@portabletext/react": "^3.2.0",
 		"@sanity/image-url": "^1.1.0",
+		"@sanity/locale-fr-fr": "^1.2.32",
 		"@sanity/vision": "^4.22.0",
 		"clsx": "^2.1.1",
 		"next": "^15.3.0",

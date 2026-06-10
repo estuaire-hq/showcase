@@ -1,0 +1,3 @@
+# Obsidian per-machine state — keep the notes, ignore local workspace/cache
+.obsidian/workspace*
+.obsidian/cache

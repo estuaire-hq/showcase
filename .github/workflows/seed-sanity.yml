@@ -1,0 +1,42 @@
+# Bootstrap Sanity content — createIfNotExists (NEVER --reset here).
+#
+# The seed targets the persistent Sanity *dataset*, not the deploy. So this runs when
+# the content model / seeds / shared content change (the only times new documents need
+# creating), plus on manual dispatch — not on every code push. Existing/edited documents
+# are never touched (createIfNotExists). `--reset` stays a deliberate, local-only action.
+#
+# The WRITE token lives ONLY here (GitHub secret); the prod runtime (Coolify) keeps a
+# READ token. See ADR 0006 / constitution Principle IX.
+name: Seed Sanity (bootstrap)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/sanity/schemas/**"
+      - "src/sanity/seed/documents/**"
+      - "src/content/**"
+  workflow_dispatch: {}
+
+concurrency:
+  group: seed-sanity
+  cancel-in-progress: false
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # run.ts validates first (required fields + asset files exist), then writes via
+      # createIfNotExists. It reads config from the env below — no .env.development in CI.
+      - name: Seed (createIfNotExists)
+        run: npm run seed:ci
+        env:
+          NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ vars.NEXT_PUBLIC_SANITY_PROJECT_ID }}
+          NEXT_PUBLIC_SANITY_DATASET: ${{ vars.NEXT_PUBLIC_SANITY_DATASET }}
+          SANITY_API_WRITE_TOKEN: ${{ secrets.SANITY_API_WRITE_TOKEN }}

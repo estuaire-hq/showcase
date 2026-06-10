@@ -30,7 +30,11 @@
 			"!**/build",
 			"!**/.specify",
 			"!**/.claude",
-			"!skills-lock.json"
+			"!**/.design",
+			"!skills-lock.json",
+			"!src/sanity.types.ts",
+			"!schema.json",
+			"!.sanity"
 		]
 	}
 }

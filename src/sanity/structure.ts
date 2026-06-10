@@ -1,7 +1,7 @@
-import { HomeIcon } from "@sanity/icons";
+import { HomeIcon, InlineIcon } from "@sanity/icons";
 import type { StructureResolver } from "sanity/structure";
 
-const SINGLETONS = ["homePage"];
+const SINGLETONS = ["homePage", "footer"];
 
 export const structure: StructureResolver = (S) =>
 	S.list()
@@ -15,6 +15,15 @@ export const structure: StructureResolver = (S) =>
 						.schemaType("homePage")
 						.documentId("homePage")
 						.title("Page d'accueil"),
+				),
+			S.listItem()
+				.title("Pied de page")
+				.icon(InlineIcon)
+				.child(
+					S.document()
+						.schemaType("footer")
+						.documentId("footer")
+						.title("Pied de page"),
 				),
 			S.divider(),
 			...S.documentTypeListItems().filter(

@@ -6,11 +6,11 @@ export default async function HomePage() {
 
 	return (
 		<main className="flex min-h-svh flex-col items-center justify-center px-6 text-center">
-			<h1 className="text-5xl font-bold tracking-tight sm:text-7xl">
+			<h1 className="font-display text-5xl font-semibold tracking-tight sm:text-7xl">
 				{data?.title ?? "Estuaire"}
 			</h1>
 			{data?.tagline && (
-				<p className="mt-6 text-lg text-muted sm:text-xl">{data.tagline}</p>
+				<p className="mt-6 text-ink/60 text-lg sm:text-xl">{data.tagline}</p>
 			)}
 		</main>
 	);

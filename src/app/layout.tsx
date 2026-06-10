@@ -1,9 +1,25 @@
 import type { Metadata, Viewport } from "next";
+import { Montserrat, Montserrat_Alternates } from "next/font/google";
 import { draftMode } from "next/headers";
 import Script from "next/script";
 import { VisualEditing } from "next-sanity/visual-editing";
 import { SanityLive } from "@/lib/sanity/live";
 import "./globals.css";
+
+const montserrat = Montserrat({
+	subsets: ["latin"],
+	weight: ["400", "500", "600", "700"],
+	variable: "--font-montserrat",
+	display: "swap",
+});
+
+const montserratAlternates = Montserrat_Alternates({
+	subsets: ["latin"],
+	weight: ["400", "500", "600"],
+	style: ["normal", "italic"],
+	variable: "--font-montserrat-alternates",
+	display: "swap",
+});
 
 const umamiScriptUrl = process.env.UMAMI_SCRIPT_URL;
 const umamiWebsiteId = process.env.UMAMI_WEBSITE_ID;
@@ -28,7 +44,10 @@ export default async function RootLayout({
 }) {
 	const { isEnabled: isDraftMode } = await draftMode();
 	return (
-		<html lang="fr">
+		<html
+			lang="fr"
+			className={`${montserrat.variable} ${montserratAlternates.variable}`}
+		>
 			<body className="font-sans antialiased">
 				{children}
 				{umamiScriptUrl && umamiWebsiteId && (

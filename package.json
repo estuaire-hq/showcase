@@ -7,21 +7,31 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "biome check .",
-		"format": "biome check --write ."
+		"format": "biome check --write .",
+		"typegen": "sanity schema extract && sanity typegen generate",
+		"seed:schema": "sanity schema extract --enforce-required-fields --path .sanity/schema.strict.json",
+		"seed": "npm run seed:schema && node --env-file=.env.development --import tsx src/sanity/seed/run.ts",
+		"seed:check": "npm run seed:schema && tsx src/sanity/seed/run.ts --check",
+		"seed:ci": "npm run seed:schema && tsx src/sanity/seed/run.ts",
+		"seed:scaffold": "npm run seed:schema && tsx src/sanity/seed/scaffold.ts"
 	},
 	"dependencies": {
+		"@gsap/react": "^2.1.2",
 		"@portabletext/react": "^3.2.0",
 		"@sanity/image-url": "^1.1.0",
 		"@sanity/locale-fr-fr": "^1.2.32",
 		"@sanity/vision": "^4.22.0",
 		"clsx": "^2.1.1",
+		"gsap": "^3.15.0",
+		"lenis": "^1.3.23",
 		"next": "^15.3.0",
 		"next-sanity": "^11.6.0",
 		"react": "^19.1.0",
 		"react-dom": "^19.1.0",
 		"sanity": "^4.22.0",
 		"styled-components": "^6.1.0",
-		"tailwind-merge": "^3.5.0"
+		"tailwind-merge": "^3.5.0",
+		"tailwind-variants": "^3.2.2"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.8",
@@ -29,6 +39,7 @@
 		"@types/node": "^22.0.0",
 		"@types/react": "^19.1.0",
 		"tailwindcss": "^4.1.0",
+		"tsx": "^4.22.4",
 		"typescript": "^5.8.0"
 	}
 }

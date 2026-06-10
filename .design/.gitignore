@@ -1,0 +1,10 @@
+# .design/ — design source + Figma tooling.
+# COMMITTED (needed by the pixel-perfect method): scripts/ + figma-data/*.json + *.md
+# IGNORED below (local-only, heavy or throwaway):
+
+# Master Figma export + source images — redundant with the Figma cloud file
+# (the source of truth) and with Sanity content. Not needed in the repo.
+images/
+
+# Throwaway verification screenshots (charlotte / Figma renders)
+*.png

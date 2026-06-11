@@ -11,10 +11,11 @@ import { NextResponse } from "next/server";
  * The link is shareable and works on any device/browser — it re-sets the cookie
  * on every visit, so it never "expires" the way a one-shot link would.
  *
- * Runs in the Node.js runtime (stable since Next 15.5) so the token is read at
- * REQUEST time, not inlined at build time — set / rotate / remove it in Coolify
- * without a rebuild. Removing the variable opens the site publicly (the gate is
- * a no-op); `robots.ts` keys off the same variable to lift the noindex.
+ * Implemented as a Next.js `proxy` (the successor to `middleware` in v16). The
+ * proxy always runs in the Node.js runtime, so the token is read at REQUEST
+ * time, not inlined at build time — set / rotate / remove it in Coolify without
+ * a rebuild. Removing the variable opens the site publicly (the gate is a
+ * no-op); `robots.ts` keys off the same variable to lift the noindex.
  */
 
 const COOKIE_NAME = "estuaire_preview";
@@ -36,7 +37,7 @@ function placeholder(request: NextRequest): NextResponse {
 	return NextResponse.rewrite(new URL("/coming-soon", request.url));
 }
 
-export function middleware(request: NextRequest): NextResponse {
+export function proxy(request: NextRequest): NextResponse {
 	const token = process.env.SITE_PREVIEW_TOKEN;
 
 	// No token configured → gate disabled, site open (post-launch state).
@@ -75,7 +76,6 @@ export function middleware(request: NextRequest): NextResponse {
 }
 
 export const config = {
-	runtime: "nodejs",
 	matcher: [
 		/*
 		 * Run on everything EXCEPT:

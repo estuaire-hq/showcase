@@ -1,14 +1,14 @@
-import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
+import type { SanityImageSource } from "@sanity/image-url";
 import { footerContent } from "@/content/footer";
-import type { FOOTER_QUERYResult } from "@/sanity.types";
+import type { FOOTER_QUERY_RESULT } from "@/sanity.types";
 import { urlFor } from "./image";
 import { sanityFetch } from "./live";
 import { FOOTER_QUERY } from "./queries";
 
 // Types derive from the schema via TypeGen (`sanity.types.ts`) — never hand-typed
-// (constitution Principle IX). FOOTER_QUERYResult is a union of the "document
+// (constitution Principle IX). FOOTER_QUERY_RESULT is a union of the "document
 // absent" / partial / populated shapes; narrow to the populated branch's members.
-type FooterData = NonNullable<FOOTER_QUERYResult>;
+type FooterData = NonNullable<FOOTER_QUERY_RESULT>;
 type CtaImage = NonNullable<FooterData["ctaImages"]>[number];
 type FooterLink = NonNullable<FooterData["navLinks"]>[number];
 type Link = { label: string; href: string };

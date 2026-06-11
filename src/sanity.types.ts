@@ -12,7 +12,23 @@
  * ---------------------------------------------------------------------------------
  */
 
+export declare const internalGroqTypeReferenceTo: unique symbol;
+
 // Source: schema.json
+export type SanityImageAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+};
+
+export type SanityFileAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.fileAsset";
+};
+
 export type Footer = {
   _id: string;
   _type: "footer";
@@ -24,12 +40,7 @@ export type Footer = {
   ctaButtonLabel?: string;
   ctaButtonHref?: string;
   ctaImages?: Array<{
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -43,12 +54,7 @@ export type Footer = {
   linkedInUrl?: string;
   plaquetteLabel?: string;
   plaquetteFile?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.fileAsset";
-    };
+    asset?: SanityFileAssetReference;
     media?: unknown;
     _type: "file";
   };
@@ -125,6 +131,7 @@ export type SanityImageMetadata = {
   palette?: SanityImagePalette;
   lqip?: string;
   blurHash?: string;
+  thumbHash?: string;
   hasAlpha?: boolean;
   isOpaque?: boolean;
 };
@@ -194,89 +201,109 @@ export type Slug = {
   source?: string;
 };
 
-export type AllSanitySchemaTypes = Footer | SanityImageCrop | SanityImageHotspot | HomePage | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageMetadata | SanityFileAsset | SanityAssetSourceData | SanityImageAsset | Geopoint | Slug;
-export declare const internalGroqTypeReferenceTo: unique symbol;
-// Source: ./src/lib/sanity/queries.ts
+export type AllSanitySchemaTypes =
+  | SanityImageAssetReference
+  | SanityFileAssetReference
+  | Footer
+  | SanityImageCrop
+  | SanityImageHotspot
+  | HomePage
+  | SanityImagePaletteSwatch
+  | SanityImagePalette
+  | SanityImageDimensions
+  | SanityImageMetadata
+  | SanityFileAsset
+  | SanityAssetSourceData
+  | SanityImageAsset
+  | Geopoint
+  | Slug;
+
+// Source: src/lib/sanity/queries.ts
 // Variable: HOME_PAGE_QUERY
 // Query: *[_id == "homePage"][0]{    title,    tagline  }
-export type HOME_PAGE_QUERYResult = {
-  title: string | null;
-  tagline: null;
-} | {
-  title: null;
-  tagline: string | null;
-} | {
-  title: string | null;
-  tagline: string | null;
-} | null;
+export type HOME_PAGE_QUERY_RESULT =
+  | {
+      title: string | null;
+      tagline: null;
+    }
+  | {
+      title: null;
+      tagline: string | null;
+    }
+  | {
+      title: string | null;
+      tagline: string | null;
+    }
+  | null;
+
+// Source: src/lib/sanity/queries.ts
 // Variable: FOOTER_QUERY
 // Query: *[_id == "footer"][0]{    ctaTitleOutline,    ctaTitleFill,    ctaButtonLabel,    ctaButtonHref,    ctaImages[]{      asset,      hotspot,      crop,      alt,      "lqip": asset->metadata.lqip    },    tagline,    address,    contactHref,    linkedInUrl,    plaquetteLabel,    "plaquetteUrl": plaquetteFile.asset->url,    navLinks[]{ label, href },    legalLinks[]{ label, href }  }
-export type FOOTER_QUERYResult = {
-  ctaTitleOutline: null;
-  ctaTitleFill: null;
-  ctaButtonLabel: null;
-  ctaButtonHref: null;
-  ctaImages: null;
-  tagline: null;
-  address: null;
-  contactHref: null;
-  linkedInUrl: null;
-  plaquetteLabel: null;
-  plaquetteUrl: null;
-  navLinks: null;
-  legalLinks: null;
-} | {
-  ctaTitleOutline: null;
-  ctaTitleFill: null;
-  ctaButtonLabel: null;
-  ctaButtonHref: null;
-  ctaImages: null;
-  tagline: string | null;
-  address: null;
-  contactHref: null;
-  linkedInUrl: null;
-  plaquetteLabel: null;
-  plaquetteUrl: null;
-  navLinks: null;
-  legalLinks: null;
-} | {
-  ctaTitleOutline: string | null;
-  ctaTitleFill: string | null;
-  ctaButtonLabel: string | null;
-  ctaButtonHref: string | null;
-  ctaImages: Array<{
-    asset: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    } | null;
-    hotspot: SanityImageHotspot | null;
-    crop: SanityImageCrop | null;
-    alt: string | null;
-    lqip: string | null;
-  }> | null;
-  tagline: string | null;
-  address: string | null;
-  contactHref: string | null;
-  linkedInUrl: string | null;
-  plaquetteLabel: string | null;
-  plaquetteUrl: string | null;
-  navLinks: Array<{
-    label: string | null;
-    href: string | null;
-  }> | null;
-  legalLinks: Array<{
-    label: string | null;
-    href: string | null;
-  }> | null;
-} | null;
+export type FOOTER_QUERY_RESULT =
+  | {
+      ctaTitleOutline: null;
+      ctaTitleFill: null;
+      ctaButtonLabel: null;
+      ctaButtonHref: null;
+      ctaImages: null;
+      tagline: null;
+      address: null;
+      contactHref: null;
+      linkedInUrl: null;
+      plaquetteLabel: null;
+      plaquetteUrl: null;
+      navLinks: null;
+      legalLinks: null;
+    }
+  | {
+      ctaTitleOutline: null;
+      ctaTitleFill: null;
+      ctaButtonLabel: null;
+      ctaButtonHref: null;
+      ctaImages: null;
+      tagline: string | null;
+      address: null;
+      contactHref: null;
+      linkedInUrl: null;
+      plaquetteLabel: null;
+      plaquetteUrl: null;
+      navLinks: null;
+      legalLinks: null;
+    }
+  | {
+      ctaTitleOutline: string | null;
+      ctaTitleFill: string | null;
+      ctaButtonLabel: string | null;
+      ctaButtonHref: string | null;
+      ctaImages: Array<{
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      }> | null;
+      tagline: string | null;
+      address: string | null;
+      contactHref: string | null;
+      linkedInUrl: string | null;
+      plaquetteLabel: string | null;
+      plaquetteUrl: string | null;
+      navLinks: Array<{
+        label: string | null;
+        href: string | null;
+      }> | null;
+      legalLinks: Array<{
+        label: string | null;
+        href: string | null;
+      }> | null;
+    }
+  | null;
 
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    "\n  *[_id == \"homePage\"][0]{\n    title,\n    tagline\n  }\n": HOME_PAGE_QUERYResult;
-    "\n  *[_id == \"footer\"][0]{\n    ctaTitleOutline,\n    ctaTitleFill,\n    ctaButtonLabel,\n    ctaButtonHref,\n    ctaImages[]{\n      asset,\n      hotspot,\n      crop,\n      alt,\n      \"lqip\": asset->metadata.lqip\n    },\n    tagline,\n    address,\n    contactHref,\n    linkedInUrl,\n    plaquetteLabel,\n    \"plaquetteUrl\": plaquetteFile.asset->url,\n    navLinks[]{ label, href },\n    legalLinks[]{ label, href }\n  }\n": FOOTER_QUERYResult;
+    '\n  *[_id == "homePage"][0]{\n    title,\n    tagline\n  }\n': HOME_PAGE_QUERY_RESULT;
+    '\n  *[_id == "footer"][0]{\n    ctaTitleOutline,\n    ctaTitleFill,\n    ctaButtonLabel,\n    ctaButtonHref,\n    ctaImages[]{\n      asset,\n      hotspot,\n      crop,\n      alt,\n      "lqip": asset->metadata.lqip\n    },\n    tagline,\n    address,\n    contactHref,\n    linkedInUrl,\n    plaquetteLabel,\n    "plaquetteUrl": plaquetteFile.asset->url,\n    navLinks[]{ label, href },\n    legalLinks[]{ label, href }\n  }\n': FOOTER_QUERY_RESULT;
   }
 }

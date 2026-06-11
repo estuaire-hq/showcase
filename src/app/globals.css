@@ -57,4 +57,16 @@
 	body {
 		@apply bg-paper text-ink;
 	}
+
+	/* Hide the scrollbar site-wide (justified custom CSS — no Tailwind utility
+	   exists for the scrollbar pseudo-element). Scroll itself is untouched:
+	   Lenis still drives wheel / trackpad / keyboard / touch. Covers the page
+	   scrollbar and any nested overflow container. */
+	* {
+		scrollbar-width: none; /* Firefox */
+		-ms-overflow-style: none; /* legacy Edge / IE */
+	}
+	*::-webkit-scrollbar {
+		display: none; /* Chrome / Safari / WebKit */
+	}
 }

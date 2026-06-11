@@ -535,7 +535,16 @@ update_agent_file() {
         log_error "update_agent_file requires target_file and agent_name parameters"
         return 1
     fi
-    
+
+    # Project policy (Estuaire): the root CLAUDE.md is curated BY HAND and MUST NOT be
+    # auto-edited. speckit's "## Active Technologies" / "## Recent Changes" blocks are
+    # disabled for it — the stack is documented manually in CLAUDE.md's own sections.
+    # This guard covers both call paths (update_specific_agent + update_all_existing_agents).
+    if [[ "$target_file" == "$REPO_ROOT/CLAUDE.md" ]]; then
+        log_info "Skipping $REPO_ROOT/CLAUDE.md (curated manually; speckit auto-update disabled)"
+        return 0
+    fi
+
     log_info "Updating $agent_name context file: $target_file"
     
     local project_name

@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-// Read the gate flag at request time, not build time (mirrors the middleware,
+// Read the gate flag at request time, not build time (mirrors the proxy gate,
 // so removing SITE_PREVIEW_TOKEN in Coolify lifts the noindex without a rebuild).
 export const dynamic = "force-dynamic";
 

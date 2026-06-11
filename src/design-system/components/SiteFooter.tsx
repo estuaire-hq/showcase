@@ -73,11 +73,28 @@ export function SiteFooter({
 						{/* Rule tracks the button width (kit: rule ≈ button at every breakpoint). */}
 						<div className="mt-7 w-full max-w-[620px] border-paper border-t-[3px] lg:mt-9 lg:max-w-[613px]" />
 					</div>
-					<Slideshow
-						images={cta.images}
-						sizes="(min-width:1024px) 42vw, 100vw"
-						className="aspect-[350/340] w-full lg:aspect-[812/552]"
-					/>
+					{/* The WHOLE slideshow box is a parallax layer: the entire box (not its inner
+					    image) starts well BELOW its slot and LIFTS into place over the reveal, so it
+					    visibly rises at its own speed vs the static title beside it. No clip; the box
+					    moves within its grid cell (ink around it, never a visible gap).
+					    `data-parallax-from`/`-to` are the yPercent endpoints FooterReveal reads: from
+					    `40` (enters ~40% of its height — ≈159px — LOWER than its slot) → `0` (settles
+					    EXACT in its slot at the page bottom). The box must clear the wordmark below by
+					    the time it scrolls in (~scrollY 1420): with the range extended to the page
+					    bottom the box lifts slower, so ~42 is the hard ceiling before it overlaps the
+					    "Estuaire" wordmark on screen. Desktop only — the stacked mobile/tablet layout
+					    is too tight to translate. */}
+					<div
+						data-parallax-from="40"
+						data-parallax-to="0"
+						className="aspect-[350/340] w-full will-change-transform lg:aspect-[812/552]"
+					>
+						<Slideshow
+							images={cta.images}
+							sizes="(min-width:1024px) 42vw, 100vw"
+							className="h-full w-full"
+						/>
+					</div>
 				</div>
 
 				{/* 2 — Brand lockup (placeholder for the logo_footer vector) */}

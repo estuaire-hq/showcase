@@ -23,6 +23,14 @@ import { gsap, ScrollTrigger, useGSAP } from "@/lib/motion/gsap";
  *    presents the footer's top (the CTA) IN FULL; you then scroll through the rest. A
  *    NEGATIVE-only offset never extends the scrollable height, and once settled the
  *    footer scrolls through with no gap.
+ *  - DEPTH: the WHOLE CTA slideshow box (`[data-parallax-from]`) starts well BELOW its slot and
+ *    LIFTS into place over the same reveal range — a parallax layer at its own speed, visibly
+ *    rising vs the static title beside it. The entire box translates (yPercent `from: 40` →
+ *    `to: 0`) over the footer-enter → page-bottom range, so it starts ~40% of its height (≈159px)
+ *    lower and lifts to settle EXACT in its slot at the very bottom. Desktop only (gsap.matchMedia):
+ *    the stacked mobile/tablet layout is
+ *    too tight to translate the box. Scrubbed (`ease:'none'`), images only (never the text).
+ *    Triggered on the CONTENT too, so the footer's moving transform never destabilises its range.
  *
  * Reduced motion: no transform — the footer just flows after the content, static.
  */
@@ -75,6 +83,46 @@ export function FooterReveal({
 					},
 				},
 			);
+
+			// Depth: the WHOLE slideshow box parallaxes — yPercent goes from → to, so the box
+			// starts BELOW its slot (from) and lifts to settle in place (to: 0) at its own speed.
+			// The range spans from the footer entering (start) all the way to the page bottom
+			// (end), NOT just the reveal: the box settles only at the very bottom, so on the way
+			// back UP the image starts descending immediately from the bottom — before the section
+			// above re-enters (which happens only at the reveal seam, higher up). Desktop only: the
+			// stacked mobile/tablet layout is too tight to translate the box (it would overlap its
+			// siblings). Same stable trigger (content) — the footer's moving transform never
+			// destabilises the range; the transforms just compose. Scrubbed → ease "none"; images
+			// only, never text.
+			const mm = gsap.matchMedia();
+			mm.add("(min-width: 1024px)", () => {
+				const parallaxEl = footerEl.querySelector<HTMLElement>(
+					"[data-parallax-from]",
+				);
+				if (!parallaxEl) return;
+				const from = Number.parseFloat(parallaxEl.dataset.parallaxFrom || "0");
+				const to = Number.parseFloat(parallaxEl.dataset.parallaxTo || "0");
+				if (from === to) return;
+				gsap.fromTo(
+					parallaxEl,
+					{ yPercent: from }, // starts below its slot
+					{
+						yPercent: to, // lifts to settle in its slot — only at the page bottom
+						ease: "none",
+						scrollTrigger: {
+							trigger: content,
+							start: "bottom bottom", // footer enters at the viewport bottom
+							// End at the page bottom: content.bottom + (footer height − viewport) is the
+							// max scroll. Settling there (not at "bottom top") is what lets the image
+							// descend from the very bottom on the way back up.
+							end: () =>
+								`bottom+=${Math.max(0, footerEl.offsetHeight - window.innerHeight)} top`,
+							scrub: true,
+							invalidateOnRefresh: true,
+						},
+					},
+				);
+			});
 
 			ScrollTrigger.refresh();
 		},

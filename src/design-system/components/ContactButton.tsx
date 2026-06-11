@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ComponentProps } from "react";
+import type { MouseEventHandler } from "react";
 import { tv } from "tailwind-variants";
 
 /**
@@ -47,7 +47,7 @@ export function ContactButton({
 	size?: "sm" | "lg";
 	active?: boolean;
 	className?: string;
-	onClick?: ComponentProps<"button">["onClick"];
+	onClick?: MouseEventHandler<HTMLElement>;
 }) {
 	const cls = contactButton({ tone, size, active, class: className });
 	if (href != null) {
@@ -56,6 +56,7 @@ export function ContactButton({
 				href={href}
 				className={cls}
 				aria-current={active ? "page" : undefined}
+				onClick={onClick}
 			>
 				{label}
 			</Link>

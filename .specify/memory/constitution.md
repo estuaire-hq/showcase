@@ -164,6 +164,31 @@
   Companion changes (operational, not constitutional):
     - specs/002-nextjs-16-migration/ (spec, plan, tasks, research, contracts).
     - ADR 0008 (décision de migration, à venir) ; ADR 0007 à mettre à jour (middleware → proxy).
+
+  Sync Impact Report (1.6.2 → 1.7.0)
+  ====================================
+  Version change: 1.6.2 → 1.7.0
+  Added principles:
+    - X. Design System : source unique du langage visuel — tout choix visuel DOIT venir
+      du design system (@/design-system + tokens @theme). AUCUNE couleur codée en dur
+      (tokens @theme uniquement ; pas de hex/rgb/hsl ni de valeur arbitraire type
+      bg-[#…] / text-[18px]) ; AUCUNE taille de police codée en dur (échelle
+      text-display/title/subtitle/lead/body/caption) ; les composants d'UI réutilisables
+      (boutons, pills, cartes…) DOIVENT vivre dans src/design-system/ et être consommés via
+      @/design-system, jamais réimplémentés ad hoc ; variantes via tailwind-variants ;
+      CSS custom / valeurs arbitraires rares et justifiées, jamais pour une couleur ou une
+      taille de marque.
+  Rationale for MINOR bump: nouveau principe contraignant et testable, qui codifie en loi la
+    discipline design-system jusqu'ici seulement opérationnelle (CLAUDE.md « Design System » /
+    ADR 0003). Étend les Principes VII (pixel-perfect) et VIII (DS présentationnel) sans
+    redéfinir ni supprimer aucun principe existant → pas MAJOR. (10 principes désormais.)
+  Templates requiring updates:
+    - .specify/templates/plan-template.md       ✅ compatible (Constitution Check générique)
+    - .specify/templates/spec-template.md        ✅ compatible (aucun champ lié à un principe)
+    - .specify/templates/tasks-template.md       ✅ compatible (aucune catégorie à changer)
+  Companion changes (operational, not constitutional):
+    - CLAUDE.md « Design System » + « Do NOT » encodent déjà ces règles (désormais constitutionnelles).
+    - docs/vault/decisions/0003-design-system.md est l'ADR d'origine.
 -->
 
 # Estuaire Constitution
@@ -359,6 +384,41 @@ dérivent d'une source unique et soient validés mécaniquement. Étend le Princ
 CMS détient le contenu) à la dimension *modèle / types* (cf.
 [[decisions/0006-schema-derived-types-and-typed-seeds]]).
 
+### X. Design System : source unique du langage visuel
+
+Tout choix visuel — couleur, typographie, rayon, espacement — et tout composant
+d'interface réutilisable DOIT provenir du **design system** (`@/design-system` +
+tokens Tailwind v4 `@theme`). Rien de tout cela ne DOIT être codé en dur ni
+réinventé dans une page ou une fonctionnalité.
+
+- **Couleurs** : AUCUNE couleur codée en dur — pas de hex, `rgb()`, `hsl()`, nom
+  CSS arbitraire, ni valeur arbitraire Tailwind (`bg-[#1a1a1a]`, `text-[rgb(...)]`).
+  Les couleurs DOIVENT être des tokens `@theme` (`bg-estuaire`, `text-ink`,
+  `text-paper`, …).
+- **Typographie** : AUCUNE taille de police codée en dur (px/rem arbitraire,
+  `text-[18px]`). Les tailles DOIVENT venir de l'échelle de tokens (`text-display`,
+  `text-title`, `text-subtitle`, `text-lead`, `text-body`, `text-caption`) ; les
+  familles via les utilitaires de tokens (`font-display`), en respectant la règle de
+  marque (UPPERCASE → Montserrat, lowercase → Montserrat Alternates, via `BrandText`).
+- **Rayons, espacements et autres primitives de design** : via tokens / utilitaires
+  Tailwind, jamais de valeur magique.
+- **Composants d'UI réutilisables** (boutons, pills, cartes, champs, badges, toggles,
+  etc.) DOIVENT vivre dans `src/design-system/` et être consommés via `@/design-system`.
+  Ils NE DOIVENT PAS être réimplémentés ad hoc. S'il manque une primitive, on
+  l'**ajoute au design system** (acte délibéré, cf. Principe III) — on ne la duplique
+  pas dans une fonctionnalité.
+- Les tokens `@theme` (`src/app/globals.css`) sont la **source de vérité** ; `tokens.ts`
+  n'en est qu'un miroir TypeScript pour le JS/GSAP. Les variantes de composants se font
+  avec **`tailwind-variants` (`tv`)** + `cn`.
+- **CSS custom** et **valeurs arbitraires** sont l'exception : rares, justifiées par un
+  commentaire explicite, et JAMAIS pour une couleur ou une taille typographique de marque.
+
+**Justification** : le rendu est le produit (cf. Principe VII). Concentrer couleurs,
+typographie et primitives dans un seul module garantit la cohérence visuelle, rend le
+pixel-perfect maintenable, et permet de faire évoluer le langage visuel à un seul endroit
+sans dérive. Consommer le design system plutôt que de le réimplémenter préserve aussi son
+isolation présentationnelle (cf. Principe VIII et [[decisions/0003-design-system]]).
+
 ## Technical Stack & Constraints
 
 ### Stack applicative
@@ -496,4 +556,4 @@ Elle prévaut sur toute autre convention implicite.
   complète cette constitution avec les instructions opérationnelles pour
   l'agent de développement.
 
-**Version**: 1.6.2 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-06-11
+**Version**: 1.7.0 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-06-11

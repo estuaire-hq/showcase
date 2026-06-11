@@ -31,13 +31,15 @@ drops the prefix → falls back to the placeholder) and forces a heavy de-prefix
 migration at launch.
 
 ## How
-- `src/middleware.ts` — **Node.js runtime** (`config.runtime = "nodejs"`, stable
-  since Next 15.5). Node runtime is **required**: in the Edge runtime, non-public
-  env vars are inlined at build time, which would freeze the token (and the
-  on/off switch) at build — defeating the "change it in Coolify" goal. The
-  middleware reads the token at request time, validates the `/v/<token>` link and
-  the cookie with a constant-time SHA-256 comparison, and `rewrite`s everything
-  else to `/coming-soon` (URL preserved → real routes never leak).
+- `src/proxy.ts` — a Next.js **`proxy`** (the successor to `middleware`, renamed
+  in Next 16 — see ADR 0008). The proxy **always runs in the Node.js runtime**
+  (the Edge runtime is not supported for `proxy`), so no `config.runtime` is set.
+  Node runtime is **required**: in the Edge runtime, non-public env vars are
+  inlined at build time, which would freeze the token (and the on/off switch) at
+  build — defeating the "change it in Coolify" goal. The proxy reads the token at
+  request time, validates the `/v/<token>` link and the cookie with a
+  constant-time SHA-256 comparison, and `rewrite`s everything else to
+  `/coming-soon` (URL preserved → real routes never leak).
 - `src/app/coming-soon/page.tsx` — self-contained placeholder (design-system
   tokens, no `/public` asset → the matcher can block everything but build
   assets), `robots: { index: false }`.
@@ -51,6 +53,6 @@ migration at launch.
 - Toggling preview/launch is a Coolify env change, no redeploy of code.
 - Security-by-obscurity, acceptable for a pre-launch showcase (no sensitive data);
   the token is a long random value, the cookie is `httpOnly` + `secure` in prod.
-- Cleanup at launch: remove `SITE_PREVIEW_TOKEN`. The middleware/placeholder can
+- Cleanup at launch: remove `SITE_PREVIEW_TOKEN`. The proxy/placeholder can
   stay dormant (no-op) or be deleted later.
 - The `/v/` prefix is reserved; avoid a future real route under it.

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ComponentProps } from "react";
+import type { MouseEventHandler } from "react";
 import { tv } from "tailwind-variants";
 
 /**
@@ -14,7 +14,9 @@ const navButton = tv({
 	base: "inline-flex h-10 items-center justify-center rounded-full px-[18px] font-display text-caption lowercase leading-none ring-inset transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-estuaire",
 	variants: {
 		tone: { onLight: "text-ink", onDark: "text-paper" },
-		active: { true: "ring-1", false: "" },
+		// Active entry (current page): 1px ring + weight 600 — exact treatment of the
+		// Figma "état actif" node 51:2699 (CSS provided): inactive links are 400.
+		active: { true: "font-semibold ring-1", false: "" },
 	},
 	compoundVariants: [
 		{
@@ -46,7 +48,7 @@ export function NavButton({
 	tone?: "onLight" | "onDark";
 	active?: boolean;
 	className?: string;
-	onClick?: ComponentProps<"button">["onClick"];
+	onClick?: MouseEventHandler<HTMLElement>;
 }) {
 	const cls = navButton({ tone, active, class: className });
 	if (href != null) {
@@ -55,6 +57,7 @@ export function NavButton({
 				href={href}
 				className={cls}
 				aria-current={active ? "page" : undefined}
+				onClick={onClick}
 			>
 				{label}
 			</Link>

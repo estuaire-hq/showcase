@@ -1,4 +1,5 @@
 import { Footer } from "@/components/Footer";
+import { Navbar } from "@/components/Navbar";
 import { FooterReveal } from "@/lib/motion/FooterReveal";
 import { SmoothScroll } from "@/lib/motion/SmoothScroll";
 
@@ -16,6 +17,7 @@ export default function SiteLayout({
 }) {
 	return (
 		<SmoothScroll>
+			<Navbar />
 			<FooterReveal footer={<Footer />}>{children}</FooterReveal>
 		</SmoothScroll>
 	);

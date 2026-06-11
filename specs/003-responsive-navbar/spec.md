@@ -176,6 +176,12 @@ style plein ; revenir au sommet et vérifier le retour au style transparent.
 - **FR-013** : La navbar DOIT reproduire fidèlement la maquette Figma à chacun des trois points de
   rupture (smartphone 390, tablette 768, desktop 1920) : dimensions, espacements, typographies,
   couleurs et positions intrinsèques conformes à la référence.
+  > **Exception approuvée (porteur, 2026-06-11)** : la **hauteur d'en-tête** et la **taille du logo**
+  > sont **volontairement réduites** par rapport à la maquette — barre **112 px desktop / 80 px sous
+  > `lg`** (au lieu de 160/120) et logo **60 px desktop / 44 px sous `lg`** (au lieu de 75/50), la
+  > maquette ayant été jugée trop haute. Tout le reste (padding-x, gaps, typographie, couleurs,
+  > positions) reste conforme à la référence. Déviation consciente au Principe VII, tracée en
+  > `plan.md` §Complexity Tracking.
 - **FR-014** : Chaque entrée de navigation DOIT pointer vers une **page dédiée** (route distincte —
   ex. *Expertises*, *Univers*, *Réalisations*, *contact* mènent chacune à leur propre page). La
   navbar câble ces destinations même si la page cible n'est pas encore construite (cf. *Hors
@@ -222,9 +228,11 @@ style plein ; revenir au sommet et vérifier le retour au style transparent.
   Les slugs des routes suivent les libellés et seront figés au moment de la planification.
 - **Points de rupture** : convention du design system — base → mobile (390), `md:` → tablette (768),
   `lg:` → desktop (≥1024, frame 1920).
-- **Dimensions de référence** : hauteur d'en-tête ≈ 160 px sur desktop et ≈ 120 px sur
-  tablette/smartphone ; le logo passe à une taille réduite sous le desktop ; ces valeurs
-  intrinsèques sont issues de la maquette et font foi.
+- **Dimensions de référence** : la maquette donne une hauteur d'en-tête ≈ 160 px desktop / ≈ 120 px
+  tablette-smartphone et un logo réduit sous le desktop. **Déviation approuvée (porteur, 2026-06-11)** :
+  la barre est ramenée à **112 px desktop / 80 px sous `lg`** et le logo à **60 / 44 px** (la maquette
+  paraissait trop haute) ; le padding-x et les autres dimensions intrinsèques restent conformes à la
+  maquette (cf. FR-013 et `plan.md` §Complexity Tracking).
 - **Panneau plein écran** : fond sombre semi-opaque (≈ 90 %) recouvrant la page, logo et entrées
   centrés, croix de fermeture en haut à droite (à la place de l'icône menu).
 - **Mécanisme de contraste & seuil de scroll** : le *comportement* (contraste adaptatif en

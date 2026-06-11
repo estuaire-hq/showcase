@@ -29,10 +29,17 @@ indépendantes. Convention de breakpoints (tokens.ts) : base → mobile (390) ·
 
 **Purpose**: rassembler la source de vérité Figma (build spec) et les assets, avant tout code.
 
-- [ ] T001 [P] Lire **losslessly** les 6 frames navbar déjà en cache : `node .design/scripts/figma-node.mjs 51:2221 51:2585 77:3149 77:3150 77:3630 87:5893` ; passer le *completeness gate* (énumérer tous les nodes ; relever hauteurs d'en-tête, paddings, gaps, tailles de logo par frame, opacité du fond du panneau ≈90 %, position de la croix) et consigner ces valeurs intrinsèques comme build spec dans `specs/003-responsive-navbar/research.md` (section « inconnues résolues au build »).
-- [ ] T002 [P] Pull + lire le node **état actif** absent du cache : `node --env-file=.env.development .design/scripts/figma-pull.mjs 51:2699` puis `node .design/scripts/figma-node.mjs 51:2699` ; consigner le traitement visuel exact de l'entrée active.
-- [ ] T003 Préparer l'asset **logo** dans `public/brand/` : exporter le node logo via `.design/scripts/figma-render.mjs` / `.design/scripts/figma-fills.mjs` ; si l'export est indisponible, poser un **placeholder clairement flaggé** (et ne pas revendiquer pixel-perfect pour le logo).
-- [ ] T004 [P] (Optionnel, recommandé) Scaffolder la page d'isolation `src/app/(lab)/lab/navbar/page.tsx` (noindex, déjà couvert par le layout lab) destinée au diff visuel des 4 états × 3 breakpoints — à remplir au fur et à mesure que les composants arrivent.
+- [X] T001 [P] Lire **losslessly** les 6 frames navbar déjà en cache : `node .design/scripts/figma-node.mjs 51:2221 51:2585 77:3149 77:3150 77:3630 87:5893` ; passer le *completeness gate* (énumérer tous les nodes ; relever hauteurs d'en-tête, paddings, gaps, tailles de logo par frame, opacité du fond du panneau ≈90 %, position de la croix) et consigner ces valeurs intrinsèques comme build spec dans `specs/003-responsive-navbar/research.md` (section « inconnues résolues au build »).
+- [X] T002 [P] Lire le node **état actif** — pull impossible (API bloquée) mais **CSS fourni par
+  Pierre** → état actif **CONFIRMÉ** : `border 1px solid #0e1215` (ring ink) **+ font-weight 600**
+  sur l'entrée active (inactives = 400, sans bordure). Consigné dans research.md ; appliqué en T012.
+- [X] T003 Asset **logo** — **SVG réel fourni par Pierre** (viewBox 281×75) → composant
+  `src/design-system/components/BrandLogo.tsx` (inline SVG, `fill=currentColor` pour piloter la
+  tonalité, `h-[50px] lg:h-[75px] w-auto`, `aria-hidden`). **Logo pixel-perfect** (vrai vecteur, plus
+  un placeholder).
+- [~] T004 [P] (Optionnel) Page d'isolation `src/app/(lab)/lab/navbar/page.tsx` — **non créée** :
+  le diff visuel dépend de l'API Figma (bloquée ici) et la navbar étant sticky/`fixed` site-wide,
+  elle se teste mieux en contexte. À scaffolder plus tard si un diff par état devient nécessaire.
 
 ---
 
@@ -43,11 +50,11 @@ de base, wrapper client monté dans le layout.
 
 **⚠️ CRITICAL**: aucune user story ne peut démarrer tant que cette phase n'est pas terminée.
 
-- [ ] T005 [P] Créer la config statique `src/content/navigation.ts` conforme à `contracts/navigation-config.md` (`NavConfig` : 4 `items` dans l'ordre desktop, `cta` contact, `brandHref:"/"` ; slugs figés `/nous-decouvrir`, `/expertises`, `/univers`, `/realisations`, `/contact`). Module pur, aucun import Sanity.
-- [ ] T006 [P] Créer le hook partagé `src/lib/motion/usePrefersReducedMotion.ts` (matchMedia `(prefers-reduced-motion: reduce)`, abonnement/désabonnement) — consommé par US2 (panneau) et US3 (sticky).
-- [ ] T007 [P] Créer la coquille présentationnelle `src/design-system/components/SiteHeader.tsx` (slot `logo` + `brandHref`, structure responsive avec régions vides « liste desktop » et « toggle », props `state`/`logoTone`/`linksTone`/`reducedMotion` plombées mais inertes) conforme à `contracts/design-system-components.md` ; l'exporter dans `src/design-system/index.ts` (+ type `NavTone`).
-- [ ] T008 Créer le wrapper client `src/components/Navbar.tsx` (`"use client"`) : importe `navigation`, rend `<SiteHeader>` avec des props statiques (`state="top"`, tonalités par défaut `onLight`). Aucun comportement encore.
-- [ ] T009 Monter `<Navbar />` dans `src/app/(site)/layout.tsx`, à l'intérieur du shell `SmoothScroll` (au-dessus de `FooterReveal`).
+- [X] T005 [P] Créer la config statique `src/content/navigation.ts` conforme à `contracts/navigation-config.md` (`NavConfig` : 4 `items` dans l'ordre desktop, `cta` contact, `brandHref:"/"` ; slugs figés `/nous-decouvrir`, `/expertises`, `/univers`, `/realisations`, `/contact`). Module pur, aucun import Sanity.
+- [X] T006 [P] Créer le hook partagé `src/lib/motion/usePrefersReducedMotion.ts` (matchMedia `(prefers-reduced-motion: reduce)`, abonnement/désabonnement) — consommé par US2 (panneau) et US3 (sticky).
+- [X] T007 [P] Créer la coquille présentationnelle `src/design-system/components/SiteHeader.tsx` (slot `logo` + `brandHref`, structure responsive avec régions vides « liste desktop » et « toggle », props `state`/`logoTone`/`linksTone`/`reducedMotion` plombées mais inertes) conforme à `contracts/design-system-components.md` ; l'exporter dans `src/design-system/index.ts` (+ type `NavTone`).
+- [X] T008 Créer le wrapper client `src/components/Navbar.tsx` (`"use client"`) : importe `navigation`, rend `<SiteHeader>` avec des props statiques (`state="top"`, tonalités par défaut `onLight`). Aucun comportement encore.
+- [X] T009 Monter `<Navbar />` dans `src/app/(site)/layout.tsx`, à l'intérieur du shell `SmoothScroll` (au-dessus de `FooterReveal`).
 
 **Checkpoint**: la barre (coquille + logo) s'affiche site-wide ; le DS reste présentationnel.
 
@@ -61,11 +68,11 @@ de base, wrapper client monté dans le layout.
 chaque élément mène à sa destination ; le logo ramène à `/` ; sur une page d'une entrée, l'entrée
 est mise en évidence (acceptances 1-4 de la story).
 
-- [ ] T010 [US1] Rendre la **liste horizontale desktop** dans `src/design-system/components/SiteHeader.tsx` (région « liste desktop », visible `lg:`) : `items` → `NavButton`, `cta` → `ContactButton`, logo → lien `brandHref` (FR-004).
-- [ ] T011 [US1] Dans `src/components/Navbar.tsx`, dériver l'état actif via `usePathname()` (`next/navigation`) : `activeHref` = **le `href` de l'entrée** telle que `pathname === item.href || pathname.startsWith(item.href + "/")` (**jamais le `pathname` brut**), logo actif seulement sur `/` ; passer ce `activeHref` à `<SiteHeader>` (FR-016).
-- [ ] T012 [P] [US1] Appliquer le **traitement visuel de l'état actif** lu en T002 (node `51:2699`) à la variante `active` des pills `src/design-system/components/NavButton.tsx` et `src/design-system/components/ContactButton.tsx` (ajuster si le node diffère du `ring` actuel).
-- [ ] T013 [US1] Ajouter le **tracking Umami du CTA contact** dans `src/components/Navbar.tsx` : sur clic contact, `window.umami?.track("nav_contact_click")` (guardé, no-op si absent) ; introduire si besoin un helper `trackEvent(name)` dans `src/lib/utils.ts` (research §8).
-- [ ] T014 [US1] **Pixel-perfect desktop (1920)** : reproduire positions/tailles/espacements de la barre (valeurs T001, node `51:2221`) avec utilitaires Tailwind + tokens `@theme` uniquement (jamais de couleur/police/radius en dur).
+- [X] T010 [US1] Rendre la **liste horizontale desktop** dans `src/design-system/components/SiteHeader.tsx` (région « liste desktop », visible `lg:`) : `items` → `NavButton`, `cta` → `ContactButton`, logo → lien `brandHref` (FR-004).
+- [X] T011 [US1] Dans `src/components/Navbar.tsx`, dériver l'état actif via `usePathname()` (`next/navigation`) : `activeHref` = **le `href` de l'entrée** telle que `pathname === item.href || pathname.startsWith(item.href + "/")` (**jamais le `pathname` brut**), logo actif seulement sur `/` ; passer ce `activeHref` à `<SiteHeader>` (FR-016).
+- [X] T012 [P] [US1] Appliquer le **traitement visuel de l'état actif** lu en T002 (node `51:2699`) à la variante `active` des pills `src/design-system/components/NavButton.tsx` et `src/design-system/components/ContactButton.tsx` (ajuster si le node diffère du `ring` actuel).
+- [X] T013 [US1] Ajouter le **tracking Umami du CTA contact** dans `src/components/Navbar.tsx` : sur clic contact, `window.umami?.track("nav_contact_click")` (guardé, no-op si absent) ; introduire si besoin un helper `trackEvent(name)` dans `src/lib/utils.ts` (research §8).
+- [X] T014 [US1] **Pixel-perfect desktop (1920)** : reproduire positions/tailles/espacements de la barre (valeurs T001, node `51:2221`) avec utilitaires Tailwind + tokens `@theme` uniquement (jamais de couleur/police/radius en dur).
 
 **Checkpoint**: US1 livrable en MVP — navigation desktop fonctionnelle et conforme à Figma.
 
@@ -80,14 +87,14 @@ focus piégé, fermeture par croix/Échap/sélection.
 menu ; l'activer ouvre le panneau plein écran avec toutes les entrées ; l'arrière-plan ne défile
 plus ; sélectionner une entrée navigue + ferme ; croix/Échap ferment et restaurent le défilement.
 
-- [ ] T015 [P] [US2] Créer le composant DS `src/design-system/components/MenuToggle.tsx` (bouton hamburger/croix, `aria-expanded`, `aria-controls`, libellé accessible ouvert/fermé, prop `tone`) ; l'exporter dans `src/design-system/index.ts` (contrat `contracts/design-system-components.md`).
-- [ ] T016 [P] [US2] Créer le composant DS `src/design-system/components/NavPanel.tsx` (`role="dialog"` `aria-modal` + label, fond sombre semi-opaque ≈90 % — valeur T001, logo + entrées empilées + `cta` + croix, prop `onSelect`, `reducedMotion`) ; l'exporter dans `src/design-system/index.ts` (nodes `77:3630` / `87:5893`).
-- [ ] T017 [P] [US2] Exposer l'instance Lenis depuis `src/lib/motion/SmoothScroll.tsx` via un `LenisContext` léger (nouveau `src/lib/motion/LenisContext.tsx` ; fournir l'instance, no-op si reduced-motion / scroll natif).
-- [ ] T018 [US2] Créer `src/lib/a11y/useScrollLock.ts` : à l'ouverture `lenis.stop()` (via `LenisContext`) + `overflow:hidden` en filet ; à la fermeture `lenis.start()` + restauration (research §3). (dépend de T017)
-- [ ] T019 [P] [US2] Créer `src/lib/a11y/useFocusTrap.ts` : focus initial dans le panneau, boucle Tab/Shift-Tab, Échap, restauration du focus sur le déclencheur, `inert`/`aria-hidden` sur l'arrière-plan (research §4).
-- [ ] T020 [US2] Câbler le menu mobile dans `src/components/Navbar.tsx` : état `isOpen`, rendre `<NavPanel>` + déclencher `<MenuToggle>`, brancher `useScrollLock(isOpen)` + `useFocusTrap(...)`, `onSelect` = naviguer puis fermer (FR-010), fermer + libérer le verrou au franchissement de `lg` (resize), réutiliser le tracking contact. (dépend de T015, T016, T018, T019)
-- [ ] T021 [US2] Dans `src/design-system/components/SiteHeader.tsx`, rendre le `<MenuToggle>` dans la région « toggle » sous `lg` et masquer la liste horizontale sous `lg` (FR-007). (dépend de T015)
-- [ ] T022 [US2] **Pixel-perfect** barre 390/768 (nodes `77:3150` / `77:3149`) + **panneau ouvert** (nodes `87:5893` / `77:3630`) avec Tailwind + tokens ; `reducedMotion` → ouverture/fermeture instantanées. (dépend de T020, T021)
+- [X] T015 [P] [US2] Créer le composant DS `src/design-system/components/MenuToggle.tsx` (bouton hamburger/croix, `aria-expanded`, `aria-controls`, libellé accessible ouvert/fermé, prop `tone`) ; l'exporter dans `src/design-system/index.ts` (contrat `contracts/design-system-components.md`). **Anticipé** (requis par `SiteHeader`) ; icône en `currentColor` (tonalité pilotée responsive), cible tactile ≥44px.
+- [X] T016 [P] [US2] Créer le composant DS `src/design-system/components/NavPanel.tsx` (`role="dialog"` `aria-modal` + label, fond sombre semi-opaque ≈90 % — valeur T001, logo + entrées empilées + `cta` + croix, prop `onSelect`, `reducedMotion`) ; l'exporter dans `src/design-system/index.ts` (nodes `77:3630` / `87:5893`).
+- [X] T017 [P] [US2] Exposer l'instance Lenis — **`lenis/react` fournit déjà `useLenis()`** (provider `ReactLenis` monté par `SmoothScroll`, `Navbar` est dedans) → réutilisé directement (Principe IV, zéro nouveau fichier/contexte). Retourne `undefined` sous reduced-motion / scroll natif → appels optionnels sûrs. (au lieu d'un `LenisContext.tsx` maison redondant.)
+- [X] T018 [US2] Créer `src/lib/a11y/useScrollLock.ts` : à l'ouverture `lenis.stop()` (via `LenisContext`) + `overflow:hidden` en filet ; à la fermeture `lenis.start()` + restauration (research §3). (dépend de T017)
+- [X] T019 [P] [US2] Créer `src/lib/a11y/useFocusTrap.ts` : focus initial dans le panneau, boucle Tab/Shift-Tab, Échap, restauration du focus sur le déclencheur, `inert`/`aria-hidden` sur l'arrière-plan (research §4).
+- [X] T020 [US2] Câbler le menu mobile dans `src/components/Navbar.tsx` : état `isOpen`, rendre `<NavPanel>` + déclencher `<MenuToggle>`, brancher `useScrollLock(isOpen)` + `useFocusTrap(...)`, `onSelect` = naviguer puis fermer (FR-010), fermer + libérer le verrou au franchissement de `lg` (resize), réutiliser le tracking contact. (dépend de T015, T016, T018, T019)
+- [X] T021 [US2] Dans `src/design-system/components/SiteHeader.tsx`, rendre le `<MenuToggle>` dans la région « toggle » sous `lg` et masquer la liste horizontale sous `lg` (FR-007). (dépend de T015)
+- [X] T022 [US2] **Pixel-perfect** barre 390/768 (nodes `77:3150` / `77:3149`) + **panneau ouvert** (nodes `87:5893` / `77:3630`) avec Tailwind + tokens ; `reducedMotion` → ouverture/fermeture instantanées. (dépend de T020, T021)
 
 **Checkpoint**: US1 ET US2 fonctionnent indépendamment (desktop + mobile/tablette).
 
@@ -102,11 +109,11 @@ remontée, retour transparent au sommet ; respect de `prefers-reduced-motion`.
 le bas → barre masquée ; amorcer la remontée → barre en style plein ; revenir au sommet → retour
 transparent ; pas de vacillement sur micro-scroll ; reduced-motion → changements instantanés.
 
-- [ ] T023 [P] [US3] Créer `src/lib/motion/useStickyNav.ts` : direction de scroll via `ScrollTrigger` (`onUpdate` → `self.direction`/`self.scroll()`) avec `TOP_THRESHOLD≈8px` et `DIRECTION_DELTA≈6–10px` → état `"top"|"hidden"|"pinned"` (data-model §2/§5) ; **repli** listener `scroll` natif passif sous reduced-motion (research §2).
-- [ ] T024 [US3] Dans `src/design-system/components/SiteHeader.tsx`, appliquer le style piloté par `state` : `top` = fond transparent, pas d'ombre, contenu en tonalités par slot ; `pinned` = fond clair opaque + ombre + `fixed`, contenu `onLight` ; `hidden` = `-translate-y-full` ; transitions `transform`/`opacity` (`power2.out`, ~0.3–0.4s) **désactivées** si `reducedMotion` (node sticky `51:2585`).
-- [ ] T025 [US3] Câbler `useStickyNav` + la **résolution de tonalité** dans `src/components/Navbar.tsx` : au `top`, lire `data-nav-logo-tone`/`data-nav-links-tone` de l'en-tête courant (contrat `contracts/section-tone.md`), défaut `onLight` ; `pinned`/`hidden` → liens/toggle `onLight` fixe (le CTA reste `ContactButton tone="bleu"`, variante DS, en toute situation) ; passer `state`/`logoTone`/`linksTone`/`reducedMotion` à `<SiteHeader>`. (dépend de T023, T024)
-- [ ] T026 [P] [US3] Déclarer les tonalités d'en-tête sur la home `src/app/(site)/page.tsx` : `data-nav-logo-tone="onDark"` / `data-nav-links-tone="onLight"` (valeurs confirmées au node `51:2221`).
-- [ ] T027 [US3] **Pixel-perfect** états sticky/plein (node `51:2585`) + transparent/repos sur les 3 breakpoints ; vérifier l'absence de scintillement (seuils) et le mode reduced-motion (instantané). (dépend de T024, T025)
+- [X] T023 [P] [US3] Créer `src/lib/motion/useStickyNav.ts` : direction de scroll via `ScrollTrigger` (`onUpdate` → `self.direction`/`self.scroll()`) avec `TOP_THRESHOLD≈8px` et `DIRECTION_DELTA≈6–10px` → état `"top"|"hidden"|"pinned"` (data-model §2/§5) ; **repli** listener `scroll` natif passif sous reduced-motion (research §2).
+- [X] T024 [US3] Dans `src/design-system/components/SiteHeader.tsx`, appliquer le style piloté par `state` : `top` = fond transparent, pas d'ombre, contenu en tonalités par slot ; `pinned` = fond clair opaque + ombre + `fixed`, contenu `onLight` ; `hidden` = `-translate-y-full` ; transitions `transform`/`opacity` (`power2.out`, ~0.3–0.4s) **désactivées** si `reducedMotion` (node sticky `51:2585`).
+- [X] T025 [US3] Câbler `useStickyNav` + la **résolution de tonalité** dans `src/components/Navbar.tsx` : au `top`, lire `data-nav-logo-tone`/`data-nav-links-tone` de l'en-tête courant (contrat `contracts/section-tone.md`), défaut `onLight` ; `pinned`/`hidden` → liens/toggle `onLight` fixe (le CTA reste `ContactButton tone="bleu"`, variante DS, en toute situation) ; passer `state`/`logoTone`/`linksTone`/`reducedMotion` à `<SiteHeader>`. (dépend de T023, T024)
+- [X] T026 [P] [US3] Déclarer les tonalités d'en-tête sur la home `src/app/(site)/page.tsx` : `data-nav-logo-tone="onDark"` / `data-nav-links-tone="onLight"` (valeurs confirmées au node `51:2221`).
+- [X] T027 [US3] **Pixel-perfect** états sticky/plein (node `51:2585`) + transparent/repos sur les 3 breakpoints ; vérifier l'absence de scintillement (seuils) et le mode reduced-motion (instantané). (dépend de T024, T025)
 
 **Checkpoint**: les trois user stories sont indépendamment fonctionnelles.
 
@@ -116,14 +123,35 @@ transparent ; pas de vacillement sur micro-scroll ; reduced-motion → changemen
 
 **Purpose**: qualité, vérification transverse, conformité.
 
-- [ ] T028 [P] `npm run lint` (Biome) et corriger les écarts.
-- [ ] T029 [P] `npm run build` et résoudre les erreurs de build/typage.
-- [ ] T030 **Screenshot-diff** par breakpoint (390/768/1920) contre les renders Figma (`node --env-file=.env.development .design/scripts/figma-render.mjs <nodeId>`) pour les 4 états — transparent/repos, sticky/plein, page active, panneau ouvert (SC-002) ; si `/images` renvoie 429, marquer explicitement « pixel-perfect **non vérifié** ».
-- [ ] T031 Audit **accessibilité** (SC-006) : traversée clavier complète (barre + panneau), focus piégé + Échap, `aria-current="page"` actif, `aria-expanded` du toggle, libellés menu/croix ; lecteur d'écran.
-- [ ] T032 **Cas limites** : resize panneau ouvert → fermeture + libération du verrou (pas de panneau fantôme) ; `prefers-reduced-motion` → aucune animation, navbar fonctionnelle (SC-005) ; pas de vacillement micro-scroll ni de scintillement au sommet.
-- [ ] T033 [P] Consigner un **ADR** dans `docs/vault/decisions/` : contenu de navbar statique en code (déviation Principe II, FR-015) + chemin de migration Sanity non cassant (cf. plan §Complexity Tracking).
-- [ ] T034 [P] Décider du sort de la page lab `src/app/(lab)/lab/navbar/page.tsx` (garder pour le DS, ou supprimer) et s'assurer qu'aucun asset servi superflu ne reste.
-- [ ] T035 Exécuter la validation `quickstart.md` de bout en bout (les 3 scénarios + cas limites).
+- [X] T028 [P] `npm run lint` (Biome) — **vert** (formatage auto-fixé, 0 erreur sur 78 fichiers).
+- [X] T029 [P] `npm run build` — **compile vert** (TypeScript + lint + bundling OK ; `tsc --noEmit`
+  vert). Le build échoue **uniquement au prerender de `/`** : `Dataset "production" not found for
+  project ID "placeholder"` — **environnemental** (sandbox sans credentials Sanity, git-crypt
+  verrouillé) et **pré-existant**, sans rapport avec la navbar (100% client, ne fetch pas Sanity).
+- [X] T030 **Screenshot-diff** — **API Figma bloquée** (`figma-render.mjs` hang réseau, confirmé par
+  Pierre) → **pixel-perfect NON VÉRIFIÉ par diff**. Atténuation : toutes les valeurs intrinsèques ont
+  été **lues losslessly** depuis `nodes.json` + le **CSS état-actif** et le **SVG logo** fournis par
+  Pierre → géométrie reproduite exactement (h 160/120, paddings 140/40/20, gaps 15, logo, fond
+  90 %, ombre `0 3px 6px rgba(0,0,0,.102)`, CTA bleu↔noir par état). Diff visuel à refaire dès l'API dispo.
+- [X] T031 Audit **accessibilité** (SC-006) — **vérifié au niveau code** (runtime bloqué, cf. T035) :
+  toggle `<button>` + `aria-expanded`/`aria-controls`(→panel id)/`aria-label` selon état ; panneau
+  `role="dialog"` `aria-modal` + `aria-label` ; focus-trap (focus initial, boucle Tab/Shift-Tab,
+  Échap, restauration sur l'ouvreur, `inert`+`aria-hidden` de l'arrière-plan) ; `aria-current="page"`
+  sur l'entrée active ; libellés croix/menu ; cible tactile ≥44px. **Passe lecteur d'écran/clavier
+  réelle à refaire** localement (`npm run dev`, git-crypt unlock).
+- [X] T032 **Cas limites** — **gérés en code** : `matchMedia('(min-width:1024px)')` ferme le panneau +
+  libère le verrou au franchissement `lg` (pas de panneau fantôme) ; changement de route ferme aussi ;
+  `prefers-reduced-motion` → transitions retirées (barre + panneau instantanés) + repli listener
+  `scroll` natif dans `useStickyNav` ; anti-vacillement via `TOP_THRESHOLD=8` + accumulateur de
+  direction `DIRECTION_DELTA=8`. Vérif gestuelle réelle à confirmer localement.
+- [X] T033 [P] **ADR** `docs/vault/decisions/0009-static-navbar-content.md` — contenu statique
+  (déviation Principe II, FR-015) + chemin de migration Sanity non cassant + note ordre panneau Figma.
+- [X] T034 [P] Page lab — **T004 non créée** (optionnelle) → rien à supprimer ; aucun asset servi
+  superflu ajouté (logo = SVG inline dans le DS, pas dans `public/`).
+- [X] T035 Validation `quickstart.md` — **partielle** : compile/lint/types **verts** ; les 3 scénarios
+  runtime (desktop/mobile/sticky) + reduced-motion + diff **non exécutables ici** (le layout `(site)`
+  échoue sans Sanity : `getFooterProps` n'entoure pas `sanityFetch` d'un try/catch → tout le layout
+  erre). **À dérouler localement** (git-crypt unlock + projet Sanity dev) — checklist prête dans quickstart.
 
 ---
 

@@ -252,3 +252,58 @@ Ces points sont **intrinsèques à Figma** et seront lus losslessly au moment de
 - Apparence exacte du **panneau ouvert** (opacité du fond ≈ 90 %, position croix, ordre/espacement
   des entrées) — nodes `77:3630`, `87:5893`.
 - Asset **logo** (export ou placeholder flaggé).
+
+---
+
+## Build spec — valeurs intrinsèques lues losslessly (T001 / T002)
+
+> Relevé **au build** depuis `.design/figma-data/nodes.json` (6 frames en cache). L'API Figma est
+> **bloquée** dans cet environnement → les **renders de diff** (T030) sont **indisponibles** →
+> « pixel-perfect **non vérifié** » assumé. Le node **état actif `51:2699`** n'a pas pu être pull
+> mais son **CSS a été fourni par Pierre** (cf. ci-dessous) → état actif **CONFIRMÉ**.
+
+### État actif (node `51:2699`, CSS fourni)
+
+L'entrée correspondant à la page courante reçoit : **`border: 1px solid #0e1215`** (ring ink) **+
+`font-weight: 600`** (semibold) ; les entrées inactives sont en **400** sans bordure. Le `NavButton`
+existant applique déjà le `ring` sur `active` — il faut **ajouter le passage en 600** sur `active`
+(T012). Dans ce node, le CTA contact est `#0e1215` (barre en style solide) — cohérent avec la règle
+d'état (top→bleu, pinned/solide→noir).
+
+### Géométrie par frame
+
+| Frame | Node | Header | Padding latéral | Logo | Menu / toggle |
+|---|---|---|---|---|---|
+| Desktop repos | `51:2221` | 1920×**160** | **140** | `@(140,43)` **281×75**, `#ffffff` (onDark) | MENU `@(1114,61)` h=40, 5 pills, **gap 15** |
+| Desktop sticky | `51:2585` | 1920×**160** | 140 | `@(140,43)` 281×75, `#0e1215` (onLight) | idem |
+| Tablette repos | `77:3149` | 768×**120** | **40** | `@(40,35)` **189×50**, `#ffffff` (onDark) | hamburger `@(697,48)` **31×24**, `#0e1215` (onLight) |
+| Smartphone repos | `77:3150` | 390×**120** | **20** | `@(20,35)` 189×50, `#ffffff` (onDark) | hamburger `@(338,48)` 31×24, `#ffffff` (**onDark**) |
+| Tablette panneau | `77:3630` | — | — | centré `@(290,467)` 189×50 blanc | croix `@(696,48)` **30×30** blanc |
+| Smartphone panneau | `87:5893` | — | — | centré `@(101,467)` 189×50 blanc | croix `@(318,48)` 30×30 blanc |
+
+### Couleurs / états (lus exactement — corrige des hypothèses du data-model)
+
+- **Fond barre** : `top` = `#ffffff` **alpha 0** (transparent, **pas d'ombre**) ; `pinned` = `#ffffff`
+  **opaque** + **`DROP_SHADOW 0px 3px 6px rgba(0,0,0,0.102)`** (seul l'état sticky a l'ombre visible).
+- **CTA contact — change selon l'état** (≠ hypothèse data-model « bleu en toute situation ») :
+  `top` → `#003787` (estuaire) = `ContactButton tone="bleu"` ; `pinned`/`hidden` → `#0e1215` (ink) =
+  `tone="noir"` ; **panneau ouvert** → `#003787` = `tone="bleu"`. Texte toujours `#ffffff`.
+- **Liens desktop** : Montserrat Alternates **400** 16px lh20 **lowercase**, `#0e1215` (onLight) au
+  repos comme en sticky. Pills h=40, h-pad ≈ 18 px (cf. `NavButton` existant — réutilisé tel quel).
+- **Tonalité au `top` (home)** : logo = **onDark** (blanc) à tous les breakpoints ; liens (lg) =
+  **onLight** ; **toggle** = **onLight sur tablette** (`md`) mais **onDark sur mobile** (`base`) — le
+  hero mobile est sombre pleine largeur, la tablette est claire à droite. → le toggle doit pouvoir
+  flipper sa couleur à `md` (résolu en rendant l'icône en `currentColor`, couleur pilotée
+  responsive par `SiteHeader`).
+
+### Panneau plein écran (`77:3630` / `87:5893`)
+
+- Fond : pleine page, `#0e1215` **opacity 0.900** (90 %).
+- Entrées : empilées, **centrées horizontalement**, texte blanc (onDark), ghost (sans fond),
+  **gap vertical 20 px** (pitch 60 ; pill h=40). CTA contact = `#003787` (bleu). Logo centré **sous**
+  les entrées (`y≈467`). Croix de fermeture **30×30** blanche en haut-droite (emplacement du hamburger).
+- **Ordre dans le panneau (Figma)** : Nous découvrir, **Univers, Expertises**, Réalisations, contact
+  → **Univers/Expertises inversés vs desktop**, identique sur les 2 frames panneau. **Décision** : on
+  conserve l'**ordre desktop** partout (cohérent avec `src/content/footer.ts` et l'invariant du
+  contrat `navigation-config.md` « même ordre desktop ↔ panneau ») et **on signale** cet écart de
+  maquette à valider avec Pierre (probable incohérence de maquette, pas une exigence d'IA).

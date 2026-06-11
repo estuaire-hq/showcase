@@ -1,0 +1,57 @@
+# Continuous integration — lint + build on every commit to main and every PR.
+#
+# This is a *verification* pipeline: it never deploys (Coolify auto-deploys on push to
+# main, independently) and never writes to Sanity (that is the seed job's role). It only
+# proves the code lints clean and the production build compiles.
+#
+# - `lint`  → biome check . (lint + format check)
+# - `build` → next build, which also runs the TypeScript typecheck (no separate tsc step)
+#
+# Both jobs run in parallel for fast, separate statuses. The build REQUIRES the public
+# Sanity project vars: the homepage is statically generated and reads Sanity at build time,
+# so without a real projectId/dataset the prerender 404s ("Dataset not found"). These are
+# the same repo-level Actions *variables* the seed job reads; reads of published content
+# are public, so no token is needed, and the resulting build is thrown away (Coolify, which
+# already supplies these vars at build time, is what actually deploys).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel superseded runs for the same ref (e.g. rapid pushes to a PR).
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build (Next.js production build + typecheck)
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ vars.NEXT_PUBLIC_SANITY_PROJECT_ID }}
+          NEXT_PUBLIC_SANITY_DATASET: ${{ vars.NEXT_PUBLIC_SANITY_DATASET }}

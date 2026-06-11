@@ -148,6 +148,22 @@
     - .github/workflows/seed-sanity.yml (CI bootstrap of the prod project, createIfNotExists).
     - seed-assets/ introduced (committed seed images, outside public/, excluded from the build
       via .dockerignore); footer.seed.ts points there; ADR 0006 updated.
+
+  Sync Impact Report (1.6.1 → 1.6.2)
+  ====================================
+  Version change: 1.6.1 → 1.6.2
+  Modified sections:
+    - Technical Stack & Constraints / « Stack applicative » : Next.js 15 → 16,
+      Sanity Cloud v4 → v5, et résolution du TODO(ANIMATION_LIB) → GSAP
+      (+ @gsap/react, Lenis ; framer-motion non utilisé, cf. package.json).
+  Rationale for PATCH: mise à jour factuelle de la table descriptive de stack vers les
+    versions migrées + résolution d'un TODO de longue date. Aucun principe ajouté,
+    supprimé ou redéfini (les 9 principes restent inchangés ; le Constitution Check de
+    la migration 002-nextjs-16-migration les valide tous). Analogue au bump 1.6.0 → 1.6.1
+    (correction factuelle d'une section existante).
+  Companion changes (operational, not constitutional):
+    - specs/002-nextjs-16-migration/ (spec, plan, tasks, research, contracts).
+    - ADR 0008 (décision de migration, à venir) ; ADR 0007 à mettre à jour (middleware → proxy).
 -->
 
 # Estuaire Constitution
@@ -349,10 +365,10 @@ CMS détient le contenu) à la dimension *modèle / types* (cf.
 
 | Couche | Technologie | Version / Détail |
 |---|---|---|
-| Framework | Next.js | 15 (App Router, TypeScript, standalone output) |
-| CMS | Sanity Cloud | Plan gratuit, Studio embarqué |
+| Framework | Next.js | 16 (App Router, TypeScript, standalone output) |
+| CMS | Sanity Cloud | v5, plan gratuit, Studio embarqué |
 | Styles | Tailwind CSS | v4 |
-| Animations | GSAP ou Framer Motion | TODO(ANIMATION_LIB): à confirmer |
+| Animations | GSAP | GSAP + `@gsap/react` + Lenis (scroll fluide) |
 | Formulaire contact | Nodemailer | SMTP Microsoft 365 du client |
 | Analytics | Umami | Auto-hébergé sur le même VPS (séparé) |
 
@@ -480,4 +496,4 @@ Elle prévaut sur toute autre convention implicite.
   complète cette constitution avec les instructions opérationnelles pour
   l'agent de développement.
 
-**Version**: 1.6.1 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-06-10
+**Version**: 1.6.2 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-06-11

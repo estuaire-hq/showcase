@@ -1,0 +1,12 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"noEmit": true,
+		"strict": true,
+		"types": ["node"],
+		"jsx": "preserve",
+		"plugins": []
+	},
+	"include": ["**/*.ts"],
+	"exclude": ["node_modules"]
+}

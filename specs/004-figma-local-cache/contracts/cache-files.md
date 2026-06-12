@@ -37,17 +37,23 @@ espaces, **versionné** sauf `assets/`.
 - **Autosuffisant** : interprétable sans charger `manifest.json` ni une autre frame.
 
 ## `index.json`
-- `targets` : map `nom métier → { description, node }`.
+- `targets` : map `nom métier → { description, node, image? }`.
   - `description` : string **non vide** (CS-007).
   - `node` : objet à **1–3** clés parmi `desktop|tablet|mobile`, chaque valeur = id Figma brut présent
     dans `manifest.nodeToFrame`.
+  - `image` (optionnel) : mêmes breakpoints que `node` → chemin du render de référence versionné
+    (`assets/<id>.png`). `status` vérifie l'existence du fichier déclaré.
 - **Curé à la main** (dev + agent). `collect` ne le réécrit jamais.
 - Une nouvelle cible = une entrée ajoutée (une seule édition, < 1 min — CS-008).
 
-## `assets/` (gitignoré)
-- Bitmaps rendus des nodes à image + sources d'image-fills, nommés `<safe-id>.<ext>` (produits par `collect`).
-- **Ré-téléchargeables** : leur absence n'invalide pas le cache structurel ; `read` des données
-  géométriques reste possible, l'asset manquant est **signalé**, jamais inventé (cas limite).
+## `assets/` (**versionné** — révision 2026-06-12)
+- Renders de page (exports pleine page, fournis manuellement) + sources d'image-fills, nommés
+  `<safe-id>.<ext>` → **1:1 avec leur node** (lien infaillible).
+- **Trackés** (versionnés) : sous quota, le re-download n'est pas fiable et l'IA a besoin des
+  références visuelles ; `.design/` est dev-only (jamais servi), donc aucun impact prod. Un asset
+  manquant reste **signalé**, jamais inventé.
+- `read` surface le lien (`# render: …` en en-tête, `asset=…` sur les nodes à fill IMAGE) ; `status`
+  vérifie que tout render déclaré dans `index.json.image` existe.
 
 ## Garanties de compatibilité
 

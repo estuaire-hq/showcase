@@ -103,8 +103,11 @@ réconcilie les deux (EF-018).
 **Décision** :
 - **Cache structurel** (versionné, texte/JSON) → **`.design/figma-cache/`** :
   `config.json`, `manifest.json`, `index.json`, `frames/<safe-id>.json`.
-- **Assets binaires** (renders PNG + sources d'image-fills) → **`.design/figma-cache/assets/`**,
-  **gitignorés** (lourds, ré-téléchargeables, non nécessaires au dépôt — EF-011).
+- **Assets binaires** (renders PNG + sources d'image-fills) → **`.design/figma-cache/assets/`**.
+  > **Révision 2026-06-12 (ADR 0010, retour Pierre)** : initialement *gitignorés* (« lourds,
+  > ré-téléchargeables »), ils sont finalement **versionnés** — sous quota le re-download n'est pas
+  > fiable et l'IA a besoin des références visuelles ; `.design/` est dev-only (jamais servi).
+  > Nommés par node id, liés dans `index.json.image`, surfacés par `read`.
 - `<safe-id>` = id Figma avec `:` et `;` remplacés par `-` (cas limite « identifiants à séparateurs
   spéciaux » → correspondance node ↔ fichier ↔ asset univoque, déjà fait par les scripts actuels).
 

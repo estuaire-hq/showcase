@@ -35,9 +35,9 @@ indépendant de chaque story.
 
 **But** : initialiser l'arborescence du cache et le squelette de la chaîne CLI.
 
-- [ ] T001 Créer le dossier `.design/figma-cache/` et `.design/figma-cache/config.json` avec `fileKey` (`Rv5HxXNkF6VkTke0ttdAbe`), `pageId` (`51:2220`), `pageName` (`Webdesign-ESTUAIRE-V3`), `breakpoints` (`{desktop:1920,tablet:768,mobile:390}`) — cf. data-model.md §1
-- [ ] T002 [P] Mettre à jour `.design/.gitignore` pour ignorer `figma-cache/assets/` (et nettoyer les entrées obsolètes `images/`, `*.png` si plus pertinentes) — cf. research.md §3
-- [ ] T003 Mettre en place le **runtime TS** + le squelette du routeur : créer `.design/scripts/figma.ts` (table de dispatch des sous-commandes `collect`/`read`/`list`/`status`, parsing d'arguments positionnels + `--flags`, codes de sortie `0/1/2/3`, message d'usage, erreur pour commande inconnue) ; créer `.design/scripts/tsconfig.json` (`extends` la racine, `strict`, `noEmit`) ; **exclure `.design` du `tsconfig.json` racine** (découpler du build Next) ; ajouter les scripts npm `figma` (`node --env-file=.env.development --import tsx .design/scripts/figma.ts`) et `figma:check` (`tsc --noEmit -p .design/scripts`) dans `package.json` — cf. research §5, contracts/cli-commands.md
+- [X] T001 Créer le dossier `.design/figma-cache/` et `.design/figma-cache/config.json` avec `fileKey` (`Rv5HxXNkF6VkTke0ttdAbe`), `pageId` (`51:2220`), `pageName` (`Webdesign-ESTUAIRE-V3`), `breakpoints` (`{desktop:1920,tablet:768,mobile:390}`) — cf. data-model.md §1
+- [X] T002 [P] Mettre à jour `.design/.gitignore` pour ignorer `figma-cache/assets/` (et nettoyer les entrées obsolètes `images/`, `*.png` si plus pertinentes) — cf. research.md §3
+- [X] T003 Mettre en place le **runtime TS** + le squelette du routeur : créer `.design/scripts/figma.ts` (table de dispatch des sous-commandes `collect`/`read`/`list`/`status`, parsing d'arguments positionnels + `--flags`, codes de sortie `0/1/2/3`, message d'usage, erreur pour commande inconnue) ; créer `.design/scripts/tsconfig.json` (`extends` la racine, `strict`, `noEmit`) ; **exclure `.design` du `tsconfig.json` racine** (découpler du build Next) ; ajouter les scripts npm `figma` (`node --env-file=.env.development --import tsx .design/scripts/figma.ts`) et `figma:check` (`tsc --noEmit -p .design/scripts`) dans `package.json` — cf. research §5, contracts/cli-commands.md
 
 ---
 
@@ -47,7 +47,7 @@ indépendant de chaque story.
 
 **⚠️ CRITIQUE** : aucune user story ne peut commencer avant la fin de cette phase.
 
-- [ ] T004 Créer `.design/scripts/lib/types.ts` (**interfaces TypeScript** des contrats : `Config`, `Manifest`, `FrameFile`, `IndexEntry` — d'après data-model.md) **et** `.design/scripts/lib/cache.ts` : résolution des chemins du cache ; `safeId()` (`:`/`;` → `-`) ; écriture **atomique** (temp → rename) ; lecture/écriture typées de `manifest.json`, `index.json`, `frames/<safe-id>.json` ; helper `findFrameForNode(id)` (via `manifest.nodeToFrame`) — cf. data-model.md, contracts/cache-files.md
+- [X] T004 Créer `.design/scripts/lib/types.ts` (**interfaces TypeScript** des contrats : `Config`, `Manifest`, `FrameFile`, `IndexEntry` — d'après data-model.md) **et** `.design/scripts/lib/cache.ts` : résolution des chemins du cache ; `safeId()` (`:`/`;` → `-`) ; écriture **atomique** (temp → rename) ; lecture/écriture typées de `manifest.json`, `index.json`, `frames/<safe-id>.json` ; helper `findFrameForNode(id)` (via `manifest.nodeToFrame`) — cf. data-model.md, contracts/cache-files.md
 
 **Checkpoint** : socle prêt — les user stories peuvent démarrer.
 
@@ -62,11 +62,11 @@ indépendant de chaque story.
 « N nodes total » ; un node TEXT à overrides par caractère restitue ces overrides ; un id absent →
 erreur explicite « collecter d'abord » (jamais de résultat partiel silencieux).
 
-- [ ] T005 [P] [US1] Créer `.design/scripts/lib/paints.ts` : formatage `fills`/`strokes` (SOLID/GRADIENT/IMAGE + per-paint opacity), texte (`style` complet) et **overrides par caractère** (`characterStyleOverrides` + `styleOverrideTable`), helper `hex()` — extrait de l'actuel `figma-node.mjs`
-- [ ] T006 [US1] Créer `.design/scripts/lib/read.ts` (lecture **par id**) : `manifest.nodeToFrame` → `frames/<frame>.json` → extraire le sous-arbre du node ; rendre le **digest lossless** (géométrie parent-relative `@(x,y) w×h`, `opacity`, fills, strokes+weight+align, `cornerRadius`/`rectangleCornerRadii`, auto-layout, effects, style TEXT + overrides + `characters`) ; en-tête `# <nom> [<type>] W×H — N nodes total` ; flags `--raw` (JSON brut intégral), `--depth=N`, `--leaves` ; erreur exit `1` si id **absent du cache** (message « collecter d'abord ») — cf. contracts/cli-commands.md `read`, EF-001..005 (dépend de T004, T005)
-- [ ] T007 [US1] Enregistrer la commande `read` dans le routeur `.design/scripts/figma.ts` (dépend de T003, T006)
-- [ ] T008 [P] [US1] Créer une **fixture de cache** pour le test indépendant : dériver `.design/figma-cache/frames/51-2221.json` + un `manifest.json` minimal (`nodeToFrame` de la homepage) depuis l'existant `.design/figma-data/nodes.json` — permet de tester `read` **avant** que `collect` existe (sera remplacée par la vraie collecte en US2) (dépend de T004)
-- [ ] T009 [US1] **Validate US1** (quickstart.md) : hors-ligne, `read 51:2339` → sous-arbre complet, **0 appel** ; un TEXT à overrides par caractère est restitué ; id absent → erreur explicite ; `time read <id>` < 1 s ; la lecture n'ouvre **qu'un** `frames/*.json` (CS-001/002/003/005)
+- [X] T005 [P] [US1] Créer `.design/scripts/lib/paints.ts` : formatage `fills`/`strokes` (SOLID/GRADIENT/IMAGE + per-paint opacity), texte (`style` complet) et **overrides par caractère** (`characterStyleOverrides` + `styleOverrideTable`), helper `hex()` — extrait de l'actuel `figma-node.mjs`
+- [X] T006 [US1] Créer `.design/scripts/lib/read.ts` (lecture **par id**) : `manifest.nodeToFrame` → `frames/<frame>.json` → extraire le sous-arbre du node ; rendre le **digest lossless** (géométrie parent-relative `@(x,y) w×h`, `opacity`, fills, strokes+weight+align, `cornerRadius`/`rectangleCornerRadii`, auto-layout, effects, style TEXT + overrides + `characters`) ; en-tête `# <nom> [<type>] W×H — N nodes total` ; flags `--raw` (JSON brut intégral), `--depth=N`, `--leaves` ; erreur exit `1` si id **absent du cache** (message « collecter d'abord ») — cf. contracts/cli-commands.md `read`, EF-001..005 (dépend de T004, T005)
+- [X] T007 [US1] Enregistrer la commande `read` dans le routeur `.design/scripts/figma.ts` (dépend de T003, T006)
+- [X] T008 [P] [US1] Créer une **fixture de cache** pour le test indépendant : dériver `.design/figma-cache/frames/51-2221.json` + un `manifest.json` minimal (`nodeToFrame` de la homepage) depuis l'existant `.design/figma-data/nodes.json` — permet de tester `read` **avant** que `collect` existe (sera remplacée par la vraie collecte en US2) (dépend de T004)
+- [X] T009 [US1] **Validate US1** (quickstart.md) : hors-ligne, `read 51:2339` → sous-arbre complet, **0 appel** ; un TEXT à overrides par caractère est restitué ; id absent → erreur explicite ; `time read <id>` < 1 s ; la lecture n'ouvre **qu'un** `frames/*.json` (CS-001/002/003/005)
 
 **Checkpoint** : US1 fonctionne et se teste indépendamment sur la fixture (MVP).
 
@@ -82,12 +82,12 @@ résiste au quota et reprend.
 complet) + images, appels bornés ; relance → inchangé non re-téléchargé ; coupure de quota → partiel
 conservé et reprenable.
 
-- [ ] T010 [US2] Créer `.design/scripts/lib/figma-api.ts` : client REST (`X-Figma-Token`), wrapper `fetch` avec backoff **429 honorant le header `Retry-After`**, helpers `getNodes(ids)`, `getImageFills(key)`, `renderImages(ids,scale)`, `getFileMeta(key)` (`?depth=1`) — cf. research.md §0/§6
-- [ ] T011 [US2] `.design/scripts/lib/collect.ts` — **phase structure** : `GET /nodes?ids=<pageId>` (1 requête) → découper **par frame de premier niveau** → écrire chaque `frames/<safe-id>.json` (`document` brut + `styles`/`components`/`componentSets` référencés + `meta` dont `breakpoint` dérivé) et `manifest.json` (`frames[]`, `nodeToFrame`, `source{version,lastModified,collectedAt}`) **atomiquement** — cf. data-model.md §2/§3 (dépend de T004, T010)
-- [ ] T012 [US2] `.design/scripts/lib/collect.ts` — **phase images** : image-fills `GET /files/:key/images` (1 requête) → map `imageRef→URL` ; rendre les nodes porteurs d'image par lots (batch 3, fallback 1-à-1 puis scale 1), honorer `Retry-After`, **sauter** les assets déjà présents dans `assets/`, remplir `manifest.missingAssets` ; flags `--no-images`, `--only=<frameId>`, `--json` (résumé machine) — EF-008/009/010 (dépend de T011)
-- [ ] T013 [US2] `collect` : auto-détection de la page par `pageName` si `pageId` absent ; surcharge `--page=<id>` / `FIGMA_PAGE_ID` ; écrire les binaires sous `.design/figma-cache/assets/` (**jamais** `public/`) — research.md §3 (dépend de T011)
-- [ ] T014 [US2] Enregistrer la commande `collect` dans `.design/scripts/figma.ts` (dépend de T003, T012)
-- [ ] T015 [US2] **Validate US2** (quickstart.md) : cache vide → `collect` → 1 fichier autonome/frame + images, appels bornés (CS-004) ; relance → inchangé sauté (EF-009) ; simuler un 429 en plein render → cache structurel complet + `missingAssets` rempli → relance reprend sans repartir de zéro (CS-011)
+- [X] T010 [US2] Créer `.design/scripts/lib/figma-api.ts` : client REST (`X-Figma-Token`), wrapper `fetch` avec backoff **429 honorant le header `Retry-After`**, helpers `getNodes(ids)`, `getImageFills(key)`, `renderImages(ids,scale)`, `getFileMeta(key)` (`?depth=1`) — cf. research.md §0/§6
+- [X] T011 [US2] `.design/scripts/lib/collect.ts` — **phase structure** : `GET /nodes?ids=<pageId>` (1 requête) → découper **par frame de premier niveau** → écrire chaque `frames/<safe-id>.json` (`document` brut + `styles`/`components`/`componentSets` référencés + `meta` dont `breakpoint` dérivé) et `manifest.json` (`frames[]`, `nodeToFrame`, `source{version,lastModified,collectedAt}`) **atomiquement** — cf. data-model.md §2/§3 (dépend de T004, T010)
+- [X] T012 [US2] `.design/scripts/lib/collect.ts` — **phase images** : image-fills `GET /files/:key/images` (1 requête) → map `imageRef→URL` ; rendre les nodes porteurs d'image par lots (batch 3, fallback 1-à-1 puis scale 1), honorer `Retry-After`, **sauter** les assets déjà présents dans `assets/`, remplir `manifest.missingAssets` ; flags `--no-images`, `--only=<frameId>`, `--json` (résumé machine) — EF-008/009/010 (dépend de T011)
+- [X] T013 [US2] `collect` : auto-détection de la page par `pageName` si `pageId` absent ; surcharge `--page=<id>` / `FIGMA_PAGE_ID` ; écrire les binaires sous `.design/figma-cache/assets/` (**jamais** `public/`) — research.md §3 (dépend de T011)
+- [X] T014 [US2] Enregistrer la commande `collect` dans `.design/scripts/figma.ts` (dépend de T003, T012)
+- [X] T015 [US2] **Validate US2** (quickstart.md) : cache vide → `collect` → 1 fichier autonome/frame + images, appels bornés (CS-004) ; relance → inchangé sauté (EF-009) ; simuler un 429 en plein render → cache structurel complet + `missingAssets` rempli → relance reprend sans repartir de zéro (CS-011)
 
 **Checkpoint** : la vraie collecte remplace la fixture T008 ; US1 + US2 fonctionnent sur cache réel.
 
@@ -104,10 +104,10 @@ conservé et reprenable.
 > Dépendance douce : le **contenu** de `index.json` (ids réels) vient de la collecte (US2) ; le
 > **mécanisme** (résolution de nom, `list`) est indépendant et pourrait s'appuyer sur la fixture T008.
 
-- [ ] T016 [US3] Créer `.design/figma-cache/index.json` avec des cibles curées initiales (`home/hero`, `footer`, `kit/bouton-envoyer`, …), chacune avec `description` non vide + `node` par breakpoint, ids vérifiés via `read`/`manifest` — cf. data-model.md §4 (dépend de T011 pour les ids réels)
-- [ ] T017 [US3] Étendre `.design/scripts/lib/read.ts` : **résolution par nom** via `index.json` → id ; sélection `--bp=desktop|tablet|mobile` (défaut `desktop`, sinon variante unique) ; erreurs `1` pour **nom inconnu**, **nom ambigu** (plusieurs bp sans `--bp`), **variante manquante** — EF-015/017 (dépend de T006, T016)
-- [ ] T018 [US3] Créer `.design/scripts/lib/index-status.ts` avec la commande `list` (nom + description + node(s) par bp ; marquer `⚠` si description manquante ou node non collecté ; option `--json`) et l'enregistrer dans le routeur — EF-016, CS-006/007 (dépend de T004, T003)
-- [ ] T019 [US3] **Validate US3** (quickstart.md) : ajouter une entrée → `read <nom>` renvoie les mêmes données que `read <id>` ; `list` affiche nom + description pour chaque cible ; nom inconnu/ambigu signalé (CS-006/007/008)
+- [X] T016 [US3] Créer `.design/figma-cache/index.json` avec des cibles curées initiales (`home/hero`, `footer`, `kit/bouton-envoyer`, …), chacune avec `description` non vide + `node` par breakpoint, ids vérifiés via `read`/`manifest` — cf. data-model.md §4 (dépend de T011 pour les ids réels)
+- [X] T017 [US3] Étendre `.design/scripts/lib/read.ts` : **résolution par nom** via `index.json` → id ; sélection `--bp=desktop|tablet|mobile` (défaut `desktop`, sinon variante unique) ; erreurs `1` pour **nom inconnu**, **nom ambigu** (plusieurs bp sans `--bp`), **variante manquante** — EF-015/017 (dépend de T006, T016)
+- [X] T018 [US3] Créer `.design/scripts/lib/index-status.ts` avec la commande `list` (nom + description + node(s) par bp ; marquer `⚠` si description manquante ou node non collecté ; option `--json`) et l'enregistrer dans le routeur — EF-016, CS-006/007 (dépend de T004, T003)
+- [X] T019 [US3] **Validate US3** (quickstart.md) : ajouter une entrée → `read <nom>` renvoie les mêmes données que `read <id>` ; `list` affiche nom + description pour chaque cible ; nom inconnu/ambigu signalé (CS-006/007/008)
 
 **Checkpoint** : lecture par nom + découverte IA opérationnelles.
 
@@ -124,10 +124,10 @@ index↔cache, en un geste, rafraîchissement à la demande uniquement.
 > Dépendance douce : la partie **fraîcheur** réutilise `lib/figma-api.ts` (construit en US2 — T010) ;
 > la partie **cohérence** est entièrement offline et indépendante.
 
-- [ ] T020 [US4] Étendre `.design/scripts/lib/index-status.ts` — `status` **fraîcheur** : 1 appel `getFileMeta` (`?depth=1`) → comparer `version` distante à `manifest.source.version` → `à jour`/`périmé`/`inconnu` ; flag `--offline` = fraîcheur **non évaluée** (renoncement volontaire, **pas** un exit `2`) vs **échec réseau subi** → `inconnu` + exit `2` ; cache **partiel** (`missingAssets`) signalé mais **exit `0`** (EF-010) ; afficher dates `lastModified`/`collectedAt` — EF-019/021 (dépend de T004, T010)
-- [ ] T021 [US4] Étendre `.design/scripts/lib/index-status.ts` — `status` **cohérence** (offline) : réconcilier `index.json` ↔ `frames/*` ↔ `manifest` (entrée → node non collecté, → frame absente, description manquante, variante responsive manquante, frame orpheline) ; exit `3` si incohérences (**prime sur `2`**) ; option `--json` (sortie machine combinée fraîcheur+cohérence) — EF-018 (dépend de T004)
-- [ ] T022 [US4] Enregistrer la commande `status` dans `.design/scripts/figma.ts` (dépend de T003, T020, T021)
-- [ ] T023 [US4] **Validate US4** (quickstart.md) : cache aligné → `à jour` ; éditer la maquette → `périmé` ; couper le réseau (online attendu) → `inconnu` + exit `2` sans planter ; `--offline` → fraîcheur non évaluée + exit `0` si cohérent ; cache partiel (`missingAssets`) → signalé en exit `0` ; injecter une incohérence (entrée → node non collecté) → signalée avec exit `3` (CS-010)
+- [X] T020 [US4] Étendre `.design/scripts/lib/index-status.ts` — `status` **fraîcheur** : 1 appel `getFileMeta` (`?depth=1`) → comparer `version` distante à `manifest.source.version` → `à jour`/`périmé`/`inconnu` ; flag `--offline` = fraîcheur **non évaluée** (renoncement volontaire, **pas** un exit `2`) vs **échec réseau subi** → `inconnu` + exit `2` ; cache **partiel** (`missingAssets`) signalé mais **exit `0`** (EF-010) ; afficher dates `lastModified`/`collectedAt` — EF-019/021 (dépend de T004, T010)
+- [X] T021 [US4] Étendre `.design/scripts/lib/index-status.ts` — `status` **cohérence** (offline) : réconcilier `index.json` ↔ `frames/*` ↔ `manifest` (entrée → node non collecté, → frame absente, description manquante, variante responsive manquante, frame orpheline) ; exit `3` si incohérences (**prime sur `2`**) ; option `--json` (sortie machine combinée fraîcheur+cohérence) — EF-018 (dépend de T004)
+- [X] T022 [US4] Enregistrer la commande `status` dans `.design/scripts/figma.ts` (dépend de T003, T020, T021)
+- [X] T023 [US4] **Validate US4** (quickstart.md) : cache aligné → `à jour` ; éditer la maquette → `périmé` ; couper le réseau (online attendu) → `inconnu` + exit `2` sans planter ; `--offline` → fraîcheur non évaluée + exit `0` si cohérent ; cache partiel (`missingAssets`) → signalé en exit `0` ; injecter une incohérence (entrée → node non collecté) → signalée avec exit `3` (CS-010)
 
 **Checkpoint** : les 4 user stories sont indépendamment fonctionnelles.
 
@@ -143,13 +143,13 @@ exigé par la décision de remplacement.
 > Figma) ; le KIT se lit via `read 75:2963` + cibles `kit/…` de l'index. `figma-render.mjs`,
 > `kit-inventory.mjs` et `.design/figma-data/kit-inventory.md` sont **supprimés** sans remplacement.
 
-- [ ] T024 Supprimer les scripts migrés/retirés : `.design/scripts/{figma-pull,figma-node,figma-fills,figma-render,figma-frames,kit-inventory}.mjs` (dépend de T007, T014, T022 — les commandes équivalentes `read`/`collect`/`status` existent ; `figma-render`/`kit-inventory` retirés sans remplacement)
-- [ ] T025 Supprimer les artefacts obsolètes : `.design/figma-data/nodes.json`, `.design/figma-data/images.json`, `.design/figma-data/kit-inventory.md` (et le dossier `.design/figma-data/` une fois vidé), et toute écriture/dossier `public/figma/` (dépend de T015 — cache réel en place)
-- [ ] T026 [P] Mettre à jour la skill `.claude/skills/estuaire-figma/SKILL.md` : remplacer les commandes (`figma-pull.mjs`/`figma-node.mjs`/`figma-render.mjs`) par `figma.ts collect/read/list/status` ; l'étape *verify* utilise des **captures fournies manuellement** (plus de commande `render`) ; le KIT se découvre via `read` + cibles `kit/…` (plus de `kit-inventory.md`) (sections « Source of truth », étapes 1 & 5)
-- [ ] T027 [P] Mettre à jour `CLAUDE.md` : section « Pixel-Perfect & Animation » (nouvelles commandes) ; section « Lab » (assets hors `public/figma`) ; section « Design System » — remplacer « Build components from the KIT inventory: `.design/figma-data/kit-inventory.md` » par la lecture de la frame KIT via `read 75:2963` + cibles `kit/…`
-- [ ] T028 [P] Mettre à jour le **Principe VII** de `.specify/memory/constitution.md` (références `figma-pull.mjs`/`figma-node.mjs` → `figma.ts collect`/`read`) + ajouter une entrée **Sync Impact Report** (bump **PATCH** → **1.7.1**, correction de références opérationnelles)
-- [ ] T029 [P] Écrire l'ADR `docs/vault/decisions/00XX-figma-local-cache.md` (cache découpé par frame + 2 index + chaîne canonique 4 commandes + assets hors `public/` + retrait render/kit) — assigner le prochain numéro libre (≥ 0009)
-- [ ] T030 Exécuter la **recette complète de quickstart.md** : valider les 11 critères de succès, dont **CS-009** (checkout neuf sans token Figma → `read <id collecté>` réussit)
+- [X] T024 Supprimer les scripts migrés/retirés : `.design/scripts/{figma-pull,figma-node,figma-fills,figma-render,figma-frames,kit-inventory}.mjs` (dépend de T007, T014, T022 — les commandes équivalentes `read`/`collect`/`status` existent ; `figma-render`/`kit-inventory` retirés sans remplacement)
+- [X] T025 Supprimer les artefacts obsolètes : `.design/figma-data/nodes.json`, `.design/figma-data/images.json`, `.design/figma-data/kit-inventory.md` (et le dossier `.design/figma-data/` une fois vidé), et toute écriture/dossier `public/figma/` (dépend de T015 — cache réel en place)
+- [X] T026 [P] Mettre à jour la skill `.claude/skills/estuaire-figma/SKILL.md` : remplacer les commandes (`figma-pull.mjs`/`figma-node.mjs`/`figma-render.mjs`) par `figma.ts collect/read/list/status` ; l'étape *verify* utilise des **captures fournies manuellement** (plus de commande `render`) ; le KIT se découvre via `read` + cibles `kit/…` (plus de `kit-inventory.md`) (sections « Source of truth », étapes 1 & 5)
+- [X] T027 [P] Mettre à jour `CLAUDE.md` : section « Pixel-Perfect & Animation » (nouvelles commandes) ; section « Lab » (assets hors `public/figma`) ; section « Design System » — remplacer « Build components from the KIT inventory: `.design/figma-data/kit-inventory.md` » par la lecture de la frame KIT via `read 75:2963` + cibles `kit/…`
+- [X] T028 [P] Mettre à jour le **Principe VII** de `.specify/memory/constitution.md` (références `figma-pull.mjs`/`figma-node.mjs` → `figma.ts collect`/`read`) + ajouter une entrée **Sync Impact Report** (bump **PATCH** → **1.7.1**, correction de références opérationnelles)
+- [X] T029 [P] Écrire l'ADR `docs/vault/decisions/00XX-figma-local-cache.md` (cache découpé par frame + 2 index + chaîne canonique 4 commandes + assets hors `public/` + retrait render/kit) — assigner le prochain numéro libre (≥ 0009)
+- [X] T030 Exécuter la **recette complète de quickstart.md** : valider les 11 critères de succès, dont **CS-009** (checkout neuf sans token Figma → `read <id collecté>` réussit)
 
 ---
 

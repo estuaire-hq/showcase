@@ -26,12 +26,12 @@ Conventions communes :
 ## `collect` — collecter & découper (P2 ; EF-006/007/008/009/010/011)
 
 ```bash
-node --env-file=.env.development --import tsx .design/scripts/figma.ts collect [--page=<id>] [--no-images] [--only=<frameId>] [--json]
+node --env-file=.env.development --import tsx .design/scripts/figma.ts collect [--page=<id>] [--no-images] [--only=<frameId>] [--images-only] [--json]
 ```
 
 | Aspect | Contrat |
 |---|---|
-| **Entrée** | `config.json` (ou `--page=<canvasId>` / `FIGMA_PAGE_ID`). `--no-images` saute les renders. `--only=<frameId>` recollecte une seule frame. |
+| **Entrée** | `config.json` (ou `--page=<canvasId>` / `FIGMA_PAGE_ID`). `--no-images` saute les images. `--only=<frameId>` recollecte une seule frame. `--images-only` récupère les images placées des frames **déjà en cache** (aucun re-pull de structure ; reprend les `missingAssets`). |
 | **Appels Figma** | **1** `GET /nodes?ids=<page>` (structure) **+ 1** `GET /files/:key/images` (sources) **+ N** `GET /images?ids=…` (renders batchés). Borné, jamais 1/node (CS-004). |
 | **Sorties** | écrit `frames/<safe-id>.json` (1/frame), `manifest.json`, `assets/*`. **Ne touche pas** `index.json`. |
 | **Atomicité** | chaque fichier : write temp → rename. Jamais de fichier à moitié écrit (cas limite « cache corrompu »). |
@@ -47,7 +47,7 @@ bornés ; relance → inchangé non re-téléchargé ; coupure quota → partiel
 ## `read` — lecture lossless locale (P1 ; EF-001/002/003/004/005 ; EF-015)
 
 ```bash
-node --import tsx .design/scripts/figma.ts read <nodeId|nom> [--depth=N] [--leaves] [--bp=desktop|tablet|mobile] [--raw]
+node --import tsx .design/scripts/figma.ts read <nodeId|nom> [--depth=N] [--leaves] [--bp=desktop|tablet|mobile] [--raw] [--images]
 ```
 
 | Aspect | Contrat |
@@ -55,8 +55,9 @@ node --import tsx .design/scripts/figma.ts read <nodeId|nom> [--depth=N] [--leav
 | **Entrée** | un **id Figma** (`51:2339`) **ou** un **nom d'index** (`home/hero`). `--bp` choisit la variante d'une cible nommée. |
 | **Réseau** | **AUCUN** (100 % offline — EF-002). |
 | **Résolution** | nom → `index.json` (+ `--bp`/défaut) → id ; id → `manifest.nodeToFrame` → `frames/<frame>.json` → extrait le sous-arbre. |
-| **Sortie défaut** | digest lisible (façon `figma-node.mjs`) : en-tête `# <nom> [<type>] W×H — N nodes total`, puis arbre indenté : géométrie **parent-relative** `@(x,y) w×h`, `opacity`, fills (+ per-paint opacity, gradients, IMAGE), strokes + weight + align, radii, auto-layout, effects, style TEXT complet + overrides par caractère, `characters`. **Tous les champs**, aucun filtrage (EF-001). |
+| **Sortie défaut** | digest lisible (façon `figma-node.mjs`) : en-tête `# <nom> [<type>] W×H — N nodes total` (+ `# render: .design/figma-cache/assets/<id>.png` si une référence visuelle est cachée), puis arbre indenté : géométrie **parent-relative** `@(x,y) w×h`, `opacity`, fills (+ per-paint opacity, gradients, IMAGE + `asset=<chemin>` si bitmap caché), strokes + weight + align, radii, auto-layout, effects, style TEXT complet + overrides par caractère, `characters`. **Tous les champs**, aucun filtrage (EF-001). |
 | `--raw` | émet le node JSON **brut** (lossless intégral) plutôt que le digest. |
+| `--images` | inventaire compact des slots d'image du sous-arbre : `id · position · taille · fit · asset` (chemin du bitmap caché ou `MISSING`) — le « quelles images & où » d'une page. |
 | `--depth=N` / `--leaves` | borne l'affichage (EF-003) **sans** altérer l'exhaustivité par défaut. |
 | **nb de nodes** | l'en-tête affiche le **total** du sous-arbre (EF-004, checklist de complétude). |
 | **Erreurs** | id **absent du cache** → exit `1` « node absent — collecter d'abord » (EF-005, jamais de résultat partiel silencieux) ; nom **inconnu** → `1` « nom inconnu » ; nom **ambigu** (plusieurs bp, pas de `--bp`) → `1` « préciser --bp » (EF-017) ; variante **manquante** → `1` « variante <bp> absente ». |

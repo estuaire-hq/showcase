@@ -189,6 +189,25 @@
   Companion changes (operational, not constitutional):
     - CLAUDE.md « Design System » + « Do NOT » encodent déjà ces règles (désormais constitutionnelles).
     - docs/vault/decisions/0003-design-system.md est l'ADR d'origine.
+
+  Sync Impact Report (1.7.0 → 1.7.1)
+  ====================================
+  Version change: 1.7.0 → 1.7.1
+  Modified principles:
+    - VII. Pixel-Perfect Fidelity — operational references only (no normative change):
+      the Figma source is now mirrored into a versioned local cache (.design/figma-cache/)
+      and read 100 % offline. Replaced the named scripts figma-pull.mjs / figma-node.mjs by
+      the canonical chain `.design/scripts/figma.ts collect` / `read`; the verify render is
+      provided manually (PNG export) since the ad-hoc `render` command was retired.
+  Rationale for PATCH bump: factual correction of operational references after feature
+    004-figma-local-cache consolidated 6 prototype scripts into one `figma.ts` chain
+    (collect/read/list/status). No principle added, removed, or redefined.
+  Companion changes (operational, not constitutional):
+    - .claude/skills/estuaire-figma/SKILL.md updated to the new commands + manual verify captures.
+    - CLAUDE.md « Pixel-Perfect & Animation » / « Lab » / « Design System » updated.
+    - docs/vault/decisions/0010-figma-local-cache.md records the decision.
+  Templates requiring updates:
+    - .specify/templates/*.md                   ✅ compatible (no constitution-specific references)
 -->
 
 # Estuaire Constitution
@@ -313,16 +332,16 @@ est la **source de vérité** du design (le fichier Pencil `.pen` est dépréci�
   hauteur figée.
 - Le responsive se fait **par breakpoint**, en correspondant à la frame Figma
   dédiée (desktop / tablette / mobile).
-- Les specs DOIVENT être tirées de Figma via la **REST API** (`.design/scripts/`),
-  pas du Dev Mode MCP (limité sur le plan Starter). Les fichiers source de design
-  vivent dans `.design/`.
+- Les specs DOIVENT être tirées de Figma via la **REST API**, mises en cache localement
+  (`.design/figma-cache/`, versionné) par `.design/scripts/figma.ts collect`, pas du Dev
+  Mode MCP (limité sur le plan Starter). Les fichiers source de design vivent dans `.design/`.
 - Les specs DOIVENT être lues sur le **node Figma COMPLET au moment du build**
-  (`.design/scripts/figma-node.mjs`) — JAMAIS depuis un résumé fait-maison, la mémoire,
-  ou la déduction. Toute valeur présente dans Figma (position, opacité de calque, taille,
-  police, rayon, nombre d'éléments) DOIT être lue, jamais devinée.
+  (`.design/scripts/figma.ts read <node|nom>`, 100 % hors-ligne depuis le cache) — JAMAIS
+  depuis un résumé fait-maison, la mémoire, ou la déduction. Toute valeur présente dans Figma
+  (position, opacité de calque, taille, police, rayon, nombre d'éléments) DOIT être lue, jamais devinée.
 - « Pixel-perfect » NE PEUT être revendiqué qu'après un **diff visuel contre un render
-  Figma** du node. Si le render est indisponible (ex. endpoint image limité), l'état DOIT
-  être déclaré explicitement « non vérifié », pas affirmé.
+  Figma** du node. Le render de référence est **fourni manuellement** (export PNG de Figma) ;
+  s'il est indisponible, l'état DOIT être déclaré explicitement « non vérifié », pas affirmé.
 - La méthode de fabrication est codifiée dans la skill **`estuaire-figma`**, qui
   DOIT être chargée avant de construire une page, une section ou un composant.
 
@@ -556,4 +575,4 @@ Elle prévaut sur toute autre convention implicite.
   complète cette constitution avec les instructions opérationnelles pour
   l'agent de développement.
 
-**Version**: 1.7.0 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-06-11
+**Version**: 1.7.1 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-06-12

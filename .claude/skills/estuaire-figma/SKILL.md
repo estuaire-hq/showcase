@@ -50,18 +50,29 @@ the **state nodes** (hover/survol/selected/active) and their `effects`.
 ## Source of truth
 - Figma `Rv5HxXNkF6VkTke0ttdAbe` (*Webdesign-ESTUAIRE*). homepage `51:2221`, hero
   `51:2339`, footer/BIG FOOTER `51:2222`, KIT `75:2963`. Design files in `.design/`.
-- Pull (REST API, **not** the rate-limited Dev Mode MCP):
-  `node --env-file=.env.development .design/scripts/figma-pull.mjs <nodeId>` → `nodes.json`
-  (+ image-fill renders). `FIGMA_TOKEN` is in `.env.development` (git-crypt).
+- The maquette is mirrored into a **versioned local cache** (`.design/figma-cache/`),
+  read **offline with no quota**. The canonical toolchain is `.design/scripts/figma.ts`
+  (`collect` / `read` / `list` / `status`) — **not** the rate-limited Dev Mode MCP.
+  - Refresh the cache (REST API, bounded calls, resumable on quota):
+    `node --env-file=.env.development --import tsx .design/scripts/figma.ts collect`
+    (`npm run figma -- collect`). `FIGMA_TOKEN` is in `.env.development` (git-crypt).
+  - `read` / `list` are **100% offline** (no token, no network); only `collect` and
+    `status` (freshness) touch Figma. See ADR 0010.
 
 ## 1 — Read losslessly (this is the build spec)
-`node .design/scripts/figma-node.mjs <nodeId|name> [--depth=N] [--leaves]`
+`node --import tsx .design/scripts/figma.ts read <nodeId|name> [--depth=N] [--leaves] [--bp=desktop|tablet|mobile] [--raw]`
+(offline, from the cache — `npm run figma -- read <nodeId|name>`)
 → the COMPLETE subtree, no field filtering: parent-relative geometry `@(x,y) w×h`,
 **layer `opacity`**, fills (incl. per-paint opacity, gradients, IMAGE), `strokes` +
 `strokeWeight` + `strokeAlign`, `cornerRadius`/`rectangleCornerRadii`, auto-layout
 (mode/gap/padding/align), effects, full text `style` + per-character overrides.
+- Read by raw id (`51:2339`) **or** by a curated business name (`home/hero`, `footer`,
+  `kit/…`) — run `figma.ts list` to discover what exists (name + description + variants).
+- The **KIT** is read losslessly via `read 75:2963` (and `kit/…` index targets), not a
+  separate inventory file.
 - Run it for **every** element you build. Re-run per component. Never reuse an old digest.
 - It prints "N nodes total" — that is your checklist length.
+- Node not in the cache → it says "collect first"; never a silent partial result.
 
 ## 2 — Completeness gate (before writing any code)
 - Account for all N nodes. List every visible element: name, bbox, role.
@@ -78,9 +89,9 @@ the **state nodes** (hover/survol/selected/active) and their `effects`.
 - **Responsive (breakpoints) is part of the component, not an afterthought.** The Figma
   has **3 frames**: mobile **390**, tablet **768**, desktop **1920**. DS convention
   (Tailwind defaults; `md`=768 = the tablet frame): **base → mobile · `md:` → tablet ·
-  `lg:` → desktop** (≥1024). Author **mobile-first**. Pull all 3 frames
-  (`figma-pull.mjs <desktop> <tablet> <mobile>`) and diff each width — a component is not
-  done until its 3 frames match. **Never hard-fix a width on a fluid element** (button,
+  `lg:` → desktop** (≥1024). Author **mobile-first**. `collect` already caches all
+  breakpoint frames; read each with `read <name> --bp=desktop|tablet|mobile` and diff
+  each width — a component is not done until its 3 frames match. **Never hard-fix a width on a fluid element** (button,
   card): use `w-full max-w-[…]` so it shrinks on small screens. (Footer frames: 51:2222 /
   77:3629 / 78:4371 — image right→below, nav right→centred, legal 4-col→stacked.) See
   `breakpoint` in tokens.ts.
@@ -88,27 +99,41 @@ the **state nodes** (hover/survol/selected/active) and their `effects`.
   (Figma OUTSIDE ≠ CSS centred `-webkit-text-stroke` — note the approximation).
 
 ## 4 — Build
+- **Images of the page**: `figma.ts read <page> --images` lists every image slot
+  (id · parent-relative position · size · fit · cached bitmap). `FILL`→`object-cover`,
+  `STRETCH`→`object-fill`, `FIT`→`object-contain`. The bitmap is at the `asset=` path
+  (`.design/figma-cache/assets/<id>.png|jpg`); `MISSING` → run `figma collect --images-only`
+  to fetch it. Page images are **content → they live in Sanity** (ADR 0004): build the DS
+  image component, add the Sanity field + connected wrapper, and seed the cached bitmap
+  (copy into `seed-assets/<doc>/`). Never hard-code a content image.
+  - A slot may carry a **note** (index.json `slotNotes`, shown inline by `read`): `→ MAP`
+    means integrate an interactive map, **not** an image (e.g. contact); `→ CONTENT` means
+    the image is Sanity content, often a repeated/case-study-driven band — build the
+    content-fed component, don't fetch a static asset.
 - Consume `@/design-system` components + `@theme` tokens — never hard-code colours/fonts/
   radii. Any missing component is built **in the DS**, never inline.
 - Brand type rule via `BrandText` (UPPERCASE → Montserrat, lowercase → Alternates).
   Outlined first word/line → `OutlineText` (verify: node `fills=none` + `strokes` set).
 - Position to the exact px / proportions from step 1.
 - **Vectors you cannot export** (logos, custom icons): use a clearly-flagged placeholder —
-  never fake the geometry and never claim pixel-perfect for it. Try `figma-render.mjs`.
+  never fake the geometry and never claim pixel-perfect for it. Ask the user for a PNG
+  export of the node if needed.
 - Apply motion with the **`estuaire-motion`** skill (load it).
 
 ## 5 — Verify (the gate for the words "pixel-perfect")
-- Render the Figma node to PNG: `node --env-file=.env.development .design/scripts/figma-render.mjs <nodeId>`
-  (→ `.design/figma-data/render-*.png`), or `figma-fills.mjs` for image-fill nodes.
-  Overlay / compare side-by-side against the live page.
-- If `/images` returns **429** → you have NO ground truth → say "pixel-perfect **UNVERIFIED**,
+- The reference render is **in the cache**: `read <node|name>` prints `# render:
+  .design/figma-cache/assets/<id>.png` in its header (and `index.json.image` maps each
+  target/breakpoint to it). Open that PNG and overlay / compare side-by-side against the live
+  page. These are full-page exports **provided manually** (no `render` command); if a target
+  has none, export the Figma node as a PNG or ask the user.
+- Without a reference image → you have NO ground truth → say "pixel-perfect **UNVERIFIED**,
   pending Figma render". Never claim pixel-perfect from your own showcase.
 - ⚠️ **Turbopack**: after changing the `@theme`, **restart `npm run dev`** (CSS not recompiled live).
 
 ## Checklist (per page/section/component)
-1. `figma-node.mjs` the node → read the FULL subtree (every element, every field).
+1. `figma.ts read <node|name>` → read the FULL subtree (every element, every field), offline.
 2. Completeness gate: enumerate all N nodes; confirm none missing; note counts + sibling parts.
 3. Map to `@/design-system`; build any missing components in the DS.
 4. Reproduce EXACT positions/sizes (intrinsic exact; dynamic may flex; responsive = later pass).
-5. Render the Figma node → screenshot-diff. If the render is blocked, mark **UNVERIFIED**.
+5. Screenshot-diff against a Figma PNG (provided manually). If no reference, mark **UNVERIFIED**.
    Verify `prefers-reduced-motion`.

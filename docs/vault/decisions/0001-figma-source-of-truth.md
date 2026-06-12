@@ -5,6 +5,11 @@ date: 2026-06-09
 ---
 # 0001 — Figma is the design source of truth
 
+> **Tooling superseded by [[0010-figma-local-cache]]** (2026-06-12): Figma remains the
+> source of truth, but the `figma-pull.mjs` / `figma-fills.mjs` commands below are
+> replaced by the `figma.ts collect` / `read` chain reading a versioned local cache.
+> The *decision* (Figma = truth) stands; only the operational commands changed.
+
 ## Context
 The design existed in a Pencil `.pen` file, but it was a botched paste from Figma —
 coordinates were mostly right, images and some details wrong/mismatched.

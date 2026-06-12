@@ -196,14 +196,17 @@ fonts, radii, or re-implement a button / pill / card. Importing = consuming; edi
   lives in a connected wrapper (`src/components/`) or the page — see *Data/Presentation
   Boundary* under Key Patterns (constitution Principle VIII; ADR 0005).
 - Component variants use **`tailwind-variants` (`tv`)**; `cn` is in `src/lib/utils.ts`.
-- Build components from the KIT inventory: `.design/figma-data/kit-inventory.md`.
+- Build components by reading the KIT frame losslessly: `figma.ts read 75:2963` (+ curated
+  `kit/…` targets in `.design/figma-cache/index.json`) — see the `estuaire-figma` skill.
 - Brand type rule: UPPERCASE → Montserrat, lowercase → Montserrat Alternates (`BrandText`).
 - ⚠️ Turbopack: **restart `npm run dev` after `@theme` changes** (CSS not recompiled live).
 
 ## Pixel-Perfect & Animation (skills)
 
 - Before building a page/section: load the **`estuaire-figma`** skill — Figma is the source of
-  truth; pull specs via `.design/scripts/figma-pull.mjs` (REST API, not the rate-limited MCP).
+  truth, mirrored into a versioned local cache (`.design/figma-cache/`) read **offline, no quota**.
+  Read specs with `figma.ts read <node|name>` (offline); refresh with `figma.ts collect` (REST API,
+  not the rate-limited MCP); `figma.ts list`/`status` discover targets & check freshness. See ADR 0010.
 - Before animating: load the **`estuaire-motion`** skill — text static; visuals + section
   transitions carry the motion; line-mask title reveals; honor `prefers-reduced-motion`.
 - Pixel-perfect = exact **intrinsic** dims; **dynamic** dims (full-height hero) may deviate;
@@ -216,12 +219,15 @@ fonts, radii, or re-implement a button / pill / card. Importing = consuming; edi
 - **Post-mortems & methodology lessons → `docs/vault/post-mortems/`.** After any mistake,
   rework, or change to how we work (a method, a skill, a convention), write the lesson down
   there — root cause + the fix — *before moving on*. A lesson that isn't recorded will recur.
-- Design source files (`.pen`, Figma exports, pull scripts) → hidden **`.design/`**.
+- Design source files (`.pen`, Figma cache + toolchain) → hidden **`.design/`**.
 - Frontier: *project understanding → repo (vault / specs / DS) · law → constitution · agent
   state & how-to-assist → local memory.* See the constitution's **Memory & Knowledge Architecture**.
 
 ## Lab (temporary)
 
 The `src/app/(lab)/` route group is a temporary playground (validating pixel-perfect + motion).
-**Remove it and its served assets (`public/figma`, `public/lab`) once the homepage is fully
-built.** Production pages live under `(site)` and consume `@/design-system`.
+**Remove it and its served assets (`public/lab`) once the homepage is fully built.** Production
+pages live under `(site)` and consume `@/design-system`. (Figma reference assets no longer live
+under `public/` — they are versioned in `.design/figma-cache/assets/`, named by node id and linked
+per target in `index.json.image`; `read` surfaces `# render: …`. `.design/` is dev-only, never
+served. See ADR 0010.)

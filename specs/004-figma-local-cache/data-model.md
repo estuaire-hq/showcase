@@ -26,9 +26,9 @@ entrée de `index.json` ; **Métadonnées de collecte** = le bloc `source` du `m
 │   ├── 51-2221.json     # 1 frame de premier niveau = 1 fichier (sous-arbre lossless)[versionné]
 │   ├── 77-3149.json
 │   └── …                # ~30 fichiers (pages × breakpoints + KIT + variantes)
-└── assets/              # renders PNG + sources d'image-fills, ré-téléchargeables     [GITIGNORÉ]
-    ├── 51-2380.png
-    └── …
+└── assets/              # renders de page (export manuel) + sources image-fills    [VERSIONNÉ]
+    ├── 51-2221.png       #   nommés par node id (1:1) ; révision 2026-06-12 : trackés
+    └── …                 #   (re-download non fiable sous quota — l'IA a besoin des refs)
 ```
 
 ---
@@ -151,6 +151,11 @@ par breakpoint.
         "desktop": "51:2339",
         "tablet":  "77:3160",
         "mobile":  "77:3158"
+      },
+      "image": {                              // référence visuelle versionnée (verify)
+        "desktop": "assets/51-2339.png",      // export pleine page, nommé par node id
+        "tablet":  "assets/77-3160.png",
+        "mobile":  "assets/77-3158.png"
       }
     },
     "footer": {
@@ -173,7 +178,16 @@ par breakpoint.
   défaut. Lire sans `--bp` → `desktop` si présent, sinon l'unique variante, sinon erreur « ambigu ».
 - Chaque id de `node` DOIT exister dans `manifest.nodeToFrame` — sinon `status` signale « node non
   collecté » et `read` échoue proprement (EF-005, cas limite).
+- `image` (optionnel, **mêmes breakpoints que `node`**) → chemin du render de référence
+  (`assets/<id>.png`, versionné). C'est l'export pleine page de la frame, **fourni manuellement**,
+  servant de vérité visuelle pour le *verify*. `read` l'affiche en en-tête (`# render: …`) et
+  `status` vérifie que le fichier déclaré existe.
 - Déclarer une nouvelle cible = **une seule édition** de ce fichier, **< 1 min** (CS-008).
+- `slotNotes` (optionnel, **niveau racine**) : `nodeId → { kind: "map"|"content", note }` pour les
+  slots à fill IMAGE qui ne sont **pas** des images à récupérer — `map` (intégrer une carte, ex.
+  contact `51:4641`) ou `content` (image pilotée par le contenu Sanity, ex. bandes case study,
+  répétées). `collect` les **saute** (ni render ni « missing ») ; `read`/`read --images` affichent
+  la note à la place de `asset=`.
 
 ---
 

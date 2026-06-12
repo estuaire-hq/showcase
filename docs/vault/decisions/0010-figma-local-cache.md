@@ -83,8 +83,9 @@ fraîcheur (`status`) compare la `version` distante (1 appel `?depth=1`) à la l
 - ✅ Résilience quota : collecte reprenable, péremption détectable, aucun cache à moitié écrit.
 - ⚠️ La fraîcheur est au niveau **fichier** Figma (pas page) : une édition sur une autre page
   marque « périmé » à tort — conservateur, acceptable (refresh manuel, skip des assets ≈ gratuit).
-- ⚠️ Companion changes appliqués : Principe VII (réf. opérationnelles, bump **1.7.1**), skill
-  `estuaire-figma`, `CLAUDE.md`.
+- ⚠️ Companion changes appliqués : Principe VII (réf. opérationnelles, bumps **1.7.1** puis **1.7.2**),
+  skills `estuaire-pixel-perfect` (méthode) + `estuaire-figma-cli` (CLI) — scission de `estuaire-figma`,
+  retirée —, `CLAUDE.md`.
 
 ## Notes
 - Runtime : **TS via `tsx`** (déjà devDep), pas d'étape de build ; `.design` exclu du

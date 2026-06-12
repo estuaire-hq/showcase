@@ -55,7 +55,7 @@ element, at build time** — never a summary, never from memory.
   or mark unverified); knowledge architecture now requires post-mortems in the vault.
 
 ## Prevention
-- Before building any Figma element: `figma-node.mjs` it, enumerate every node, build
-  from that — see the `estuaire-figma` skill.
+- Before building any Figma element: read it (the `estuaire-figma-cli` skill — `figma.ts read`),
+  enumerate every node, build from that — see the `estuaire-pixel-perfect` skill.
 - Never claim "pixel-perfect" without a Figma-render diff.
 - Record post-mortems and methodology lessons here in the vault (not just decisions).

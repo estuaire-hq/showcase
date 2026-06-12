@@ -208,6 +208,22 @@
     - docs/vault/decisions/0010-figma-local-cache.md records the decision.
   Templates requiring updates:
     - .specify/templates/*.md                   ✅ compatible (no constitution-specific references)
+
+  Sync Impact Report (1.7.1 → 1.7.2)
+  ====================================
+  Version change: 1.7.1 → 1.7.2
+  Modified principles:
+    - VII. Pixel-Perfect Fidelity — skill reference only (no normative change): the conflated
+      `estuaire-figma` skill is SPLIT into `estuaire-pixel-perfect` (the build method) +
+      `estuaire-figma-cli` (the local-cache CLI for reading design values). estuaire-figma retired.
+  Rationale for PATCH bump: factual correction of skill references after the skill was split for
+    separation of concerns (method vs tool). No principle added, removed, or redefined.
+  Companion changes (operational, not constitutional):
+    - .claude/skills/estuaire-pixel-perfect/ + .claude/skills/estuaire-figma-cli/ created; estuaire-figma removed.
+    - CLAUDE.md « Pixel-Perfect & Animation » updated (research → CLI skill ; build → method skill).
+    - ADR 0010 companion list, ADRs 0001/0006 pointers, post-mortems 0001/0004 references updated.
+  Templates requiring updates:
+    - .specify/templates/*.md                   ✅ compatible (no constitution-specific references)
 -->
 
 # Estuaire Constitution
@@ -342,8 +358,9 @@ est la **source de vérité** du design (le fichier Pencil `.pen` est dépréci�
 - « Pixel-perfect » NE PEUT être revendiqué qu'après un **diff visuel contre un render
   Figma** du node. Le render de référence est **fourni manuellement** (export PNG de Figma) ;
   s'il est indisponible, l'état DOIT être déclaré explicitement « non vérifié », pas affirmé.
-- La méthode de fabrication est codifiée dans la skill **`estuaire-figma`**, qui
-  DOIT être chargée avant de construire une page, une section ou un composant.
+- La méthode de fabrication est codifiée dans la skill **`estuaire-pixel-perfect`**, qui
+  DOIT être chargée avant de construire une page, une section ou un composant ; la lecture des
+  valeurs du design passe par la skill **`estuaire-figma-cli`** (la CLI du cache local).
 
 **Justification** : le rendu est le produit. Distinguer dimensions intrinsèques
 (exactes) et dynamiques (adaptatives) permet d'être fidèle sans casser le responsive.
@@ -533,8 +550,8 @@ ce qui est **versionné dans le dépôt** (mémoire projet, partagée) et ce qui
 - **Specs speckit** (`specs/`) — le quoi/comment de chaque fonctionnalité.
 - **Design system** (`src/design-system/`) — le langage visuel en code, importé via
   `@/design-system`. Importer = consommer ; éditer = modifier le DS (acte délibéré).
-- **Skills** (`.claude/skills/`) — les méthodes réutilisables (`estuaire-motion`,
-  `estuaire-figma`), à charger avant la tâche correspondante.
+- **Skills** (`.claude/skills/`) — les méthodes réutilisables (`estuaire-pixel-perfect`,
+  `estuaire-figma-cli`, `estuaire-motion`), à charger avant la tâche correspondante.
 - **Vault Obsidian** (`docs/vault/`) — le *pourquoi* lisible humain : décisions (ADR),
   **post-mortems / leçons de méthode**, R&D, inventaire de contenu, glossaire.
 
@@ -575,4 +592,4 @@ Elle prévaut sur toute autre convention implicite.
   complète cette constitution avec les instructions opérationnelles pour
   l'agent de développement.
 
-**Version**: 1.7.1 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-06-12
+**Version**: 1.7.2 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-06-12

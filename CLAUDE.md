@@ -146,7 +146,7 @@ Sanity webhook → `POST /api/revalidate` → `revalidateTag(tag)`. Each query d
 6. For **global/singleton** content: add the mapping in `@/lib/sanity/<doc>.ts` and a
    connected wrapper in `src/components/<Doc>.tsx` (see Data/Presentation Boundary above)
 7. **Seed it** (the agent authors seeds): `npm run seed:scaffold -- <doc>` → fill the TODOs with
-   the maquette values (read the Figma node via `estuaire-figma`; put copy shared with the front
+   the maquette values (read the Figma node via the `estuaire-figma-cli` skill; put copy shared with the front
    fallback in `src/content/<doc>.ts`) → register
    in `src/sanity/seed/registry.ts` → `npm run seed -- --check` → `npm run seed`.
 
@@ -197,16 +197,20 @@ fonts, radii, or re-implement a button / pill / card. Importing = consuming; edi
   Boundary* under Key Patterns (constitution Principle VIII; ADR 0005).
 - Component variants use **`tailwind-variants` (`tv`)**; `cn` is in `src/lib/utils.ts`.
 - Build components by reading the KIT frame losslessly: `figma.ts read 75:2963` (+ curated
-  `kit/…` targets in `.design/figma-cache/index.json`) — see the `estuaire-figma` skill.
+  `kit/…` targets in `.design/figma-cache/index.json`) — see the `estuaire-figma-cli` skill.
 - Brand type rule: UPPERCASE → Montserrat, lowercase → Montserrat Alternates (`BrandText`).
 - ⚠️ Turbopack: **restart `npm run dev` after `@theme` changes** (CSS not recompiled live).
 
 ## Pixel-Perfect & Animation (skills)
 
-- Before building a page/section: load the **`estuaire-figma`** skill — Figma is the source of
-  truth, mirrored into a versioned local cache (`.design/figma-cache/`) read **offline, no quota**.
-  Read specs with `figma.ts read <node|name>` (offline); refresh with `figma.ts collect` (REST API,
-  not the rate-limited MCP); `figma.ts list`/`status` discover targets & check freshness. See ADR 0010.
+- **Any research around the maquettes** (a node's geometry/styles, an image, what targets exist,
+  cache freshness): use the local Figma cache CLI `.design/scripts/figma.ts` (`read`/`list` offline;
+  `collect`/`status` hit Figma) — **a skill, `estuaire-figma-cli`, documents how to use it**. Figma is
+  the source of truth, mirrored into the versioned cache (`.design/figma-cache/`); **never guess a
+  design value — query the cache** (not the rate-limited MCP). See ADR 0010.
+- Before building a page/section: load the **`estuaire-pixel-perfect`** skill — build from the full
+  lossless node (never infer), exact intrinsic geometry, `@/design-system` + `@theme` tokens,
+  responsive per breakpoint, content images → Sanity, verify against the cached Figma render.
 - Before animating: load the **`estuaire-motion`** skill — text static; visuals + section
   transitions carry the motion; line-mask title reveals; honor `prefers-reduced-motion`.
 - Pixel-perfect = exact **intrinsic** dims; **dynamic** dims (full-height hero) may deviate;

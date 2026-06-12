@@ -18,7 +18,7 @@ que ce n'est pas présent dans la maquette" — the target and its variants were
 not designated.
 
 ## Root cause
-1. **Inference instead of reading the source** — the exact failure the `estuaire-figma`
+1. **Inference instead of reading the source** — the exact failure the `estuaire-pixel-perfect`
    skill and Principle VII forbid. A node *named* "HEADER sticky menu" inside a frame is
    not the same as a maquette reference the designer designated; finding an id by
    name-search is a guess dressed up as data. I also invented breakpoint variants

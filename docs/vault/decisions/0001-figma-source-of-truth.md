@@ -22,7 +22,8 @@ The `.pen` is deprecated (kept in `.design/` for reference only).
 Figma **REST API** — not the Dev Mode MCP (rate-limited on the Starter plan):
 `node --env-file=.env.development .design/scripts/figma-pull.mjs [nodeId]` → exact node
 JSON in `.design/figma-data/`; raw source images via `figma-fills.mjs`. Build pixel-perfect
-from that. Method codified in the **`estuaire-figma`** skill — see [[0003-design-system]].
+from that. Method codified in the **`estuaire-pixel-perfect`** skill (design values read via
+**`estuaire-figma-cli`**) — see [[0003-design-system]] and [[0010-figma-local-cache]].
 
 ## Consequences
 - Pixel-perfect = exact **intrinsic** dims; **dynamic** dims (full-height hero = 100svh) may

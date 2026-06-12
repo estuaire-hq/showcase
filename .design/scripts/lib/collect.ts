@@ -5,10 +5,11 @@
 // honors Retry-After). The structural cache is never left half-written.
 
 import { writeFileSync } from "node:fs";
-import type { ParsedArgs } from "../figma";
+import { flagString, type ParsedArgs } from "../figma";
 import {
 	assetPath,
 	findExistingAsset,
+	frameFileExists,
 	readConfig,
 	readFrameFile,
 	readIndex,
@@ -18,23 +19,38 @@ import {
 	writeManifest,
 } from "./cache";
 import {
-	type NodesResponse,
 	extFromContentType,
-	fetchBinary,
 	FigmaApiError,
 	FigmaQuotaError,
+	fetchBinary,
 	getFileMeta,
 	getImageFills,
 	getNodes,
+	type NodesResponse,
 	renderImages,
 } from "./figma-api";
-import type { Breakpoint, Config, FrameEntry, FrameFile, Manifest } from "./types";
-import type { FigmaNode } from "./types";
+import { imageFillOf, isVisibleImageFill } from "./paints";
+import { countNodes, walk } from "./tree";
+import type {
+	Breakpoint,
+	Config,
+	FigmaNode,
+	FrameEntry,
+	FrameFile,
+	Manifest,
+} from "./types";
 
 const RENDER_BATCH = 3;
 
+const errMsg = (err: unknown): string =>
+	err instanceof Error ? err.message : String(err);
+
 /** Derive a frame's breakpoint from its name, then its width (commodity field). */
-function deriveBreakpoint(name: string, width: number, breakpoints?: Config["breakpoints"]): Breakpoint | null {
+function deriveBreakpoint(
+	name: string,
+	width: number,
+	breakpoints?: Config["breakpoints"],
+): Breakpoint | null {
 	if (/tablet/i.test(name)) return "tablet";
 	if (/smartphone|mobile/i.test(name)) return "mobile";
 	if (breakpoints) {
@@ -45,23 +61,12 @@ function deriveBreakpoint(name: string, width: number, breakpoints?: Config["bre
 	return width >= 1000 ? "desktop" : null;
 }
 
-function countNodes(node: FigmaNode): number {
-	let count = 1;
-	for (const child of node.children ?? []) count += countNodes(child);
-	return count;
-}
-
-function walk(node: FigmaNode, fn: (n: FigmaNode) => void): void {
-	fn(node);
-	for (const child of node.children ?? []) walk(child, fn);
-}
-
 /** imageRefs of every visible IMAGE fill in a subtree. */
 function collectImageRefs(node: FigmaNode): Set<string> {
 	const refs = new Set<string>();
 	walk(node, (n) => {
 		for (const fill of n.fills ?? []) {
-			if (fill.type === "IMAGE" && fill.visible !== false && fill.imageRef) refs.add(fill.imageRef);
+			if (isVisibleImageFill(fill) && fill.imageRef) refs.add(fill.imageRef);
 		}
 	});
 	return refs;
@@ -81,24 +86,34 @@ interface ImageNode {
  */
 function collectImageNodes(frame: FigmaNode, out: ImageNode[]): void {
 	walk(frame, (n) => {
-		const imageFill = (n.fills ?? []).find((f) => f.type === "IMAGE" && f.visible !== false);
-		if (imageFill) out.push({ id: n.id, frameId: frame.id, imageRef: imageFill.imageRef });
+		const imageFill = imageFillOf(n);
+		if (imageFill)
+			out.push({ id: n.id, frameId: frame.id, imageRef: imageFill.imageRef });
 	});
 }
 
 /** Style/component ids actually referenced inside a frame subtree. */
-function collectReferences(frame: FigmaNode): { styleIds: Set<string>; componentIds: Set<string> } {
+function collectReferences(frame: FigmaNode): {
+	styleIds: Set<string>;
+	componentIds: Set<string>;
+} {
 	const styleIds = new Set<string>();
 	const componentIds = new Set<string>();
 	walk(frame, (n) => {
 		const styles = n.styles as Record<string, string> | undefined;
-		if (styles) for (const v of Object.values(styles)) if (typeof v === "string") styleIds.add(v);
-		if (n.type === "INSTANCE" && typeof n.componentId === "string") componentIds.add(n.componentId);
+		if (styles)
+			for (const v of Object.values(styles))
+				if (typeof v === "string") styleIds.add(v);
+		if (n.type === "INSTANCE" && typeof n.componentId === "string")
+			componentIds.add(n.componentId);
 	});
 	return { styleIds, componentIds };
 }
 
-function pickSubset(table: Record<string, unknown>, ids: Set<string>): Record<string, unknown> {
+function pickSubset(
+	table: Record<string, unknown>,
+	ids: Set<string>,
+): Record<string, unknown> {
 	const out: Record<string, unknown> = {};
 	for (const id of ids) if (id in table) out[id] = table[id];
 	return out;
@@ -124,7 +139,9 @@ function buildFrameFile(
 	const components = pickSubset(tables.components, componentIds);
 	const setIds = new Set<string>();
 	for (const cid of componentIds) {
-		const comp = tables.components[cid] as { componentSetId?: string } | undefined;
+		const comp = tables.components[cid] as
+			| { componentSetId?: string }
+			| undefined;
 		if (comp?.componentSetId) setIds.add(comp.componentSetId);
 	}
 	return {
@@ -170,7 +187,13 @@ export function splitFrames(
 	const frameFiles: Array<{ id: string; file: FrameFile }> = [];
 	const collectedNodeIds = new Set<string>();
 	for (const frame of frameNodes) {
-		const frameFile = buildFrameFile(frame, tables, version, collectedAt, breakpoints);
+		const frameFile = buildFrameFile(
+			frame,
+			tables,
+			version,
+			collectedAt,
+			breakpoints,
+		);
 		frameFiles.push({ id: frame.id, file: frameFile });
 		frames.push({
 			id: frame.id,
@@ -202,7 +225,11 @@ interface CollectSummary {
 }
 
 /** Resolve the designated page id, auto-detecting by name if none is configured. */
-async function resolvePageId(fileKey: string, config: Config, override: string | undefined): Promise<string | null> {
+async function resolvePageId(
+	fileKey: string,
+	config: Config,
+	override: string | undefined,
+): Promise<string | null> {
 	const pageId = override || process.env.FIGMA_PAGE_ID || config.pageId;
 	if (pageId) return pageId;
 	const meta = await getFileMeta(fileKey);
@@ -252,26 +279,39 @@ async function collectImages(
 			continue;
 		}
 		const url = node.imageRef ? fillsMap[node.imageRef] : undefined;
-		if (url) {
-			try {
-				const { data, contentType } = await fetchBinary(url);
-				writeFileSync(assetPath(node.id, extFromContentType(contentType)), data);
-				downloaded++;
-				if (downloaded % 25 === 0) console.error(`  …${downloaded} downloaded`);
-			} catch {
-				needRender.push(node);
-			}
-		} else {
+		if (!url) {
+			needRender.push(node);
+			continue;
+		}
+		try {
+			const { data, contentType } = await fetchBinary(url);
+			writeFileSync(assetPath(node.id, extFromContentType(contentType)), data);
+			downloaded++;
+			if (downloaded % 25 === 0) console.error(`  …${downloaded} downloaded`);
+		} catch (err) {
+			// Don't swallow: a fetch error (expired S3 url) may recover via render, but a
+			// write error (disk/permission) won't — surface the cause either way.
+			console.error(
+				`  ⚠ ${node.id} source fetch/write failed (${errMsg(err)}) → trying render`,
+			);
 			needRender.push(node);
 		}
 	}
-	if (needRender.length) console.error(`  ${needRender.length} nodes without a source → rendering…`);
+	if (needRender.length)
+		console.error(`  ${needRender.length} nodes without a source → rendering…`);
 
 	for (let i = 0; i < needRender.length && !quotaHit; i += RENDER_BATCH) {
 		const batch = needRender.slice(i, i + RENDER_BATCH);
 		let images: Record<string, string | null> = {};
 		try {
-			images = (await renderImages(fileKey, batch.map((n) => n.id), 2)).images ?? {};
+			const resp = await renderImages(
+				fileKey,
+				batch.map((n) => n.id),
+				2,
+			);
+			if (resp.err)
+				console.error(`  ⚠ Figma render error (batch): ${resp.err}`);
+			images = resp.images ?? {};
 		} catch (err) {
 			if (err instanceof FigmaQuotaError) {
 				quotaHit = true;
@@ -280,16 +320,24 @@ async function collectImages(
 			// A batch timeout (not quota) → retry one by one, then at scale 1.
 			for (const node of batch) {
 				try {
-					Object.assign(images, (await renderImages(fileKey, [node.id], 2)).images);
+					const r = await renderImages(fileKey, [node.id], 2);
+					if (r.err)
+						console.error(`  ⚠ Figma render error (${node.id}): ${r.err}`);
+					Object.assign(images, r.images);
 				} catch (err2) {
 					if (err2 instanceof FigmaQuotaError) {
 						quotaHit = true;
 						break;
 					}
 					try {
-						Object.assign(images, (await renderImages(fileKey, [node.id], 1)).images);
-					} catch {
-						/* leave unrendered — recorded as missing below */
+						Object.assign(
+							images,
+							(await renderImages(fileKey, [node.id], 1)).images,
+						);
+					} catch (err3) {
+						console.error(
+							`  ⚠ ${node.id} render failed at every scale (${errMsg(err3)}) — recording missing`,
+						);
 					}
 				}
 			}
@@ -301,8 +349,10 @@ async function collectImages(
 				const { data } = await fetchBinary(url);
 				writeFileSync(assetPath(node.id, "png"), data);
 				downloaded++;
-			} catch {
-				/* recorded as missing below */
+			} catch (err) {
+				console.error(
+					`  ⚠ ${node.id} render download/write failed (${errMsg(err)}) — recording missing`,
+				);
 			}
 		}
 	}
@@ -332,34 +382,61 @@ async function collectImages(
 export async function runCollect(args: ParsedArgs): Promise<number> {
 	const config = readConfig();
 	const fileKey = process.env.FIGMA_FILE_KEY || config.fileKey;
-	const only = typeof args.flags.get("only") === "string" ? (args.flags.get("only") as string) : null;
+	const only = flagString(args, "only") ?? null;
 	const noImages = args.flags.has("no-images");
 	const asJson = args.flags.has("json");
 	const imagesOnly = args.flags.has("images-only");
-	const pageOverride = typeof args.flags.get("page") === "string" ? (args.flags.get("page") as string) : undefined;
+	const pageOverride = flagString(args, "page");
 
 	// --images-only: fetch placed images for the already-cached frames, no structure pull.
 	if (imagesOnly) {
 		const manifest = readManifest();
 		if (!manifest) {
-			console.error("Cache is empty — run `figma collect` first, then `--images-only`.");
+			console.error(
+				"Cache is empty — run `figma collect` first, then `--images-only`.",
+			);
 			return 1;
 		}
+		const missingFrame = manifest.frames.find((f) => !frameFileExists(f.id));
+		if (missingFrame) {
+			console.error(
+				`Frame file ${missingFrame.file} is missing (stale manifest) — re-run \`figma collect\`.`,
+			);
+			return 3;
+		}
 		const frameNodes = manifest.frames.map((f) => readFrameFile(f.id).document);
-		const { downloaded, skipped, quotaHit } = await collectImages(fileKey, frameNodes, manifest, []);
+		const { downloaded, skipped, quotaHit } = await collectImages(
+			fileKey,
+			frameNodes,
+			manifest,
+			[],
+		);
 		const missing = manifest.missingAssets.length;
 		if (asJson) {
-			console.log(JSON.stringify({ mode: "images-only", downloaded, skipped, missing, quotaHit }, null, 2));
+			console.log(
+				JSON.stringify(
+					{ mode: "images-only", downloaded, skipped, missing, quotaHit },
+					null,
+					2,
+				),
+			);
 		} else {
-			console.log(`✓ images-only — ${downloaded} placed images downloaded (${skipped} skipped)`);
-			if (missing) console.log(`⚠ ${missing} not fetched${quotaHit ? " (quota)" : ""} — re-run to resume`);
+			console.log(
+				`✓ images-only — ${downloaded} placed images downloaded (${skipped} skipped)`,
+			);
+			if (missing)
+				console.log(
+					`⚠ ${missing} not fetched${quotaHit ? " (quota)" : ""} — re-run to resume`,
+				);
 		}
 		return quotaHit ? 2 : 0;
 	}
 
 	const pageId = await resolvePageId(fileKey, config, pageOverride);
 	if (!pageId) {
-		console.error(`Cannot resolve a page: no pageId and no page named "${config.pageName}" in the file.`);
+		console.error(
+			`Cannot resolve a page: no pageId and no page named "${config.pageName}" in the file.`,
+		);
 		return 1;
 	}
 
@@ -370,11 +447,15 @@ export async function runCollect(args: ParsedArgs): Promise<number> {
 		resp = await getNodes(fileKey, rootIds);
 	} catch (err) {
 		if (err instanceof FigmaApiError && err.status === 404) {
-			console.error(`Page/node ${rootIds.join(",")} not found in file ${fileKey}.`);
+			console.error(
+				`Page/node ${rootIds.join(",")} not found in file ${fileKey}.`,
+			);
 			return 1;
 		}
 		if (err instanceof FigmaQuotaError) {
-			console.error("Rate limit hit before any data could be pulled — retry later.");
+			console.error(
+				"Rate limit hit before any data could be pulled — retry later.",
+			);
 			return 2;
 		}
 		throw err;
@@ -392,7 +473,11 @@ export async function runCollect(args: ParsedArgs): Promise<number> {
 			return 1;
 		}
 		frameNodes = [entry.document];
-		tables = { styles: entry.styles, components: entry.components, componentSets: entry.componentSets };
+		tables = {
+			styles: entry.styles,
+			components: entry.components,
+			componentSets: entry.componentSets,
+		};
 	} else {
 		const entry = resp.nodes[pageId];
 		if (!entry) {
@@ -400,7 +485,11 @@ export async function runCollect(args: ParsedArgs): Promise<number> {
 			return 1;
 		}
 		frameNodes = entry.document.children ?? [];
-		tables = { styles: entry.styles, components: entry.components, componentSets: entry.componentSets };
+		tables = {
+			styles: entry.styles,
+			components: entry.components,
+			componentSets: entry.componentSets,
+		};
 	}
 
 	const { frames, nodeToFrame, frameFiles, collectedNodeIds } = splitFrames(
@@ -413,6 +502,9 @@ export async function runCollect(args: ParsedArgs): Promise<number> {
 	for (const { id, file } of frameFiles) writeFrameFile(id, file);
 
 	// Merge with an existing manifest when recollecting a single frame (--only).
+	// NOTE: `source` (version/pageId/collectedAt) below is rewritten to THIS run's values,
+	// so after an --only refresh it describes the refreshed frame; the kept frames may
+	// predate it. A full `collect` realigns the whole manifest.
 	const existing = readManifest();
 	let allFrames = frames;
 	let allNodeToFrame = nodeToFrame;
@@ -420,14 +512,25 @@ export async function runCollect(args: ParsedArgs): Promise<number> {
 	if (only && existing) {
 		allFrames = existing.frames.filter((f) => f.id !== only).concat(frames);
 		allNodeToFrame = {
-			...Object.fromEntries(Object.entries(existing.nodeToFrame).filter(([, f]) => f !== only)),
+			...Object.fromEntries(
+				Object.entries(existing.nodeToFrame).filter(([, f]) => f !== only),
+			),
 			...nodeToFrame,
 		};
-		keptMissing = existing.missingAssets.filter((id) => !collectedNodeIds.has(id));
+		keptMissing = existing.missingAssets.filter(
+			(id) => !collectedNodeIds.has(id),
+		);
 	}
 
 	const manifest: Manifest = {
-		source: { fileKey, pageId, pageName: config.pageName, lastModified, version, collectedAt },
+		source: {
+			fileKey,
+			pageId,
+			pageName: config.pageName,
+			lastModified,
+			version,
+			collectedAt,
+		},
 		frames: allFrames,
 		nodeToFrame: allNodeToFrame,
 		missingAssets: keptMissing,
@@ -452,9 +555,13 @@ export async function runCollect(args: ParsedArgs): Promise<number> {
 	if (asJson) {
 		console.log(JSON.stringify(summary, null, 2));
 	} else {
-		console.log(`✓ page ${pageId} → ${summary.frames} frames, ${summary.nodes} nodes`);
+		console.log(
+			`✓ page ${pageId} → ${summary.frames} frames, ${summary.nodes} nodes`,
+		);
 		if (!noImages)
-			console.log(`✓ ${summary.assetsDownloaded} placed images downloaded (${summary.assetsSkipped} skipped)`);
+			console.log(
+				`✓ ${summary.assetsDownloaded} placed images downloaded (${summary.assetsSkipped} skipped)`,
+			);
 		else console.log("  (--no-images: image sources skipped)");
 		if (summary.missing)
 			console.log(

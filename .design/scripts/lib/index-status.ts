@@ -7,16 +7,43 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import type { ParsedArgs } from "../figma";
-import { cacheDir, frameFileExists, readConfig, readIndex, readManifest } from "./cache";
-import { FigmaApiError, FigmaNetworkError, FigmaQuotaError, getFileMeta } from "./figma-api";
+import {
+	cacheDir,
+	frameFileExists,
+	readConfig,
+	readIndex,
+	readManifest,
+} from "./cache";
+import {
+	FigmaApiError,
+	FigmaNetworkError,
+	FigmaQuotaError,
+	getFileMeta,
+} from "./figma-api";
 import type { Breakpoint, IndexFile, Manifest } from "./types";
 
 const BREAKPOINTS: Breakpoint[] = ["desktop", "tablet", "mobile"];
 
+/**
+ * The breakpoints that carry a node id in an index entry, in canonical order.
+ * One definition of "present variant" so list/status don't each re-derive it
+ * (and `id` is narrowed to string here — no `as string` at the call sites).
+ */
+function presentVariants(
+	node: Partial<Record<Breakpoint, string>>,
+): Array<{ bp: Breakpoint; id: string }> {
+	const out: Array<{ bp: Breakpoint; id: string }> = [];
+	for (const bp of BREAKPOINTS) {
+		const id = node[bp];
+		if (id) out.push({ bp, id });
+	}
+	return out;
+}
+
 /** Format a target's responsive variants as `desktop <id> · mobile <id>`. */
 function formatVariants(node: Partial<Record<Breakpoint, string>>): string {
-	return BREAKPOINTS.filter((bp) => node[bp])
-		.map((bp) => `${bp} ${node[bp]}`)
+	return presentVariants(node)
+		.map(({ bp, id }) => `${bp} ${id}`)
 		.join(" · ");
 }
 
@@ -26,36 +53,49 @@ export function runList(args: ParsedArgs): number {
 	const index = readIndex();
 	const manifest = readManifest();
 	const asJson = args.flags.has("json");
-	const targets = index?.targets ?? {};
-	const names = Object.keys(targets).sort();
+	const entries = Object.entries(index?.targets ?? {}).sort(([a], [b]) =>
+		a.localeCompare(b),
+	);
 
-	const collected = (id: string) => Boolean(manifest && id in manifest.nodeToFrame);
+	const collected = (id: string) =>
+		Boolean(manifest && id in manifest.nodeToFrame);
 
 	if (asJson) {
-		const out = names.map((name) => {
-			const t = targets[name];
+		const out = entries.map(([name, t]) => {
 			const nodes = Object.fromEntries(
-				BREAKPOINTS.filter((bp) => t.node[bp]).map((bp) => [bp, { id: t.node[bp], collected: collected(t.node[bp] as string) }]),
+				presentVariants(t.node).map(({ bp, id }) => [
+					bp,
+					{ id, collected: collected(id) },
+				]),
 			);
-			return { name, description: t.description, nodes, warn: !t.description || Object.values(nodes).some((n) => !n.collected) };
+			return {
+				name,
+				description: t.description,
+				nodes,
+				warn: !t.description || Object.values(nodes).some((n) => !n.collected),
+			};
 		});
 		console.log(JSON.stringify(out, null, 2));
 		return 0;
 	}
 
-	if (!names.length) {
-		console.log("No named targets yet — add entries to .design/figma-cache/index.json (see data-model.md §4).");
+	if (!entries.length) {
+		console.log(
+			"No named targets yet — add entries to .design/figma-cache/index.json (see data-model.md §4).",
+		);
 		return 0;
 	}
-	for (const name of names) {
-		const t = targets[name];
-		const missing = BREAKPOINTS.some((bp) => t.node[bp] && !collected(t.node[bp] as string));
+	for (const [name, t] of entries) {
+		const missing = presentVariants(t.node).some(({ id }) => !collected(id));
 		const warn = !t.description || missing ? " ⚠" : "";
 		console.log(`${name}${warn}`);
 		console.log(`  ${t.description || "(no description)"}`);
 		console.log(`  [${formatVariants(t.node)}]`);
 	}
-	if (!manifest) console.log("\n(no manifest — run `figma collect`; collected-status unknown)");
+	if (!manifest)
+		console.log(
+			"\n(no manifest — run `figma collect`; collected-status unknown)",
+		);
 	return 0;
 }
 
@@ -66,45 +106,61 @@ interface Coherence {
 	warnings: string[];
 }
 
-function checkCoherence(manifest: Manifest, index: IndexFile | null): Coherence {
+function checkCoherence(
+	manifest: Manifest,
+	index: IndexFile | null,
+): Coherence {
 	const errors: string[] = [];
 	const warnings: string[] = [];
 
 	// Index targets ↔ cache.
 	for (const [name, target] of Object.entries(index?.targets ?? {})) {
 		if (!target.description || !target.description.trim())
-			errors.push(`index "${name}": missing description (no anonymous target — CS-007).`);
-		const present = BREAKPOINTS.filter((bp) => target.node[bp]);
-		for (const bp of present) {
-			const id = target.node[bp] as string;
+			errors.push(
+				`index "${name}": missing description (no anonymous target — CS-007).`,
+			);
+		const present = presentVariants(target.node);
+		for (const { bp, id } of present) {
 			const frameId = manifest.nodeToFrame[id];
 			if (!frameId) {
-				errors.push(`index "${name}" (${bp} ${id}): node not collected — run \`figma collect\`.`);
+				errors.push(
+					`index "${name}" (${bp} ${id}): node not collected — run \`figma collect\`.`,
+				);
 			} else if (!frameFileExists(frameId)) {
-				errors.push(`index "${name}" (${bp} ${id}): routed to frame ${frameId} but its file is missing.`);
+				errors.push(
+					`index "${name}" (${bp} ${id}): routed to frame ${frameId} but its file is missing.`,
+				);
 			}
 		}
 		if (present.length >= 2) {
 			for (const bp of BREAKPOINTS)
-				if (!target.node[bp]) warnings.push(`index "${name}": responsive but missing ${bp} variant.`);
+				if (!target.node[bp])
+					warnings.push(
+						`index "${name}": responsive but missing ${bp} variant.`,
+					);
 		}
 		// Reference renders: a declared image must exist on disk; a node without one is noted.
-		for (const bp of present) {
+		for (const { bp } of present) {
 			const img = target.image?.[bp];
-			if (!img) warnings.push(`index "${name}" (${bp}): no reference render linked.`);
+			if (!img)
+				warnings.push(`index "${name}" (${bp}): no reference render linked.`);
 			else if (!existsSync(join(cacheDir(), img)))
-				warnings.push(`index "${name}" (${bp}): render ${img} declared but file is missing.`);
+				warnings.push(
+					`index "${name}" (${bp}): render ${img} declared but file is missing.`,
+				);
 		}
 	}
 
 	// Manifest frames ↔ frame files (orphans / missing files).
 	for (const frame of manifest.frames) {
-		if (!frameFileExists(frame.id)) errors.push(`manifest frame ${frame.id}: file ${frame.file} is missing.`);
+		if (!frameFileExists(frame.id))
+			errors.push(`manifest frame ${frame.id}: file ${frame.file} is missing.`);
 	}
 
 	// Slot annotations must point at collected nodes.
 	for (const id of Object.keys(index?.slotNotes ?? {})) {
-		if (!manifest.nodeToFrame[id]) warnings.push(`slotNote "${id}": node not in cache (stale annotation?).`);
+		if (!manifest.nodeToFrame[id])
+			warnings.push(`slotNote "${id}": node not in cache (stale annotation?).`);
 	}
 
 	return { errors, warnings };
@@ -120,7 +176,9 @@ export async function runStatus(args: ParsedArgs): Promise<number> {
 
 	const manifest = readManifest();
 	if (!manifest) {
-		console.error("Cache is empty (no manifest.json) — run `figma collect` first.");
+		console.error(
+			"Cache is empty (no manifest.json) — run `figma collect` first.",
+		);
 		return 1;
 	}
 	const index = readIndex();
@@ -134,11 +192,16 @@ export async function runStatus(args: ParsedArgs): Promise<number> {
 		const fileKey = process.env.FIGMA_FILE_KEY || config.fileKey;
 		try {
 			const remote = await getFileMeta(fileKey);
-			freshness = remote.version === manifest.source.version ? "up-to-date" : "stale";
+			freshness =
+				remote.version === manifest.source.version ? "up-to-date" : "stale";
 		} catch (err) {
-			if (err instanceof FigmaNetworkError || err instanceof FigmaQuotaError || err instanceof FigmaApiError) {
+			if (
+				err instanceof FigmaNetworkError ||
+				err instanceof FigmaQuotaError ||
+				err instanceof FigmaApiError
+			) {
 				freshness = "unknown";
-				if (exit !== 3) exit = 2; // network failure subi; coherence (3) takes precedence
+				if (exit !== 3) exit = 2; // network failure; coherence (3) takes precedence
 			} else {
 				throw err;
 			}
@@ -147,14 +210,18 @@ export async function runStatus(args: ParsedArgs): Promise<number> {
 
 	const placedMissing = manifest.missingAssets.length;
 	const targetCount = index ? Object.keys(index.targets).length : 0;
-	const placedCollected = manifest.frames.reduce((n, f) => n + f.assets.length, 0);
-	const annotatedSlots = index?.slotNotes ? Object.keys(index.slotNotes).length : 0;
+	const placedCollected = manifest.frames.reduce(
+		(n, f) => n + f.assets.length,
+		0,
+	);
+	const annotatedSlots = index?.slotNotes
+		? Object.keys(index.slotNotes).length
+		: 0;
 	// Reference-render coverage (index.image — the manual page exports).
 	let renderHave = 0;
 	let renderTotal = 0;
 	for (const t of Object.values(index?.targets ?? {})) {
-		for (const bp of BREAKPOINTS) {
-			if (!t.node[bp]) continue;
+		for (const { bp } of presentVariants(t.node)) {
 			renderTotal++;
 			const img = t.image?.[bp];
 			if (img && existsSync(join(cacheDir(), img))) renderHave++;
@@ -171,12 +238,15 @@ export async function runStatus(args: ParsedArgs): Promise<number> {
 					collectedAt: manifest.source.collectedAt,
 					coherence,
 					summary: {
-					frames: manifest.frames.length,
-					targets: targetCount,
-					referenceRenders: { have: renderHave, total: renderTotal },
-					placedImageAssets: { collected: placedCollected, uncollected: placedMissing },
-					annotatedSlots,
-				},
+						frames: manifest.frames.length,
+						targets: targetCount,
+						referenceRenders: { have: renderHave, total: renderTotal },
+						placedImageAssets: {
+							collected: placedCollected,
+							uncollected: placedMissing,
+						},
+						annotatedSlots,
+					},
 					exit,
 				},
 				null,
@@ -193,15 +263,23 @@ export async function runStatus(args: ParsedArgs): Promise<number> {
 		"not-evaluated": "— not evaluated (--offline)",
 	};
 	console.log(`Freshness: ${freshnessLabel[freshness]}`);
-	console.log(`  local version ${manifest.source.version} · modified ${manifest.source.lastModified} · collected ${manifest.source.collectedAt}`);
-	console.log(`Cache: ${manifest.frames.length} frames, ${targetCount} targets`);
-	console.log(`Reference renders: ${renderHave}/${renderTotal} present (index.image — page exports for visual diff)`);
+	console.log(
+		`  local version ${manifest.source.version} · modified ${manifest.source.lastModified} · collected ${manifest.source.collectedAt}`,
+	);
+	console.log(
+		`Cache: ${manifest.frames.length} frames, ${targetCount} targets`,
+	);
+	console.log(
+		`Reference renders: ${renderHave}/${renderTotal} present (index.image — page exports for visual diff)`,
+	);
 	if (placedCollected || placedMissing)
 		console.log(
 			`Placed-image assets: ${placedCollected} collected${placedMissing ? `, ${placedMissing} uncollected — run \`figma collect\`` : ""}`,
 		);
 	if (annotatedSlots)
-		console.log(`Annotated slots: ${annotatedSlots} (map / content-driven — not fetched, see index.json slotNotes)`);
+		console.log(
+			`Annotated slots: ${annotatedSlots} (map / content-driven — not fetched, see index.json slotNotes)`,
+		);
 	if (coherence.errors.length) {
 		console.log(`Consistency: ${coherence.errors.length} error(s)`);
 		for (const e of coherence.errors) console.log(`  ✗ ${e}`);

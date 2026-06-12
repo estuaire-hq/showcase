@@ -13,6 +13,7 @@
 // --env-file is only needed by the network commands (collect, status freshness).
 // read / list are offline and read no secret.
 
+import { CacheError } from "./lib/cache";
 import { runCollect } from "./lib/collect";
 import { runList, runStatus } from "./lib/index-status";
 import { runRead } from "./lib/read";
@@ -39,6 +40,12 @@ export function parseArgs(rest: string[]): ParsedArgs {
 		}
 	}
 	return { positionals, flags };
+}
+
+/** Value of a `--flag=value` option, or undefined for a bare/absent flag. */
+export function flagString(args: ParsedArgs, name: string): string | undefined {
+	const v = args.flags.get(name);
+	return typeof v === "string" ? v : undefined;
 }
 
 /** A command returns its process exit code (0 ok · 1 usage/input · 2 network · 3 incoherent). */
@@ -92,6 +99,14 @@ async function main(): Promise<void> {
 }
 
 main().catch((err: unknown) => {
-	console.error(err instanceof Error ? (err.stack ?? err.message) : String(err));
+	// A broken cache (missing/corrupt/invalid file) is an incoherent-cache failure (exit 3),
+	// reported as its located message — not an opaque stack trace.
+	if (err instanceof CacheError) {
+		console.error(err.message);
+		process.exit(3);
+	}
+	console.error(
+		err instanceof Error ? (err.stack ?? err.message) : String(err),
+	);
 	process.exit(1);
 });

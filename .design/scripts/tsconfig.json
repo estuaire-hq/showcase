@@ -3,6 +3,7 @@
 	"compilerOptions": {
 		"noEmit": true,
 		"strict": true,
+		"noUncheckedIndexedAccess": true,
 		"types": ["node"],
 		"jsx": "preserve",
 		"plugins": []

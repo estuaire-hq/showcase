@@ -3,12 +3,36 @@
 // cache is never half-written), and typed read/write of config / manifest / index
 // / frame files. No network here.
 
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import {
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	renameSync,
+	writeFileSync,
+} from "node:fs";
+import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import type { z } from "zod";
+import {
+	ConfigSchema,
+	FrameFileSchema,
+	IndexFileSchema,
+	ManifestSchema,
+} from "./schemas";
 import type { Config, FrameFile, IndexFile, Manifest } from "./types";
 
 const HERE = dirname(fileURLToPath(import.meta.url)); // .design/scripts/lib
+
+/**
+ * A cache file is missing-when-expected, corrupt, or fails its schema. Carries the
+ * located, actionable message; mapped to exit 3 (incoherent cache) by the CLI.
+ */
+export class CacheError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = "CacheError";
+	}
+}
 
 /** Absolute path to `.design/figma-cache/`. */
 export function cacheDir(): string {
@@ -55,8 +79,46 @@ export function assetRelPath(nodeId: string, ext = "png"): string {
 
 // ── JSON read/write ────────────────────────────────────────────────────────────
 
-function readJson<T>(filePath: string): T {
-	return JSON.parse(readFileSync(filePath, "utf8")) as T;
+/** Repo-relative path for error messages (e.g. `.design/figma-cache/index.json`). */
+function repoRel(filePath: string): string {
+	return relative(resolve(HERE, "..", "..", ".."), filePath);
+}
+
+/**
+ * Read + parse + schema-validate a cache file. Each failure mode (unreadable,
+ * not JSON, wrong shape) throws a CacheError naming the file and the remedy, so a
+ * corrupt or hand-broken cache fails fast and located — never as a typed lie.
+ */
+function parseCacheFile<S extends z.ZodType>(
+	filePath: string,
+	schema: S,
+): z.infer<S> {
+	let raw: string;
+	try {
+		raw = readFileSync(filePath, "utf8");
+	} catch (err) {
+		throw new CacheError(
+			`Cannot read cache file ${repoRel(filePath)}: ${err instanceof Error ? err.message : String(err)}`,
+		);
+	}
+	let json: unknown;
+	try {
+		json = JSON.parse(raw);
+	} catch (err) {
+		throw new CacheError(
+			`Corrupt cache file ${repoRel(filePath)} (not valid JSON): ${err instanceof Error ? err.message : String(err)}. Re-run \`figma collect\`.`,
+		);
+	}
+	const result = schema.safeParse(json);
+	if (!result.success) {
+		const issues = result.error.issues
+			.map((i) => `${i.path.join(".") || "<root>"}: ${i.message}`)
+			.join("; ");
+		throw new CacheError(
+			`Invalid cache file ${repoRel(filePath)}: ${issues}. Re-run \`figma collect\` (or fix the JSON).`,
+		);
+	}
+	return result.data;
 }
 
 /** Write JSON atomically: temp file in the same dir, then rename. */
@@ -70,7 +132,7 @@ export function writeJsonAtomic(filePath: string, data: unknown): void {
 // ── Typed accessors ──────────────────────────────────────────────────────────
 
 export function readConfig(): Config {
-	return readJson<Config>(configPath());
+	return parseCacheFile(configPath(), ConfigSchema);
 }
 
 export function hasManifest(): boolean {
@@ -79,7 +141,9 @@ export function hasManifest(): boolean {
 
 /** Read the manifest, or null if the cache is empty (never collected). */
 export function readManifest(): Manifest | null {
-	return existsSync(manifestPath()) ? readJson<Manifest>(manifestPath()) : null;
+	return existsSync(manifestPath())
+		? parseCacheFile(manifestPath(), ManifestSchema)
+		: null;
 }
 
 export function writeManifest(manifest: Manifest): void {
@@ -88,7 +152,9 @@ export function writeManifest(manifest: Manifest): void {
 
 /** Read the curated index, or null if it doesn't exist yet. */
 export function readIndex(): IndexFile | null {
-	return existsSync(indexPath()) ? readJson<IndexFile>(indexPath()) : null;
+	return existsSync(indexPath())
+		? parseCacheFile(indexPath(), IndexFileSchema)
+		: null;
 }
 
 export function frameFileExists(frameId: string): boolean {
@@ -96,7 +162,8 @@ export function frameFileExists(frameId: string): boolean {
 }
 
 export function readFrameFile(frameId: string): FrameFile {
-	return readJson<FrameFile>(framePath(frameId));
+	// `document` is validated shallowly (lossless) — narrow the loose node back to FigmaNode.
+	return parseCacheFile(framePath(frameId), FrameFileSchema) as FrameFile;
 }
 
 export function writeFrameFile(frameId: string, frame: FrameFile): void {
@@ -104,7 +171,10 @@ export function writeFrameFile(frameId: string, frame: FrameFile): void {
 }
 
 /** Routing: a node id → its top-level frame id, or null if not collected. */
-export function findFrameForNode(manifest: Manifest, nodeId: string): string | null {
+export function findFrameForNode(
+	manifest: Manifest,
+	nodeId: string,
+): string | null {
 	return manifest.nodeToFrame[nodeId] ?? null;
 }
 

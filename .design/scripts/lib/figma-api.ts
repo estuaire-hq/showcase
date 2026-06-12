@@ -54,18 +54,23 @@ async function apiFetch(url: string, attempt = 0): Promise<Response> {
 	try {
 		res = await fetch(url, { headers: { "X-Figma-Token": token() } });
 	} catch (err) {
-		throw new FigmaNetworkError(`Network error calling Figma: ${err instanceof Error ? err.message : String(err)}`);
+		throw new FigmaNetworkError(
+			`Network error calling Figma: ${err instanceof Error ? err.message : String(err)}`,
+		);
 	}
 	if (res.status === 429) {
 		if (attempt >= MAX_429_RETRIES)
-			throw new FigmaQuotaError(`Rate limit (429) not cleared after ${MAX_429_RETRIES} retries.`);
+			throw new FigmaQuotaError(
+				`Rate limit (429) not cleared after ${MAX_429_RETRIES} retries.`,
+			);
 		const header = Number(res.headers.get("retry-after"));
-		const waitS = Number.isFinite(header) && header > 0 ? header : 15 * (attempt + 1);
+		const waitS =
+			Number.isFinite(header) && header > 0 ? header : 15 * (attempt + 1);
 		if (waitS > MAX_RETRY_WAIT_S)
 			throw new FigmaQuotaError(
 				`Rate limit exhausted — Figma asks to wait ${waitS}s (> ${MAX_RETRY_WAIT_S}s cap). The cache is left intact; re-run \`figma collect\` once the quota recovers.`,
 			);
-		console.warn(`  429 rate-limited — waiting ${waitS}s (Retry-After)…`);
+		console.error(`  429 rate-limited — waiting ${waitS}s (Retry-After)…`);
 		await sleep(waitS * 1000);
 		return apiFetch(url, attempt + 1);
 	}
@@ -76,7 +81,10 @@ async function apiJson<T>(url: string): Promise<T> {
 	const res = await apiFetch(url);
 	if (!res.ok) {
 		const body = await res.text().catch(() => "");
-		throw new FigmaApiError(`${url} → ${res.status} ${res.statusText}\n${body}`, res.status);
+		throw new FigmaApiError(
+			`${url} → ${res.status} ${res.statusText}\n${body}`,
+			res.status,
+		);
 	}
 	return (await res.json()) as T;
 }
@@ -119,8 +127,13 @@ export interface RenderResponse {
 // ── Endpoints ──────────────────────────────────────────────────────────────────
 
 /** GET /files/:key/nodes?ids=… — no `depth` ⇒ the FULL subtree of each id (EF-006). */
-export function getNodes(fileKey: string, ids: string[]): Promise<NodesResponse> {
-	return apiJson<NodesResponse>(`${API}/files/${fileKey}/nodes?ids=${encodeURIComponent(ids.join(","))}`);
+export function getNodes(
+	fileKey: string,
+	ids: string[],
+): Promise<NodesResponse> {
+	return apiJson<NodesResponse>(
+		`${API}/files/${fileKey}/nodes?ids=${encodeURIComponent(ids.join(","))}`,
+	);
 }
 
 /** GET /files/:key?depth=1 — light file object: name, lastModified, version (freshness). */
@@ -129,26 +142,47 @@ export function getFileMeta(fileKey: string): Promise<FileMetaResponse> {
 }
 
 /** GET /files/:key/images — imageRef → source S3 URL for every image fill (1 call). */
-export function getImageFills(fileKey: string): Promise<ImageFillsResponse> {
-	return apiJson<ImageFillsResponse>(`${API}/files/${fileKey}/images`);
+export async function getImageFills(
+	fileKey: string,
+): Promise<ImageFillsResponse> {
+	// This endpoint can return HTTP 200 with a body-level error envelope; surface it
+	// rather than silently yielding an empty fills map (which sends every image to render).
+	const resp = await apiJson<ImageFillsResponse>(
+		`${API}/files/${fileKey}/images`,
+	);
+	if (resp.error)
+		throw new FigmaApiError(
+			`image-fills endpoint returned an error envelope (status ${resp.status}).`,
+			resp.status,
+		);
+	return resp;
 }
 
 /** GET /images/:key?ids=…&format=png&scale=… — flattened node renders. */
-export function renderImages(fileKey: string, ids: string[], scale = 2): Promise<RenderResponse> {
+export function renderImages(
+	fileKey: string,
+	ids: string[],
+	scale = 2,
+): Promise<RenderResponse> {
 	return apiJson<RenderResponse>(
 		`${API}/images/${fileKey}?ids=${encodeURIComponent(ids.join(","))}&format=png&scale=${scale}`,
 	);
 }
 
 /** Fetch a (token-less, pre-signed) asset URL into memory + its content-type. */
-export async function fetchBinary(url: string): Promise<{ data: Buffer; contentType: string | null }> {
+export async function fetchBinary(
+	url: string,
+): Promise<{ data: Buffer; contentType: string | null }> {
 	let res: Response;
 	try {
 		res = await fetch(url);
 	} catch (err) {
-		throw new FigmaNetworkError(`Network error downloading asset: ${err instanceof Error ? err.message : String(err)}`);
+		throw new FigmaNetworkError(
+			`Network error downloading asset: ${err instanceof Error ? err.message : String(err)}`,
+		);
 	}
-	if (!res.ok) throw new FigmaApiError(`download ${url} → ${res.status}`, res.status);
+	if (!res.ok)
+		throw new FigmaApiError(`download ${url} → ${res.status}`, res.status);
 	const data = Buffer.from(await res.arrayBuffer());
 	return { data, contentType: res.headers.get("content-type") };
 }

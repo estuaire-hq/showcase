@@ -4,6 +4,20 @@
 
 import type { Color, FigmaNode, Paint, TextStyle } from "./types";
 
+/**
+ * Is this paint a visible image fill (the bitmap-bearing kind)? The single
+ * definition of "image slot" shared by collect (download targets) and read
+ * (digest/inventory) — change the rule here, not in four call sites.
+ */
+export function isVisibleImageFill(paint: Paint): boolean {
+	return paint.type === "IMAGE" && paint.visible !== false;
+}
+
+/** The first visible image fill of a node, or undefined. */
+export function imageFillOf(node: FigmaNode): Paint | undefined {
+	return (node.fills ?? []).find(isVisibleImageFill);
+}
+
 /** `{r,g,b}` (0–1) → `#rrggbb`. */
 export function hex(c?: Color): string {
 	if (!c) return "?";
@@ -50,7 +64,10 @@ export function formatCharOverrides(node: FigmaNode): string[] {
 		const ov = table[id] ?? {};
 		const bits: string[] = [];
 		if (ov.fills) bits.push(`fill=${formatPaints(ov.fills)}`);
-		if (ov.strokes) bits.push(`stroke=${formatPaints(ov.strokes)} w${ov.strokeWeight ?? "?"}`);
+		if (ov.strokes)
+			bits.push(
+				`stroke=${formatPaints(ov.strokes)} w${ov.strokeWeight ?? "?"}`,
+			);
 		if (ov.fontFamily) bits.push(ov.fontFamily);
 		if (ov.fontWeight) bits.push(`w${ov.fontWeight}`);
 		if (bits.length) out.push(`charOverride#${id}{${bits.join(" ")}}`);

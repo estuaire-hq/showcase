@@ -39,7 +39,7 @@ l'en-tête `… — N nodes total` (votre checklist de complétude). **0 appel r
 - JSON brut intégral (lossless) : `… read 51:2339 --raw`.
 - Node pas encore collecté → message explicite « collecter d'abord » (jamais un résultat partiel).
 
-## 3. Lire « le hero de la home » par son nom — Scénario 3
+## 3. Lire une cible par son nom — Scénario 3
 
 D'abord, découvrir ce qui existe :
 
@@ -53,8 +53,8 @@ node --import tsx .design/scripts/figma.ts list
 Puis lire par **nom** (équivalent à lire par id) :
 
 ```bash
-node --import tsx .design/scripts/figma.ts read home/hero            # variante desktop par défaut
-node --import tsx .design/scripts/figma.ts read home/hero --bp=mobile # variante mobile
+node --import tsx .design/scripts/figma.ts read home            # variante desktop par défaut
+node --import tsx .design/scripts/figma.ts read home --bp=mobile # variante mobile
 ```
 
 ### Déclarer une nouvelle cible (< 1 min, une seule édition)
@@ -93,7 +93,7 @@ orphelines, variantes responsive manquantes). C'est le **gate qualité** du cach
 | **CS-003** (< 1 s) | `time read <id>` → < 1 s. |
 | **CS-005** (charge bornée) | la lecture n'ouvre **qu'**un `frames/*.json`, pas le monolithe. |
 | **CS-006 / CS-007** (découverte, aucune anonyme) | `list` → chaque cible a nom + description. |
-| **CS-008** (cible nommée 1 étape) | `read home/hero` sans connaître `51:2339`. |
+| **CS-008** (cible nommée 1 étape) | `read home` sans connaître `51:2221`. |
 | **CS-009** (checkout neuf sans token) | `git clone` frais (sans `.env`) → `read <id collecté>` réussit. |
 | **CS-010** (fraîcheur) | éditer Figma → `status` = périmé ; `collect` → `status` = à jour. |
 | **CS-011** (reprise) | tuer `collect` en plein render → relancer → complète sans repartir de zéro. |
@@ -108,6 +108,6 @@ L'ancien duo et ses artefacts sont **remplacés** :
   KIT lu via `read 75:2963` + cibles `kit/…` de l'index. `.design/figma-data/kit-inventory.md` supprimé.
 - `.design/figma-data/nodes.json` (monolithe 2,3 Mo) + `images.json` → supprimés (remplacés par
   `figma-cache/`).
-- Assets quittent `public/figma/` pour `.design/figma-cache/assets/` (gitignoré).
+- Assets quittent `public/figma/` pour `.design/figma-cache/assets/` (versionnés via git-lfs, cf. ADR 0010).
 - La skill **`estuaire-figma`** et le Principe VII de la constitution (qui citent nommément les
   anciens scripts) sont **mis à jour** vers les nouvelles commandes. Un **ADR** consigne la décision.

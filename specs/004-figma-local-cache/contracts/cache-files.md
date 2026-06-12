@@ -43,7 +43,12 @@ espaces, **versionné** sauf `assets/`.
     dans `manifest.nodeToFrame`.
   - `image` (optionnel) : mêmes breakpoints que `node` → chemin du render de référence versionné
     (`assets/<id>.png`). `status` vérifie l'existence du fichier déclaré.
-- **Curé à la main** (dev + agent). `collect` ne le réécrit jamais.
+- `slotNotes` (optionnel, **niveau racine**) : map `nodeId brut → { kind: "map"|"content", note }` pour
+  les slots à fill IMAGE qui ne sont **pas** des assets statiques à récupérer — `kind: "map"` (intégrer
+  une carte interactive) ou `kind: "content"` (image pilotée par le contenu Sanity). `collect` les
+  **saute** (ni render ni entrée `missingAssets`) ; `read` / `read --images` affichent la `note` à la
+  place de `asset=`. Voir data-model.md §4.
+- **Curé à la main** (dev + agent). `collect` ne réécrit jamais `targets` ni `slotNotes`.
 - Une nouvelle cible = une entrée ajoutée (une seule édition, < 1 min — CS-008).
 
 ## `assets/` (**versionné** — révision 2026-06-12)

@@ -31,8 +31,9 @@ suite au retour utilisateur (cf. research §5).
 `fetch` natif Node + `node:fs`/`node:stream`. API REST Figma (token `FIGMA_TOKEN`, `.env.development`
 git-crypt — déjà en place).
 **Storage**: fichiers locaux sous `.design/figma-cache/` — JSON versionnés (`config.json`,
-`manifest.json`, `index.json`, `frames/*.json`) + `assets/` binaires **gitignorés**
-(ré-téléchargeables). Aucune base de données.
+`manifest.json`, `index.json`, `frames/*.json`) + `assets/` binaires **versionnés via git-lfs**
+(révision 2026-06-12, cf. ADR 0010 : sous quota le re-download n'est pas fiable et l'IA a besoin des
+références visuelles ; `.design/` reste dev-only, jamais servi → aucun impact prod). Aucune base de données.
 **Testing**: pas de runner de test dans le projet (devDeps : biome, tsx, typescript — pas de
 vitest/jest). Vérification par : (a) la commande **`status`** (gate cohérence/fraîcheur, analogue à
 `seed --check`) ; (b) les **tests indépendants** de la spec exécutés manuellement (lecture offline,
@@ -105,7 +106,7 @@ Outillage de design dans `.design/` (hors build Next). L'arborescence **cible** 
 
 ```text
 .design/
-├── .gitignore                    # MAJ : ignorer figma-cache/assets/ (+ retirer images/, *.png si obsolètes)
+├── .gitignore                    # MAJ : committer figma-cache/assets/ via git-lfs (révision 2026-06-12) + retirer images/, *.png obsolètes
 ├── scripts/
 │   ├── figma.ts                  # ENTRÉE unique : routeur de sous-commandes (collect/read/list/status)
 │   ├── tsconfig.json             # extends la racine, strict, noEmit — sert tsx/éditeur/`figma:check`
@@ -122,7 +123,7 @@ Outillage de design dans `.design/` (hors build Next). L'arborescence **cible** 
     ├── manifest.json             # [versionné] auto : nodeToFrame + frames[] + source{version,…} + missingAssets
     ├── index.json                # [versionné] curé : noms métier → nodes + descriptions + variantes
     ├── frames/<safe-id>.json     # [versionné] 1 frame de premier niveau = 1 sous-arbre lossless autonome
-    └── assets/                   # [GITIGNORÉ] renders PNG + sources image-fills (ré-téléchargeables)
+    └── assets/                   # [VERSIONNÉ via git-lfs] renders PNG + sources image-fills (révision 2026-06-12, cf. ADR 0010)
 
 # RETIRÉS :
 #   migrés → figma.ts (collect/read) : .design/scripts/{figma-pull,figma-node,figma-fills,figma-frames}.mjs

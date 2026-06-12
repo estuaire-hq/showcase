@@ -145,26 +145,26 @@ par breakpoint.
 ```jsonc
 {
   "targets": {
-    "home/hero": {
-      "description": "Hero de la page d'accueil : titre line-mask + slideshow plein écran.",
+    "home": {
+      "description": "Page d'accueil (frame pleine page). Formats desktop / tablet / smartphone.",
       "node": {
-        "desktop": "51:2339",
-        "tablet":  "77:3160",
-        "mobile":  "77:3158"
+        "desktop": "51:2221",
+        "tablet":  "77:3149",
+        "mobile":  "77:3150"
       },
       "image": {                              // référence visuelle versionnée (verify)
-        "desktop": "assets/51-2339.png",      // export pleine page, nommé par node id
-        "tablet":  "assets/77-3160.png",
-        "mobile":  "assets/77-3158.png"
+        "desktop": "assets/51-2221.png",      // export pleine page, nommé par node id
+        "tablet":  "assets/77-3149.png",
+        "mobile":  "assets/77-3150.png"
       }
     },
-    "footer": {
-      "description": "BIG FOOTER : bandeau CTA + footer (4 col. légales) + bouton retour haut.",
-      "node": { "desktop": "51:2222", "tablet": "77:3629", "mobile": "78:4371" }
+    "home/slideshow": {
+      "description": "Slideshow de la section d'intro de la home. Frame desktop seule (responsive via home tablet/mobile).",
+      "node": { "desktop": "51:2420" }     // une cible peut n'avoir qu'un breakpoint
     },
-    "kit/bouton-envoyer": {
-      "description": "Bouton 'envoyer' du KIT (état par défaut), flèche à droite.",
-      "node": { "desktop": "75:3001" }     // une cible peut n'avoir qu'un breakpoint
+    "nav/open": {
+      "description": "Navbar ouverte (menu déployé). Formats tablet et smartphone — pas de desktop (pas de menu ouvrable en desktop).",
+      "node": { "tablet": "77:3630", "mobile": "87:5893" }  // cible légitimement sans desktop
     }
   }
 }

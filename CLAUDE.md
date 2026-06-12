@@ -146,8 +146,8 @@ Sanity webhook → `POST /api/revalidate` → `revalidateTag(tag)`. Each query d
 6. For **global/singleton** content: add the mapping in `@/lib/sanity/<doc>.ts` and a
    connected wrapper in `src/components/<Doc>.tsx` (see Data/Presentation Boundary above)
 7. **Seed it** (the agent authors seeds): `npm run seed:scaffold -- <doc>` → fill the TODOs with
-   the maquette values (read the Figma node via `estuaire-figma`; image fills land in
-   `public/figma/`; put copy shared with the front fallback in `src/content/<doc>.ts`) → register
+   the maquette values (read the Figma node via `estuaire-figma`; put copy shared with the front
+   fallback in `src/content/<doc>.ts`) → register
    in `src/sanity/seed/registry.ts` → `npm run seed -- --check` → `npm run seed`.
 
 ### Sanity Types & Seeds (TypeGen)

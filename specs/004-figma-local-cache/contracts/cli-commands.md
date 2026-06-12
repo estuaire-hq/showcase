@@ -52,7 +52,7 @@ node --import tsx .design/scripts/figma.ts read <nodeId|nom> [--depth=N] [--leav
 
 | Aspect | Contrat |
 |---|---|
-| **Entrée** | un **id Figma** (`51:2339`) **ou** un **nom d'index** (`home/hero`). `--bp` choisit la variante d'une cible nommée. |
+| **Entrée** | un **id Figma** (`51:2339`) **ou** un **nom d'index** (`home`). `--bp` choisit la variante d'une cible nommée. |
 | **Réseau** | **AUCUN** (100 % offline — EF-002). |
 | **Résolution** | nom → `index.json` (+ `--bp`/défaut) → id ; id → `manifest.nodeToFrame` → `frames/<frame>.json` → extrait le sous-arbre. |
 | **Sortie défaut** | digest lisible (façon `figma-node.mjs`) : en-tête `# <nom> [<type>] W×H — N nodes total` (+ `# render: .design/figma-cache/assets/<id>.png` si une référence visuelle est cachée), puis arbre indenté : géométrie **parent-relative** `@(x,y) w×h`, `opacity`, fills (+ per-paint opacity, gradients, IMAGE + `asset=<chemin>` si bitmap caché), strokes + weight + align, radii, auto-layout, effects, style TEXT complet + overrides par caractère, `characters`. **Tous les champs**, aucun filtrage (EF-001). |
@@ -77,7 +77,7 @@ node --import tsx .design/scripts/figma.ts list [--json]
 |---|---|
 | **Réseau** | aucun. Lit `index.json` (+ vérifie l'existence dans `manifest`). |
 | **Sortie** | pour **chaque** cible : `nom · description · node(s) par bp`. Une IA y lit *ce qui existe et ce que c'est* **sans ouvrir les fichiers** (CS-006). |
-| **Exemple** | `home/hero  — Hero de la page d'accueil … [desktop 51:2339 · tablet 77:3160 · mobile 77:3158]`. |
+| **Exemple** | `home  — Page d'accueil (frame pleine page) … [desktop 51:2221 · tablet 77:3149 · mobile 77:3150]`. |
 | **Signale** | une cible sans description / dont un node n'est pas collecté est marquée `⚠` (renvoie vers `status`). |
 
 ---
@@ -91,9 +91,9 @@ node --env-file=.env.development --import tsx .design/scripts/figma.ts status [-
 | Aspect | Contrat |
 |---|---|
 | **Fraîcheur** (réseau) | **1** appel `GET /files/:key?depth=1` → compare `version` distante à `manifest.source.version`. Identique → **à jour** ; différente → **périmé** (recommande `collect`) ; **`--offline`** → fraîcheur **non évaluée** (renoncement volontaire, pas une erreur) ; **échec réseau subi** (online attendu) → **inconnu**. N'invalide jamais le cache. |
-| **Cohérence** (offline) | réconcilie `index.json` ↔ `frames/*` ↔ `manifest` : entrée d'index → node non collecté ; → frame absente ; cible sans description ; variante responsive manquante ; frame orpheline (fichier sans entrée manifeste). |
-| **Sortie** | bloc fraîcheur (`à jour`/`périmé`/`inconnu`/`non évaluée` + dates) + bloc cohérence (liste des manques) + résumé (`N frames, M cibles, K assets, P manquants`). `--json` pour la sortie machine. |
-| **Exit** | `0` cohérent (à jour, **ou** `--offline`, **ou** cache **partiel** signalé) · `2` fraîcheur **inconnue subie** (Figma injoignable alors qu'attendu) · `3` incohérences (**prime sur `2`**). |
+| **Cohérence** (offline) | réconcilie `index.json` ↔ `frames/*` ↔ `manifest`. **Erreurs** (exit `3`) : cible **sans description** (CS-007) ; node d'une cible **non collecté** ; **fichier de frame manquant** pour une entrée du manifeste. **Avertissements** (`⚠`, exit `0`) : variante responsive manquante — **certaines cibles n'ont légitimement pas tous les breakpoints** (ex. `nav/open` n'a pas de desktop : aucun menu ouvrable en desktop) ; render de référence absent ou déclaré-mais-introuvable ; `slotNote` pointant un node hors cache. |
+| **Sortie** | bloc fraîcheur (`à jour`/`périmé`/`inconnu`/`non évaluée` + dates) + résumé (`N frames`, `M cibles`, `reference renders H/T` [exports `index.image` pour le diff visuel], `placed-image assets` collectés/manquants, `annotated slots` [slots `slotNotes` non récupérés : map / content]) + bloc cohérence (erreurs `✗` + avertissements `⚠`). `--json` pour la sortie machine. |
+| **Exit** | `0` cohérent — **à jour**, **ou** `--offline`, **ou** seulement des `⚠` (variante manquante légitime, render absent…), **ou** cache **partiel** signalé · `2` fraîcheur **inconnue subie** (Figma injoignable alors qu'attendu) · `3` **erreurs** de cohérence (**prime sur `2`**). |
 
 **Acceptation** (Scénario 4) : aligné → « à jour » ; maquette modifiée → « périmé » ; pas de réseau →
 « inconnu » sans planter.

@@ -1,1 +1,8 @@
 .env.development filter=git-crypt diff=git-crypt
+
+# Committed image binaries → git-lfs (content images live in Sanity, not the repo).
+# Scoped to dev/seed asset stores; the versioned JSON (config/manifest/index/frames) stays
+# plain git & diffable, and public/ is DELIBERATELY excluded (served + copied into the Docker
+# image; a deploy/CI clone may not fetch LFS blobs). See ADR 0010.
+.design/figma-cache/assets/** filter=lfs diff=lfs merge=lfs -text
+seed-assets/** filter=lfs diff=lfs merge=lfs -text

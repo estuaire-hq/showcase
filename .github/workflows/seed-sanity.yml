@@ -27,6 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true # seed-assets/ images are stored in git-lfs (see .gitattributes / ADR 0010)
       - uses: actions/setup-node@v4
         with:
           node-version: 22

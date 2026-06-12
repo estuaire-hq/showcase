@@ -1,0 +1,77 @@
+{
+  "meta": {
+    "id": "134:2393",
+    "name": "REPÈRE/ESPACE smartphone",
+    "breakpoint": "mobile",
+    "width": 38,
+    "height": 38,
+    "nodeCount": 1,
+    "collectedAt": "2026-06-12T10:01:35.700Z",
+    "sourceVersion": "2364138939658184553"
+  },
+  "document": {
+    "id": "134:2393",
+    "name": "REPÈRE/ESPACE smartphone",
+    "type": "VECTOR",
+    "scrollBehavior": "SCROLLS",
+    "boundVariables": {
+      "fills": [
+        {
+          "type": "VARIABLE_ALIAS",
+          "id": "VariableID:b11b0fc860827fed12909fa7495598562df79a38/6013:15"
+        }
+      ]
+    },
+    "blendMode": "PASS_THROUGH",
+    "fills": [
+      {
+        "blendMode": "NORMAL",
+        "type": "SOLID",
+        "color": {
+          "r": 1,
+          "g": 0.800000011920929,
+          "b": 0,
+          "a": 1
+        },
+        "boundVariables": {
+          "color": {
+            "type": "VARIABLE_ALIAS",
+            "id": "VariableID:b11b0fc860827fed12909fa7495598562df79a38/6013:15"
+          }
+        }
+      }
+    ],
+    "strokes": [],
+    "strokeWeight": 0.6557376980781555,
+    "strokeAlign": "INSIDE",
+    "absoluteBoundingBox": {
+      "x": -10887,
+      "y": -14272,
+      "width": 38,
+      "height": 38
+    },
+    "absoluteRenderBounds": {
+      "x": -10887,
+      "y": -14272,
+      "width": 38,
+      "height": 38
+    },
+    "preserveRatio": true,
+    "targetAspectRatio": {
+      "x": 122,
+      "y": 122
+    },
+    "constraints": {
+      "vertical": "TOP",
+      "horizontal": "LEFT"
+    },
+    "effects": [],
+    "interactions": [],
+    "complexStrokeProperties": {
+      "strokeType": "BASIC"
+    }
+  },
+  "styles": {},
+  "components": {},
+  "componentSets": {}
+}

@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "id": "134:2397",
+    "name": "REPÈRE/ESPACE desktop",
+    "breakpoint": null,
+    "width": 69,
+    "height": 69,
+    "nodeCount": 1,
+    "collectedAt": "2026-06-12T10:01:35.700Z",
+    "sourceVersion": "2364138939658184553"
+  },
+  "document": {
+    "id": "134:2397",
+    "name": "REPÈRE/ESPACE desktop",
+    "type": "RECTANGLE",
+    "scrollBehavior": "SCROLLS",
+    "blendMode": "PASS_THROUGH",
+    "fills": [
+      {
+        "blendMode": "NORMAL",
+        "type": "SOLID",
+        "color": {
+          "r": 1,
+          "g": 0.21960784494876862,
+          "b": 0.23529411852359772,
+          "a": 1
+        }
+      }
+    ],
+    "strokes": [],
+    "strokeWeight": 1,
+    "strokeAlign": "INSIDE",
+    "absoluteBoundingBox": {
+      "x": -13333,
+      "y": -14558,
+      "width": 69,
+      "height": 69
+    },
+    "absoluteRenderBounds": {
+      "x": -13333,
+      "y": -14558,
+      "width": 69,
+      "height": 69
+    },
+    "constraints": {
+      "vertical": "TOP",
+      "horizontal": "LEFT"
+    },
+    "effects": [],
+    "interactions": [],
+    "complexStrokeProperties": {
+      "strokeType": "BASIC"
+    }
+  },
+  "styles": {},
+  "components": {},
+  "componentSets": {}
+}

@@ -1,0 +1,307 @@
+{
+  "targets": {
+    "home": {
+      "description": "Page d'accueil (frame pleine page). Formats desktop / tablet / smartphone.",
+      "node": {
+        "desktop": "51:2221",
+        "tablet": "77:3149",
+        "mobile": "77:3150"
+      },
+      "image": {
+        "desktop": "assets/51-2221.png",
+        "tablet": "assets/77-3149.png",
+        "mobile": "assets/77-3150.png"
+      }
+    },
+    "home/slideshow": {
+      "description": "Slideshow de la section d'intro de la page d'accueil. Frame desktop uniquement : pas de frame tablet/smartphone dédiée — le responsive s'interprète avec les frames home tablet/mobile.",
+      "node": {
+        "desktop": "51:2420"
+      },
+      "image": {
+        "desktop": "assets/51-2420.png"
+      }
+    },
+    "nav/sticky": {
+      "description": "Navbar en mode sticky — frame d'exemple, format desktop.",
+      "node": {
+        "desktop": "51:2585"
+      },
+      "image": {
+        "desktop": "assets/51-2585.png"
+      }
+    },
+    "nav/open": {
+      "description": "Navbar ouverte (menu déployé). Formats tablet et smartphone.",
+      "node": {
+        "tablet": "77:3630",
+        "mobile": "87:5893"
+      },
+      "image": {
+        "tablet": "assets/77-3630.png",
+        "mobile": "assets/87-5893.png"
+      }
+    },
+    "about": {
+      "description": "Page « Nous découvrir ». Formats desktop / tablet / smartphone.",
+      "node": {
+        "desktop": "51:2699",
+        "tablet": "78:4374",
+        "mobile": "78:4626"
+      },
+      "image": {
+        "desktop": "assets/51-2699.png",
+        "tablet": "assets/78-4374.png",
+        "mobile": "assets/78-4626.png"
+      }
+    },
+    "expertises": {
+      "description": "Page « Expertises ». Formats desktop / tablet / smartphone.",
+      "node": {
+        "desktop": "51:2893",
+        "tablet": "87:5600",
+        "mobile": "87:6290"
+      },
+      "image": {
+        "desktop": "assets/51-2893.png",
+        "tablet": "assets/87-5600.png",
+        "mobile": "assets/87-6290.png"
+      }
+    },
+    "expertises/agencement-sur-mesure": {
+      "description": "Sous-page Expertises : agencement sur mesure. Formats desktop / tablet / smartphone.",
+      "node": {
+        "desktop": "51:3008",
+        "tablet": "87:6762",
+        "mobile": "87:6964"
+      },
+      "image": {
+        "desktop": "assets/51-3008.png",
+        "tablet": "assets/87-6762.png",
+        "mobile": "assets/87-6964.png"
+      }
+    },
+    "expertises/mobiliers-sur-mesure": {
+      "description": "Sous-page Expertises : mobiliers sur mesure et en série. Format desktop.",
+      "node": {
+        "desktop": "51:3134"
+      },
+      "image": {
+        "desktop": "assets/51-3134.png"
+      }
+    },
+    "expertises/presentoirs-sur-mesure": {
+      "description": "Sous-page Expertises : présentoirs sur mesure. Format desktop.",
+      "node": {
+        "desktop": "51:3259"
+      },
+      "image": {
+        "desktop": "assets/51-3259.png"
+      }
+    },
+    "secteurs": {
+      "description": "Page « Univers » (secteurs). Format desktop.",
+      "node": {
+        "desktop": "51:3386"
+      },
+      "image": {
+        "desktop": "assets/51-3386.png"
+      }
+    },
+    "secteurs/retail": {
+      "description": "Sous-page Univers : retail. Format desktop.",
+      "node": {
+        "desktop": "51:3520"
+      },
+      "image": {
+        "desktop": "assets/51-3520.png"
+      }
+    },
+    "secteurs/bureau": {
+      "description": "Sous-page Univers : bureau. Format desktop.",
+      "node": {
+        "desktop": "51:3661"
+      },
+      "image": {
+        "desktop": "assets/51-3661.png"
+      }
+    },
+    "secteurs/residentiel": {
+      "description": "Sous-page Univers : résidentiel. Format desktop.",
+      "node": {
+        "desktop": "51:3797"
+      },
+      "image": {
+        "desktop": "assets/51-3797.png"
+      }
+    },
+    "secteurs/scenographie": {
+      "description": "Sous-page Univers : scénographie. Format desktop.",
+      "node": {
+        "desktop": "51:3929"
+      },
+      "image": {
+        "desktop": "assets/51-3929.png"
+      }
+    },
+    "portfolio": {
+      "description": "Page « Réalisations » (portfolio). Format desktop.",
+      "node": {
+        "desktop": "51:4064"
+      },
+      "image": {
+        "desktop": "assets/51-4064.png"
+      }
+    },
+    "portfolio/case-study": {
+      "description": "Sous-page d'une réalisation (case study), version longue. Format desktop.",
+      "node": {
+        "desktop": "51:4386"
+      },
+      "image": {
+        "desktop": "assets/51-4386.png"
+      }
+    },
+    "portfolio/case-study-court": {
+      "description": "Sous-page d'une réalisation (case study), version courte. Format desktop.",
+      "node": {
+        "desktop": "53:2745"
+      },
+      "image": {
+        "desktop": "assets/53-2745.png"
+      }
+    },
+    "contact": {
+      "description": "Page contact. Format desktop.",
+      "node": {
+        "desktop": "51:4548"
+      },
+      "image": {
+        "desktop": "assets/51-4548.png"
+      }
+    },
+    "kit": {
+      "description": "KIT du design system. Format desktop.",
+      "node": {
+        "desktop": "75:2963"
+      },
+      "image": {
+        "desktop": "assets/75-2963.png"
+      }
+    }
+  },
+  "slotNotes": {
+    "75:3666": {
+      "kind": "content",
+      "note": "Bande visuelle pilotée par le contenu (réalisations / case study), répétée — image fournie par le contenu Sanity, pas un asset statique."
+    },
+    "75:3691": {
+      "kind": "content",
+      "note": "Bande visuelle pilotée par le contenu (réalisations / case study), répétée — image fournie par le contenu Sanity, pas un asset statique."
+    },
+    "51:2281": {
+      "kind": "content",
+      "note": "Bande visuelle pilotée par le contenu (réalisations / case study), répétée — image fournie par le contenu Sanity, pas un asset statique."
+    },
+    "51:2293": {
+      "kind": "content",
+      "note": "Bande visuelle pilotée par le contenu (réalisations / case study), répétée — image fournie par le contenu Sanity, pas un asset statique."
+    },
+    "51:2305": {
+      "kind": "content",
+      "note": "Bande visuelle pilotée par le contenu (réalisations / case study), répétée — image fournie par le contenu Sanity, pas un asset statique."
+    },
+    "77:3305": {
+      "kind": "content",
+      "note": "Bande visuelle pilotée par le contenu (réalisations / case study), répétée — image fournie par le contenu Sanity, pas un asset statique."
+    },
+    "77:3317": {
+      "kind": "content",
+      "note": "Bande visuelle pilotée par le contenu (réalisations / case study), répétée — image fournie par le contenu Sanity, pas un asset statique."
+    },
+    "77:3329": {
+      "kind": "content",
+      "note": "Bande visuelle pilotée par le contenu (réalisations / case study), répétée — image fournie par le contenu Sanity, pas un asset statique."
+    },
+    "77:4060": {
+      "kind": "content",
+      "note": "Bande visuelle pilotée par le contenu (réalisations / case study), répétée — image fournie par le contenu Sanity, pas un asset statique."
+    },
+    "77:4105": {
+      "kind": "content",
+      "note": "Bande visuelle pilotée par le contenu (réalisations / case study), répétée — image fournie par le contenu Sanity, pas un asset statique."
+    },
+    "77:4117": {
+      "kind": "content",
+      "note": "Bande visuelle pilotée par le contenu (réalisations / case study), répétée — image fournie par le contenu Sanity, pas un asset statique."
+    },
+    "88:7459": {
+      "kind": "content",
+      "note": "Bande visuelle pilotée par le contenu (réalisations / case study), répétée — image fournie par le contenu Sanity, pas un asset statique."
+    },
+    "51:4129": {
+      "kind": "content",
+      "note": "Bande visuelle pilotée par le contenu (réalisations / case study), répétée — image fournie par le contenu Sanity, pas un asset statique."
+    },
+    "51:4141": {
+      "kind": "content",
+      "note": "Bande visuelle pilotée par le contenu (réalisations / case study), répétée — image fournie par le contenu Sanity, pas un asset statique."
+    },
+    "51:4153": {
+      "kind": "content",
+      "note": "Bande visuelle pilotée par le contenu (réalisations / case study), répétée — image fournie par le contenu Sanity, pas un asset statique."
+    },
+    "51:4392": {
+      "kind": "content",
+      "note": "Image de réalisation (case study) — vient du contenu Sanity de la réalisation, pas un asset statique à récupérer."
+    },
+    "75:3442": {
+      "kind": "content",
+      "note": "Image de réalisation (case study) — vient du contenu Sanity de la réalisation, pas un asset statique à récupérer."
+    },
+    "51:4488": {
+      "kind": "content",
+      "note": "Image de réalisation (case study) — vient du contenu Sanity de la réalisation, pas un asset statique à récupérer."
+    },
+    "51:4493": {
+      "kind": "content",
+      "note": "Image de réalisation (case study) — vient du contenu Sanity de la réalisation, pas un asset statique à récupérer."
+    },
+    "53:1392": {
+      "kind": "content",
+      "note": "Image de réalisation (case study) — vient du contenu Sanity de la réalisation, pas un asset statique à récupérer."
+    },
+    "53:1397": {
+      "kind": "content",
+      "note": "Image de réalisation (case study) — vient du contenu Sanity de la réalisation, pas un asset statique à récupérer."
+    },
+    "53:2751": {
+      "kind": "content",
+      "note": "Image de réalisation (case study) — vient du contenu Sanity de la réalisation, pas un asset statique à récupérer."
+    },
+    "75:3475": {
+      "kind": "content",
+      "note": "Image de réalisation (case study) — vient du contenu Sanity de la réalisation, pas un asset statique à récupérer."
+    },
+    "53:2847": {
+      "kind": "content",
+      "note": "Image de réalisation (case study) — vient du contenu Sanity de la réalisation, pas un asset statique à récupérer."
+    },
+    "53:2852": {
+      "kind": "content",
+      "note": "Image de réalisation (case study) — vient du contenu Sanity de la réalisation, pas un asset statique à récupérer."
+    },
+    "53:2864": {
+      "kind": "content",
+      "note": "Image de réalisation (case study) — vient du contenu Sanity de la réalisation, pas un asset statique à récupérer."
+    },
+    "53:2869": {
+      "kind": "content",
+      "note": "Image de réalisation (case study) — vient du contenu Sanity de la réalisation, pas un asset statique à récupérer."
+    },
+    "51:4641": {
+      "kind": "map",
+      "note": "Carte de localisation — intégrer une map interactive (composant carte), PAS une image."
+    }
+  }
+}

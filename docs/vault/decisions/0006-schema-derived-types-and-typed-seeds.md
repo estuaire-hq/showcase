@@ -54,7 +54,7 @@ The **schema (`defineType`) is the single source of truth**; types are *derived*
 - Drift is mechanically caught: schema ↔ types/seed → compile error; missing required field or
   asset → `--check` failure. The four silent surfaces above are closed.
 - **Workflow for a new content type** (agent-facing): scaffold → fill from the Figma maquette
-  (`estuaire-figma`; image fills land in `public/figma/`, ADR 0004) → `seed -- --check` → `seed`.
+  (read the node via the `estuaire-figma-cli` skill; content images → Sanity, ADR 0004) → `seed -- --check` → `seed`.
   Register the seed in `src/sanity/seed/registry.ts` (order matters for cross-document refs).
 - **Boundary map**: `src/sanity/` defines the model · `src/lib/sanity/` consumes it at runtime ·
   `src/content/` holds neutral maquette copy · `src/sanity.types.ts` is the generated contract above

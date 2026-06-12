@@ -5,6 +5,10 @@ date: 2026-06-10
 ---
 # 0004 — Content images live in Sanity; Figma images are regenerable references
 
+> **Tooling superseded by [[0010-figma-local-cache]]** (2026-06-12): the decision stands,
+> but Figma image references are now fetched by `figma.ts collect` into the gitignored
+> `.design/figma-cache/assets/` (no longer `public/figma/` via `figma-pull.mjs`/`figma-fills.mjs`).
+
 ## Context
 The Figma maquettes place specific photos in specific slots (case studies, hero/CTA,
 sectors…). We deleted the bulk of `public/lab/images`, `public/figma`, and gitignored

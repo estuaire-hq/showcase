@@ -1,10 +1,14 @@
 # .design/ — design source + Figma tooling.
-# COMMITTED (needed by the pixel-perfect method): scripts/ + figma-data/*.json + *.md
-# IGNORED below (local-only, heavy or throwaway):
+# COMMITTED: scripts/ + the WHOLE figma-cache/ — config/manifest/index/frames AND assets/.
+#   The cache (incl. page renders / image references) is the offline source of truth for
+#   pixel-perfect work, so a fresh checkout / CI has every visual reference with no token
+#   and no quota. .design/ is dev-only (never served; excluded from the Docker image),
+#   so none of this ships to prod (Principle II is about public/, not .design/). See ADR 0010.
 
-# Master Figma export + source images — redundant with the Figma cloud file
-# (the source of truth) and with Sanity content. Not needed in the repo.
+# Master Figma export + raw source imports (the .fig + image dump) — redundant with the cloud file.
 images/
 
-# Throwaway verification screenshots (charlotte / Figma renders)
+# Throwaway verification screenshots (charlotte), EXCEPT the tracked cache renders under assets/.
 *.png
+!figma-cache/assets/
+!figma-cache/assets/**

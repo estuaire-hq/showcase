@@ -13,7 +13,9 @@
 		"seed": "npm run seed:schema && node --env-file=.env.development --import tsx src/sanity/seed/run.ts",
 		"seed:check": "npm run seed:schema && tsx src/sanity/seed/run.ts --check",
 		"seed:ci": "npm run seed:schema && tsx src/sanity/seed/run.ts",
-		"seed:scaffold": "npm run seed:schema && tsx src/sanity/seed/scaffold.ts"
+		"seed:scaffold": "npm run seed:schema && tsx src/sanity/seed/scaffold.ts",
+		"figma": "node --env-file=.env.development --import tsx .design/scripts/figma.ts",
+		"figma:check": "tsc --noEmit -p .design/scripts"
 	},
 	"dependencies": {
 		"@gsap/react": "^2.1.2",
@@ -41,6 +43,7 @@
 		"@types/react-dom": "^19.2.3",
 		"tailwindcss": "^4.1.0",
 		"tsx": "^4.22.4",
-		"typescript": "^5.8.0"
+		"typescript": "^5.8.0",
+		"zod": "^4.4.3"
 	}
 }

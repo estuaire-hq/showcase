@@ -11,6 +11,7 @@ export { FeatureBlock } from "./components/FeatureBlock";
 export { FileInput } from "./components/FileInput";
 export { Filter } from "./components/Filter";
 export { FooterLink } from "./components/FooterLink";
+export { type HeroSlide, HeroSlideshow } from "./components/HeroSlideshow";
 export { LinkedInButton } from "./components/LinkedInButton";
 export { MenuToggle } from "./components/MenuToggle";
 export { NavButton } from "./components/NavButton";
@@ -21,6 +22,10 @@ export { Select } from "./components/Select";
 export { SiteFooter } from "./components/SiteFooter";
 export { NAV_PANEL_ID, SiteHeader } from "./components/SiteHeader";
 export { Slideshow } from "./components/Slideshow";
+export {
+	SplitSection,
+	type SplitSectionImage,
+} from "./components/SplitSection";
 export { SubFilter } from "./components/SubFilter";
 export type { NavState, NavTone } from "./nav";
 export * from "./tokens";

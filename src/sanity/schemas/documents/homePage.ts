@@ -20,13 +20,18 @@ import { defineArrayMember, defineField, defineType } from "sanity";
  *    not here — editors only configure the slides.
  */
 
-/** Image field shared by every content image: hotspot crop + required-ish alt. */
-const imageField = (name: string, title: string, group: string) =>
+/**
+ * Image field shared by every content image: hotspot crop + required-ish alt.
+ * `group` is omitted for images nested inside an object type (e.g. heroSlide), which
+ * has no field groups of its own — a `group` may only reference a group defined on the
+ * same type, so passing one there crashes the Studio editor.
+ */
+const imageField = (name: string, title: string, group?: string) =>
 	defineField({
 		name,
 		title,
 		type: "image",
-		group,
+		...(group ? { group } : {}),
 		options: { hotspot: true },
 		fields: [
 			defineField({
@@ -77,7 +82,7 @@ export const homePage = defineType({
 					name: "heroSlide",
 					title: "Slide",
 					fields: [
-						imageField("image", "Visuel", "hero"),
+						imageField("image", "Visuel"),
 						defineField({
 							name: "titleOutline",
 							title: "Titre — contour",

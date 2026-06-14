@@ -1,5 +1,6 @@
 import type { SanityImageSource } from "@sanity/image-url";
 import { homePageContent } from "@/content/homePage";
+import type { SanityImageAssetReference } from "@/sanity.types";
 import { urlFor } from "./image";
 import { sanityFetch } from "./live";
 import { HOME_PAGE_QUERY } from "./queries";
@@ -10,9 +11,16 @@ import { HOME_PAGE_QUERY } from "./queries";
 // via `urlFor` + LQIP. Page-specific content → fetched by the page connector, not a
 // global `src/components/` wrapper (Principle VIII).
 
-/** Structural shape of a projected image (asset/hotspot/crop/alt/lqip). */
+/** The accessor shape `mapImage` needs across every projected image: full content images
+ *  carry `lqip`, the OG image omits it (no blur placeholder needed). `asset` is the
+ *  generated reference type — not `unknown` — so this is the canonical shape, not a loose
+ *  duplicate of the schema. */
 type QueryImage =
-	| { asset?: unknown; alt?: string | null; lqip?: string | null }
+	| {
+			asset: SanityImageAssetReference | null;
+			alt?: string | null;
+			lqip?: string | null;
+	  }
 	| null
 	| undefined;
 
@@ -27,8 +35,12 @@ function mapImage(
 	width: number,
 	fallbackAlt = "",
 ): ResolvedImage | undefined {
+	// Guards a missing asset, NOT a dangling ref (asset present but its document deleted):
+	// urlFor would then build a URL that 404s. Acceptable — the common case is no asset.
 	if (!img?.asset) return undefined;
 	return {
+		// Cast as in footer.ts: the projection is a valid image source at runtime, but its
+		// generated type is not structurally `SanityImageSource`.
 		src: urlFor(img as SanityImageSource)
 			.width(width)
 			.auto("format")
@@ -71,9 +83,11 @@ export async function getHomePageProps() {
 				blurDataURL: undefined,
 			}));
 
-	const universSectors: Sector[] = (h?.universSectors ?? [])
-		.filter((s): s is Sector => Boolean(s.label && s.href))
-		.map((s) => ({ label: s.label, href: s.href }));
+	// The type predicate already narrows each entry to `Sector` (non-null label + href),
+	// so no extra `.map` is needed (mirrors `footer.ts`).
+	const universSectors = (h?.universSectors ?? []).filter((s): s is Sector =>
+		Boolean(s.label && s.href),
+	);
 
 	return {
 		hero: { label, slides },
@@ -120,6 +134,8 @@ export async function getHomePageProps() {
 		seo: {
 			metaTitle: h?.seoMetaTitle ?? DEFAULTS.seoMetaTitle,
 			metaDescription: h?.seoMetaDescription ?? DEFAULTS.seoMetaDescription,
+			// OG image projects no `lqip` (no blur placeholder for a share image) — mapImage
+			// handles its absence via the optional `lqip`.
 			ogImage: mapImage(h?.seoOgImage, 1200),
 		},
 	};

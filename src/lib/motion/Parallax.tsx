@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/motion/gsap";
+import { prefersReducedMotion } from "./usePrefersReducedMotion";
 
 /**
  * Scroll-driven motion wrapper (estuaire-motion, ocitocine-style). NOTHING fires on
@@ -13,6 +14,8 @@ import { gsap, ScrollTrigger, useGSAP } from "@/lib/motion/gsap";
  *         bottom top). Different amps on siblings = depth.
  *       · `settle`          : -amp → 0 over top bottom → center center, then HOLDS at
  *         rest (e.g. the expertises image descends slowly and settles into its bleed).
+ *       · `rise`            : amp*0.25 → -amp (asymmetric — barely descends, rises a lot;
+ *         e.g. the intro primary image).
  *   - `[data-reveal-clip]` — a panel clip-reveal on enter (once), bottom→up.
  *
  * Honors `prefers-reduced-motion`: no transforms, everything shown at its rest state.
@@ -30,7 +33,7 @@ export function Parallax({
 		() => {
 			const root = ref.current;
 			if (!root) return;
-			if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+			if (prefersReducedMotion()) return;
 
 			for (const node of root.querySelectorAll<HTMLElement>(
 				"[data-parallax]",

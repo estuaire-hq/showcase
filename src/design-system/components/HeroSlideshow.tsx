@@ -3,8 +3,9 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/motion/gsap";
+import { prefersReducedMotion } from "@/lib/motion/usePrefersReducedMotion";
 import { cn } from "@/lib/utils";
-import { BrandText } from "../typography/BrandText";
+import { BrandText, charFont } from "../typography/BrandText";
 
 export type HeroSlide = {
 	/** Resolved image URL (page builds it from Sanity via urlFor). Optional: the
@@ -17,12 +18,6 @@ export type HeroSlide = {
 	titleFill: string;
 	blurDataURL?: string;
 };
-
-const UPPER = /\p{Lu}/u;
-const charFont = (ch: string) =>
-	UPPER.test(ch)
-		? "var(--font-montserrat)"
-		: "var(--font-montserrat-alternates)";
 
 /** Split a slide into render lines: the outline lines (stroked) + the fill line. */
 function slideLines(slide: HeroSlide) {
@@ -73,7 +68,7 @@ export function HeroSlideshow({
 			const img = imageRef.current;
 			const section = sectionRef.current;
 			if (!img || !section) return;
-			if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+			if (prefersReducedMotion()) return;
 			gsap.fromTo(
 				img,
 				{ yPercent: 0, scale: 1 },
@@ -98,10 +93,12 @@ export function HeroSlideshow({
 	useGSAP(
 		() => {
 			if (slides.length < 2) return;
-			if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+			if (prefersReducedMotion()) return;
+			// Clamp: a misconfigured `interval` (0 / negative) would busy-loop setInterval.
+			const period = Math.max(1000, interval);
 			const id = setInterval(
 				() => setActive((i) => (i + 1) % slides.length),
-				interval,
+				period,
 			);
 			return () => clearInterval(id);
 		},
@@ -119,7 +116,7 @@ export function HeroSlideshow({
 			const current = lines.map((l) => l.text);
 			prevLines.current = current;
 			if (!root || !prev) return; // first paint → static
-			if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+			if (prefersReducedMotion()) return;
 
 			// Collect every changed glyph ACROSS ALL LINES, in reading order (top line then
 			// bottom), then animate them with ONE continuous stagger — the whole phrase
@@ -159,12 +156,13 @@ export function HeroSlideshow({
 		() => {
 			const root = imageRef.current;
 			if (!root) return;
-			const reduce = window.matchMedia(
-				"(prefers-reduced-motion: reduce)",
-			).matches;
+			const reduce = prefersReducedMotion();
 			const imgs = root.querySelectorAll<HTMLElement>("[data-hero-img]");
-			imgs.forEach((el, i) => {
-				const isActive = i === active;
+			imgs.forEach((el) => {
+				// Match on the slide's own index (not DOM position): image-less slides render
+				// no node, so DOM order ≠ slide order when images are mixed (latent desync).
+				const slideIndex = Number(el.dataset.slideIndex);
+				const isActive = slideIndex === active;
 				if (!imgInit.current || reduce) {
 					gsap.set(el, {
 						autoAlpha: isActive ? 1 : 0,
@@ -212,14 +210,16 @@ export function HeroSlideshow({
 
 			{/* Text column */}
 			<div className="z-10 flex flex-col justify-start px-5 pt-28 pb-8 md:absolute md:inset-0 md:w-[64.2%] md:justify-center md:px-10 md:pt-0 md:pb-0 lg:w-[52%] lg:justify-end lg:px-[7%] lg:pb-[15%]">
-				<h1 className="font-display font-semibold text-[2.5rem] leading-none tracking-[0.05em] md:text-[clamp(2.5rem,7vw,6.25rem)] lg:text-display lg:leading-none">
+				<h1 className="font-display font-semibold text-display-sm leading-none lg:text-display">
 					<BrandText>{label}</BrandText>
 				</h1>
-				{/* Reconstructing rotating title (only changed glyphs re-animate). */}
+				{/* Reconstructing rotating title (only changed glyphs re-animate). No
+				    `aria-live`: the title is decorative rotating brand copy and the constant
+				    `<h1>` label is the stable AT anchor — a live region would re-announce the
+				    whole headline every interval. */}
 				<div
 					ref={titleRef}
-					aria-live="polite"
-					className="mt-3 font-display font-semibold text-[1.75rem] leading-[1.08] tracking-[0.02em] md:mt-5 md:text-[clamp(1.75rem,5.2vw,4.6875rem)] lg:leading-none"
+					className="mt-3 font-display font-semibold text-title-sm leading-[1.1] tracking-normal md:mt-5 lg:text-title lg:leading-none"
 				>
 					{lines.map((line, li) => (
 						<span
@@ -263,6 +263,7 @@ export function HeroSlideshow({
 						<div
 							key={slide.src}
 							data-hero-img
+							data-slide-index={i}
 							aria-hidden={i !== active}
 							className="absolute inset-0 will-change-[clip-path,opacity,transform]"
 							// SSR / no-JS: show the first slide; GSAP takes over on mount.

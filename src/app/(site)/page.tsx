@@ -9,19 +9,20 @@ import {
 import {
 	BrandText,
 	Button,
-	CaseStudyCard,
 	HeroSlideshow,
 	OutlineText,
 	SectorButton,
 	SplitSection,
 } from "@/design-system";
-import { Reveal } from "@/lib/motion/Reveal";
+import { Parallax } from "@/lib/motion/Parallax";
+import { PinnedCaseStudies } from "@/lib/motion/PinnedCaseStudies";
 import { getHomePageProps } from "@/lib/sanity/homePage";
 
 // The home is page-specific content (Principle VIII): this RSC is the connector — it
 // fetches via `getHomePageProps()` (mapping isolated in `@/lib/sanity/homePage.ts`)
 // and composes the design-system components. No global `src/components/` wrapper.
-// Section motion lives in `<Reveal>` (`@/lib/motion`), keeping the DS presentational.
+// Section motion lives in `<Parallax>` (`@/lib/motion`, scroll-driven, nothing on first
+// paint), keeping the DS presentational.
 
 export async function generateMetadata(): Promise<Metadata> {
 	const { seo } = await getHomePageProps();
@@ -52,23 +53,19 @@ export default async function HomePage() {
 			data-nav-links-tone="onLight"
 			data-nav-toggle-tone="onDark"
 		>
-			{/* 1 — Hero / slider */}
-			<Reveal>
-				<HeroSlideshow label={hero.label} slides={hero.slides} />
-			</Reveal>
+			{/* 1 — Hero / slider (no entrance animation — the title reconstructs on slide
+			    change; nothing fires on first paint) */}
+			<HeroSlideshow label={hero.label} slides={hero.slides} />
 
-			{/* 2 — Intro de positionnement */}
-			<Reveal>
+			{/* 2 — Intro de positionnement (depth parallax between the two images) */}
+			<Parallax>
 				<section className="bg-paper">
 					<div className="mx-auto max-w-[1920px] px-5 py-16 md:px-10 lg:px-[7.3%] lg:py-24">
 						<div className="grid gap-10 lg:grid-cols-2 lg:items-stretch lg:gap-x-[3%]">
 							{/* LEFT — title (top); wide image + sector pills grouped at the bottom,
 							    clear of the secondary image at the top of the right panel */}
 							<div className="flex flex-col gap-10">
-								<h2
-									data-reveal
-									className="font-display font-semibold text-[2.5rem] text-ink leading-[1.08] tracking-[0.05em] md:text-[3.25rem] lg:text-title lg:leading-[1.05]"
-								>
+								<h2 className="font-display font-semibold text-[2.5rem] text-ink leading-[1.08] tracking-[0.05em] md:text-[3.25rem] lg:text-title lg:leading-[1.05]">
 									<OutlineText tier="title">{intro.titleOutline}</OutlineText>
 									<span className="block whitespace-pre-line">
 										<BrandText>{intro.titleFill}</BrandText>
@@ -77,7 +74,8 @@ export default async function HomePage() {
 								<div className="flex flex-col gap-10 lg:mt-auto">
 									{intro.imagePrimary && (
 										<div
-											data-image-reveal
+											data-parallax="26"
+											data-parallax-mode="rise"
 											className="relative aspect-[950/500] w-full overflow-hidden"
 										>
 											<Image
@@ -124,10 +122,7 @@ export default async function HomePage() {
 							{/* RIGHT — tall blue panel: secondary image at top, text at bottom */}
 							<div className="relative flex min-h-[480px] flex-col justify-end bg-estuaire p-8 md:p-12 lg:min-h-[1180px] lg:p-0">
 								{intro.imageSecondary && (
-									<div
-										data-image-reveal
-										className="relative mb-8 aspect-[613/450] w-full overflow-hidden lg:absolute lg:top-[5%] lg:-left-[14%] lg:mb-0 lg:w-[78%]"
-									>
+									<div className="relative mb-8 aspect-[613/450] w-full overflow-hidden lg:absolute lg:top-[5%] lg:-left-[14%] lg:mb-0 lg:w-[78%]">
 										<Image
 											src={intro.imageSecondary.src}
 											alt={intro.imageSecondary.alt}
@@ -148,10 +143,10 @@ export default async function HomePage() {
 						</div>
 					</div>
 				</section>
-			</Reveal>
+			</Parallax>
 
 			{/* 3 — Nos expertises */}
-			<Reveal>
+			<Parallax>
 				<SplitSection
 					variant="expertises"
 					image={expertises.image}
@@ -162,18 +157,15 @@ export default async function HomePage() {
 					ctaUmamiEvent="home_cta_click"
 					ctaUmamiData={{ section: "expertises" }}
 				/>
-			</Reveal>
+			</Parallax>
 
 			{/* 4 — Nos univers / Réalisations (cards + sector list are static, FR-005) */}
-			<Reveal>
-				<section className="bg-paper">
+			<Parallax>
+				<section className="relative bg-paper">
 					<div className="mx-auto max-w-[1920px] px-5 pt-16 md:px-10 lg:px-[7.3%] lg:pt-24">
 						{/* Top row: title (left, bottom-aligned) + feature image (right) */}
 						<div className="grid items-end gap-8 lg:grid-cols-[1fr_674px] lg:gap-16">
-							<h2
-								data-reveal
-								className="font-display font-semibold text-[2.5rem] text-ink leading-[1.08] tracking-[0.05em] md:text-[3.25rem] lg:text-title lg:leading-[1.05]"
-							>
+							<h2 className="font-display font-semibold text-[2.5rem] text-ink leading-[1.08] tracking-[0.05em] md:text-[3.25rem] lg:text-title lg:leading-[1.05]">
 								<OutlineText tier="title">
 									{realisations.titleOutline}
 								</OutlineText>
@@ -182,7 +174,7 @@ export default async function HomePage() {
 								</span>
 							</h2>
 							<div
-								data-image-reveal
+								data-parallax="6"
 								className="relative aspect-[674/700] w-full overflow-hidden"
 							>
 								<Image
@@ -198,7 +190,7 @@ export default async function HomePage() {
 						{/* Bottom row: wide image (left) + « par secteur » categories (right) */}
 						<div className="mt-10 grid gap-8 lg:mt-14 lg:grid-cols-[1fr_536px] lg:items-center lg:gap-16">
 							<div
-								data-image-reveal
+								data-parallax="6"
 								className="relative aspect-[1027/625] w-full overflow-hidden"
 							>
 								<Image
@@ -222,39 +214,20 @@ export default async function HomePage() {
 						</div>
 					</div>
 
-					{/* Case-study bands (full-bleed, static) */}
-					<div className="mt-12 flex flex-col lg:mt-20">
-						{homeRealisationCards.map((card, i) => (
-							<span
-								key={card.image}
-								data-umami-event="home_realisation_click"
-								data-umami-event-card={String(i)}
-							>
-								<CaseStudyCard
-									image={card.image}
-									alt={card.title}
-									title={card.title}
-									meta={card.meta}
-									href={REALISATIONS_HREF}
-								/>
-							</span>
-						))}
-					</div>
-
-					<div className="flex justify-center px-5 py-14">
-						<Button
-							href={realisations.cta.href}
-							tone="dark"
-							className="w-full max-w-[536px]"
-						>
-							{realisations.cta.label}
-						</Button>
+					{/* Full-viewport pinned case studies (deviation from the maquette band):
+					    each pins and reveals title → rule → details → CTA on scroll, with the
+					    "voir nos réalisations" link integrated per panel. */}
+					<div className="mt-16 lg:mt-24">
+						<PinnedCaseStudies
+							cards={homeRealisationCards}
+							cta={realisations.cta}
+						/>
 					</div>
 				</section>
-			</Reveal>
+			</Parallax>
 
 			{/* 5 — Notre vision */}
-			<Reveal>
+			<Parallax>
 				<SplitSection
 					variant="vision"
 					image={vision.image}
@@ -265,7 +238,7 @@ export default async function HomePage() {
 					ctaUmamiEvent="home_cta_click"
 					ctaUmamiData={{ section: "vision" }}
 				/>
-			</Reveal>
+			</Parallax>
 		</main>
 	);
 }

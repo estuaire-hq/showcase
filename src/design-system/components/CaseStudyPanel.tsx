@@ -26,10 +26,7 @@ export function CaseStudyPanel({
 	meta,
 	cta,
 	className,
-}: {
-	image: string;
-	title: string;
-	meta: string[];
+}: CaseStudyPanelData & {
 	cta: { label: string; href: string };
 	className?: string;
 }) {
@@ -53,11 +50,14 @@ export function CaseStudyPanel({
 			</div>
 			<div className="absolute inset-0 bg-ink/35" />
 
-			{/* Title + rule + meta, low-left. */}
+			{/* Title + rule + meta, low-left — with the CTA. On mobile/tablet the CTA
+			    flows below the meta (it would otherwise overlap the full-width title +
+			    wrapped meta, both anchored to bottom-[10%]); from lg it breaks out to the
+			    low-right corner of this block (≡ the maquette right-[6.8%] bottom-[10%]). */}
 			<div className="absolute inset-x-5 bottom-[10%] md:inset-x-10 lg:inset-x-[6.8%]">
 				<h3
 					data-cs-title
-					className="max-w-[20ch] font-display font-semibold text-[2.5rem] leading-none tracking-[0.03em] md:text-[3.5rem] lg:text-display"
+					className="max-w-[20ch] font-display font-semibold text-title-sm leading-none lg:text-title"
 				>
 					<BrandText>{title}</BrandText>
 				</h3>
@@ -81,20 +81,20 @@ export function CaseStudyPanel({
 						))}
 					</p>
 				)}
-			</div>
 
-			{/* Subtle CTA, low-right (a worked-up link, not the big pill). */}
-			<Link
-				data-cs-cta
-				href={cta.href}
-				className="group absolute right-5 bottom-[10%] inline-flex items-center gap-3 font-display font-semibold text-body md:right-10 lg:right-[6.8%]"
-			>
-				<span className="relative">
-					{cta.label}
-					<span className="absolute -bottom-1 left-0 h-px w-full origin-right scale-x-0 bg-paper transition-transform duration-300 ease-out group-hover:origin-left group-hover:scale-x-100" />
-				</span>
-				<Arrow className="size-5 transition-transform duration-300 ease-out group-hover:translate-x-1" />
-			</Link>
+				{/* Subtle CTA (a worked-up link, not the big pill). */}
+				<Link
+					data-cs-cta
+					href={cta.href}
+					className="group mt-8 inline-flex items-center gap-3 font-display font-semibold text-body lg:absolute lg:right-0 lg:bottom-0 lg:mt-0"
+				>
+					<span className="relative">
+						{cta.label}
+						<span className="absolute -bottom-1 left-0 h-px w-full origin-right scale-x-0 bg-paper transition-transform duration-300 ease-out group-hover:origin-left group-hover:scale-x-100" />
+					</span>
+					<Arrow className="size-5 transition-transform duration-300 ease-out group-hover:translate-x-1" />
+				</Link>
+			</div>
 		</article>
 	);
 }

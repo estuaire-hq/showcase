@@ -6,6 +6,10 @@ export { BrandLogo } from "./components/BrandLogo";
 export { Button, type ButtonTone, buttonStyles } from "./components/Button";
 export { CarouselArrow } from "./components/CarouselArrow";
 export { CaseStudyCard } from "./components/CaseStudyCard";
+export {
+	CaseStudyPanel,
+	type CaseStudyPanelData,
+} from "./components/CaseStudyPanel";
 export { ContactButton } from "./components/ContactButton";
 export { FeatureBlock } from "./components/FeatureBlock";
 export { FileInput } from "./components/FileInput";

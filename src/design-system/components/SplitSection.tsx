@@ -61,7 +61,6 @@ export function SplitSection({
 
 	const title = (
 		<h2
-			data-reveal
 			className={cn(
 				"font-display font-semibold text-[2rem] leading-[1.1] tracking-[0.05em] md:text-[2.75rem] lg:text-title lg:leading-[1.05]",
 			)}
@@ -113,7 +112,8 @@ export function SplitSection({
 
 	const media: ReactNode = image ? (
 		<div
-			data-image-reveal
+			data-parallax={isVision ? "4" : "16"}
+			data-parallax-mode={isVision ? "drift" : "settle"}
 			className={cn(
 				"relative aspect-[3/4] w-full overflow-hidden md:aspect-auto md:h-full md:min-h-[520px]",
 				isVision ? "bg-estuaire lg:min-h-[940px]" : "lg:min-h-[860px]",

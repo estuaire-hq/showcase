@@ -20,19 +20,26 @@ Modeling realisations in Sanity now would **duplicate** the future model and for
 (Principle IV).
 
 ## Decision
-Keep the realisation cards **static**:
-- **data** in `src/content/homeRealisations.ts` — typed `{ image, sector, title }[]`, `href`
-  **constant** `/realisations` for every card ;
+Keep the realisation content **static**:
+- **data** in `src/content/homeRealisations.ts` — the featured case-study cards typed
+  `{ image, title, meta: string[] }[]` (`meta` = `lieu · année · superficie`), the static
+  **12-item** "par secteur" list, and the section header images; the link `href` is the
+  **constant** `/realisations` for every card and row ;
 - **images** committed under `public/home/realisations/`.
 
-They are mapped to the existing `CaseStudyCard` design-system component (`image`, `alt=title`,
-`title`, `meta=[sector]`, `href`). This is a **conscious, bounded, time-boxed deviation from
-Principle II**, sanctioned by the spec (FR-005) and tracked in the plan's *Complexity Tracking #1*.
+The featured cards are mapped to the `CaseStudyPanel` design-system component, driven by
+`PinnedCaseStudies` (full-viewport pinned panels — a motion deviation from the maquette band,
+documented in the component); the "par secteur" rows render as `SectorButton`s. This is a
+**conscious, bounded, time-boxed deviation from Principle II**, sanctioned by the spec (FR-005)
+and tracked in the plan's *Complexity Tracking #1*.
 
 Unlike navbar chrome ([[decisions/0009-static-navbar-content]]), these card images are genuine
 **editorial content media** — exactly what Principle II ([[decisions/0004-content-images-in-sanity]])
 keeps in Sanity. Hence this deviation is stronger than 0009 and warrants its own ratification here,
 with an explicit lifting condition.
+
+Card `meta` values (`lieu · année · superficie`) are **placeholder** maquette stand-ins for the
+future CMS content (the maquette bands show « Lieu  année  superficie » / « Nom cas study »).
 
 ## Migration path (non-breaking — with the *Réalisations* feature)
 When the realisation content model is designed:
@@ -44,7 +51,7 @@ When the realisation content model is designed:
    `/realisations/[slug]`.
 4. Delete `src/content/homeRealisations.ts` and `public/home/realisations/`.
 
-The `CaseStudyCard` contract (`image`/`alt`/`title`/`meta`/`href`) stays **identical** — only the
+The `CaseStudyPanel` contract (`image`/`title`/`meta`/`cta`) stays **identical** — only the
 **data source** and the **href granularity** change. The deviation is reversible with no change to
 the design system.
 

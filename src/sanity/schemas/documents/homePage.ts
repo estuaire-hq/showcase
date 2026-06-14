@@ -13,7 +13,7 @@ import { defineArrayMember, defineField, defineType } from "sanity";
  * the UPPERCASE→Montserrat / lowercase→Montserrat Alternates casse rule.
  *
  * Out of this model (deliberate, see spec 005 + ADR 0011):
- *  - the realisation case-study cards AND the 13-item "réalisations par secteur"
+ *  - the realisation case-study cards AND the 12-item "réalisations par secteur"
  *    list are STATIC for now (src/content/homeRealisations.ts), all linking to
  *    /realisations — rebound to the CMS with the future "Réalisations" feature;
  *  - the hero slideshow MECHANICS (autoplay, cross-fade) live in the component,
@@ -198,7 +198,7 @@ export const homePage = defineType({
 		}),
 
 		// — Réalisations —
-		// The case-study cards and the 13-item "par secteur" list are STATIC
+		// The case-study cards and the 12-item "par secteur" list are STATIC
 		// (src/content/homeRealisations.ts) — only the section's editorial chrome
 		// (title + CTA) is editable here. See ADR 0011.
 		defineField({

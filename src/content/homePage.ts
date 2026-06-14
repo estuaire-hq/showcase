@@ -50,7 +50,7 @@ export const homePageContent = {
 		{ label: "résidentiel", href: "/univers/residentiel" },
 	],
 
-	// — Nos réalisations par secteur (cards + 13-sector list are STATIC, see
+	// — Nos réalisations par secteur (cards + 12-sector list are STATIC, see
 	//   homeRealisations.ts; only the section chrome is editable) —
 	realisationsTitleOutline: "Nos réalisations",
 	realisationsTitleFill: "par secteur",

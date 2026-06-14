@@ -29,7 +29,7 @@ export const homeRealisationImages = {
 
 /**
  * The "par secteur" sector list of the réalisations section (maquette 51:2221 — the
- * 13-row menu). These are realisation categories, distinct from the 4 univers; all
+ * 12-row menu). These are realisation categories, distinct from the 4 univers; all
  * resolve to the catalogue for now (Pierre's clarification). Rebound with the
  * Réalisations feature.
  */
@@ -53,7 +53,7 @@ export type HomeRealisationCard = {
 	image: string;
 	/** Realisation title (also used as the image `alt`). */
 	title: string;
-	/** Rendered with tick separators by CaseStudyCard (lieu · année · superficie). */
+	/** Rendered with rule separators by CaseStudyPanel (lieu · année · superficie). */
 	meta: string[];
 };
 

@@ -170,7 +170,9 @@ The schema is the single source of truth; types are **generated, never hand-writ
   and excluded from the Docker build context via `.dockerignore`. Never reference `public/` assets
   from a seed: `public/` ships to prod, and `--check` would fail on a fresh CI checkout.
 - **Two Sanity projects**: a local `npm run seed` writes to the *dev* project only; prod is seeded
-  by the CI job (see Environment Variables). `--reset` stays manual / pre-launch — never in CI.
+  by the CI job (see Environment Variables). A push only ever runs `createIfNotExists`; `--reset`
+  on prod is a deliberate, pre-launch action via a manual `workflow_dispatch` (`reset=true`) — the
+  prod write token lives only in CI, so there is no local path to reset prod.
 
 ## Do NOT
 

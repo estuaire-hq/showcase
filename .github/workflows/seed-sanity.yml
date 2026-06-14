@@ -1,12 +1,21 @@
-# Bootstrap Sanity content — createIfNotExists (NEVER --reset here).
+# Bootstrap Sanity content into the PROD project.
 #
 # The seed targets the persistent Sanity *dataset*, not the deploy. So this runs when
 # the content model / seeds / shared content change (the only times new documents need
-# creating), plus on manual dispatch — not on every code push. Existing/edited documents
-# are never touched (createIfNotExists). `--reset` stays a deliberate, local-only action.
+# creating), plus on manual dispatch — not on every code push.
 #
-# The WRITE token lives ONLY here (GitHub secret); the prod runtime (Coolify) keeps a
-# READ token. See ADR 0006 / constitution Principle IX.
+# Write mode:
+#   - push (auto)            → createIfNotExists: existing/edited documents are NEVER
+#                              touched. This is the only mode a code push can ever trigger.
+#   - workflow_dispatch only → opt-in `reset` input → createOrReplace: resets documents to
+#                              the maquette, CLOBBERING any editor edits. This is a deliberate,
+#                              pre-launch action — it can ONLY be reached by a human manually
+#                              dispatching the workflow with reset=true, never by a push.
+#
+# Why reset lives here and not "locally": the two Sanity projects are distinct (dev vs prod),
+# and the prod WRITE token exists ONLY as a GitHub secret (the prod runtime/Coolify keeps a
+# READ token; no .env carries it). A local `npm run seed` writes the *dev* project only — so
+# the prod project can only be reset from this gated, manual CI path. See ADR 0006 / Principle IX.
 name: Seed Sanity (bootstrap)
 
 on:
@@ -16,7 +25,16 @@ on:
       - "src/sanity/schemas/**"
       - "src/sanity/seed/documents/**"
       - "src/content/**"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      reset:
+        description: "Reset to the maquette (createOrReplace) — CLOBBERS editor edits. Pre-launch only."
+        type: boolean
+        default: false
+      only:
+        description: "Restrict to one document type (e.g. homePage). Leave empty to seed all."
+        type: string
+        default: ""
 
 concurrency:
   group: seed-sanity
@@ -34,11 +52,20 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      # run.ts validates first (required fields + asset files exist), then writes via
-      # createIfNotExists. It reads config from the env below — no .env.development in CI.
-      - name: Seed (createIfNotExists)
-        run: npm run seed:ci
+      # run.ts validates first (required fields + asset files exist), then writes. It reads
+      # config from the env below — no .env.development in CI. On a push, RESET/ONLY are empty,
+      # so this is plain createIfNotExists; --reset is reachable only via manual dispatch.
+      # Inputs go through env vars (never inlined into the shell) to avoid script injection.
+      - name: Seed
+        run: |
+          FLAGS=""
+          if [ "$RESET" = "true" ]; then FLAGS="--reset"; fi
+          if [ -n "$ONLY" ]; then FLAGS="$FLAGS $ONLY"; fi
+          echo "Seeding prod${FLAGS:+ with flags:$FLAGS}"
+          npm run seed:ci -- $FLAGS
         env:
           NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ vars.NEXT_PUBLIC_SANITY_PROJECT_ID }}
           NEXT_PUBLIC_SANITY_DATASET: ${{ vars.NEXT_PUBLIC_SANITY_DATASET }}
           SANITY_API_WRITE_TOKEN: ${{ secrets.SANITY_API_WRITE_TOKEN }}
+          RESET: ${{ inputs.reset }}
+          ONLY: ${{ inputs.only }}

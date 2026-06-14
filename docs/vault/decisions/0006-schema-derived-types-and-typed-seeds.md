@@ -41,6 +41,9 @@ The **schema (`defineType`) is the single source of truth**; types are *derived*
 - **Write policy.** `createIfNotExists` by default (never clobbers editor edits); `--reset` →
   `createOrReplace` to reset to the maquette. The runner uploads assets idempotently (Sanity is
   content-addressed; a local manifest skips the round-trip) and injects stable `_key`s.
+  In CI, a code push can only ever trigger the default mode; `--reset` is reachable solely via a
+  human `workflow_dispatch` with the opt-in `reset` input (a deliberate, pre-launch action). The
+  push trigger never resets.
 - **Scaffolder.** `npm run seed:scaffold -- <doc>` emits a typed `*.seed.ts` stub from the schema
   (real field structure, image/file intents, no invented names) to fill with maquette values.
 - **Maquette copy lives once**, in `src/content/<doc>.ts` — a *neutral* location belonging to
@@ -69,8 +72,11 @@ The **schema (`defineType`) is the single source of truth**; types are *derived*
 - **Two separate Sanity projects** (dev vs prod, distinct projectId — see the constitution's
   Variables d'environnement): seeding is *per project*. A local `npm run seed` populates only the
   dev project; the prod project is seeded by the CI job (`.github/workflows/seed-sanity.yml`,
-  `createIfNotExists`) with the prod projectId + a write token held as a GitHub Actions secret —
-  the write token never reaches the prod runtime (which keeps only a read token).
+  `createIfNotExists` on push) with the prod projectId + a write token held as a GitHub Actions
+  secret — the write token never reaches the prod runtime (which keeps only a read token). Because
+  that write token lives only in CI, resetting the prod project to the maquette is *also* a CI
+  action: a manual `workflow_dispatch` with `reset=true` (pre-launch only) — there is no local path
+  to write prod.
 - Intermediate schema files (`schema.json`, `.sanity/`) are gitignored; `src/sanity.types.ts` is
   committed (diffs visible in PRs, no regeneration needed on pull).
 - Codified as **constitution Principle IX** (v1.6.0) and in CLAUDE.md (Adding a New Sanity Content

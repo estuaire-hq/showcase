@@ -24,23 +24,24 @@ type AsLink = BaseProps &
 	Omit<ComponentProps<typeof Link>, "className"> & { href: string };
 
 export function SectorButton(props: AsButton | AsLink) {
-	const { label, className, ...rest } = props;
-	const cls = sectorButton({ class: className });
-	const content = <BrandText>{label}</BrandText>;
-
-	if (rest.href != null) {
+	// Discriminate on `props` (not a destructured `rest`) so TS narrows the union to a
+	// single arm — Link vs button props are then exact, no cast needed.
+	if (props.href != null) {
+		const { label, className, ...rest } = props;
 		return (
-			<Link className={cls} {...(rest as ComponentProps<typeof Link>)}>
-				{content}
+			<Link className={sectorButton({ class: className })} {...rest}>
+				<BrandText>{label}</BrandText>
 			</Link>
 		);
 	}
-	const { href: _omit, ...buttonRest } = rest as ComponentProps<"button"> & {
-		href?: undefined;
-	};
+	const { label, className, href: _href, ...rest } = props;
 	return (
-		<button type="button" className={cls} {...buttonRest}>
-			{content}
+		<button
+			type="button"
+			className={sectorButton({ class: className })}
+			{...rest}
+		>
+			<BrandText>{label}</BrandText>
 		</button>
 	);
 }

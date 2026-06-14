@@ -13,6 +13,7 @@ import {
 } from "@/design-system";
 import { useFocusTrap } from "@/lib/a11y/useFocusTrap";
 import { useScrollLock } from "@/lib/a11y/useScrollLock";
+import { useNavOverlay } from "@/lib/motion/navOverlay";
 import { usePrefersReducedMotion } from "@/lib/motion/usePrefersReducedMotion";
 import { useStickyNav } from "@/lib/motion/useStickyNav";
 import { trackEvent } from "@/lib/utils";
@@ -67,6 +68,8 @@ export function Navbar() {
 	const activeHref = resolveActiveHref(pathname);
 	const reducedMotion = usePrefersReducedMotion();
 	const state = useStickyNav(reducedMotion);
+	// Full-bleed dark sections (pinned case studies) ask the bar to go transparent/onDark.
+	const overlay = useNavOverlay();
 
 	const [isOpen, setIsOpen] = useState(false);
 	const [mounted, setMounted] = useState(false);
@@ -123,6 +126,7 @@ export function Navbar() {
 				brandHref={navigation.brandHref}
 				activeHref={activeHref}
 				state={state}
+				overlay={overlay}
 				logoTone={tones.logo}
 				linksTone={tones.links}
 				toggleToneMobile={tones.toggleMobile}

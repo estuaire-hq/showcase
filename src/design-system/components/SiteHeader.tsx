@@ -51,6 +51,11 @@ const STATE_CLASS: Record<NavState, string> = {
  * `pinned`/`hidden` the bar is opaque and content is forced `onLight` (ink) with the
  * CTA `noir` (the CTA colour DOES change with state — Figma nodes 51:2221 vs 51:2585,
  * which the original contract under-specified).
+ *
+ * `overlay`: the bar is floating over a full-bleed dark section (the pinned case
+ * studies). It then stays transparent (no solid background, no shadow) even while
+ * `pinned`, and content is forced `onDark` (white) with the CTA `bleu`, so the whole
+ * dark photo shows through the bar instead of a white band.
  */
 export function SiteHeader({
 	items,
@@ -58,6 +63,7 @@ export function SiteHeader({
 	brandHref,
 	logo,
 	state,
+	overlay = false,
 	logoTone = "onLight",
 	linksTone = "onLight",
 	toggleToneMobile,
@@ -73,6 +79,8 @@ export function SiteHeader({
 	brandHref: string;
 	logo?: React.ReactNode;
 	state: NavState;
+	/** Float transparently over a full-bleed dark section (forces `onDark`, drops the background). */
+	overlay?: boolean;
 	logoTone?: NavTone;
 	linksTone?: NavTone;
 	/** At-rest toggle tone below `md` (mobile) when it differs from `linksTone`. Defaults to `linksTone`. */
@@ -86,13 +94,25 @@ export function SiteHeader({
 	className?: string;
 }) {
 	const atTop = state === "top";
-	const resolvedLogoTone: NavTone = atTop ? logoTone : "onLight";
-	const resolvedLinksTone: NavTone = atTop ? linksTone : "onLight";
-	const ctaTone = atTop ? "bleu" : "noir";
+	// Over dark imagery (overlay) the bar is transparent with white content, regardless
+	// of the pinned/hidden state; otherwise the hero tones apply at `top`, ink elsewhere.
+	const resolvedLogoTone: NavTone = overlay
+		? "onDark"
+		: atTop
+			? logoTone
+			: "onLight";
+	const resolvedLinksTone: NavTone = overlay
+		? "onDark"
+		: atTop
+			? linksTone
+			: "onLight";
+	const ctaTone = overlay || atTop ? "bleu" : "noir";
 
-	const toggleClass = atTop
-		? TOGGLE_TOP_CLASS[`${toggleToneMobile ?? linksTone}-${linksTone}`]
-		: "text-ink";
+	const toggleClass = overlay
+		? "text-paper"
+		: atTop
+			? TOGGLE_TOP_CLASS[`${toggleToneMobile ?? linksTone}-${linksTone}`]
+			: "text-ink";
 
 	const headerRef = useRef<HTMLElement>(null);
 
@@ -131,7 +151,9 @@ export function SiteHeader({
 				"fixed inset-x-0 top-0 z-50 flex h-20 items-center justify-between px-5 md:px-10 lg:h-28 lg:px-[140px]",
 				!reducedMotion &&
 					"transition-[background-color,box-shadow] duration-500 ease-out",
-				STATE_CLASS[state],
+				// `overlay` wins over the at-rest state: stay transparent (no shadow) over the
+				// dark full-bleed section so the bar never paints a band over the photo.
+				overlay ? "bg-transparent" : STATE_CLASS[state],
 				className,
 			)}
 		>

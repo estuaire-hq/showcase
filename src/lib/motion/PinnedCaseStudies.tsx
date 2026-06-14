@@ -3,6 +3,8 @@
 import { useRef } from "react";
 import { CaseStudyPanel, type CaseStudyPanelData } from "@/design-system";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/motion/gsap";
+import { setNavOverlay } from "@/lib/motion/navOverlay";
+import { prefersReducedMotion } from "./usePrefersReducedMotion";
 
 // Per-panel choreography, in timeline units (mapped to scroll by scrub). Each panel:
 // reveals its content, HOLDS fully on screen (you see only it), then hands off — the
@@ -39,7 +41,7 @@ export function PinnedCaseStudies({
 		() => {
 			const root = ref.current;
 			if (!root) return;
-			if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+			if (prefersReducedMotion()) return;
 
 			const panels = gsap.utils.toArray<HTMLElement>("[data-cs-layer]", root);
 			if (!panels.length) return;
@@ -64,8 +66,14 @@ export function PinnedCaseStudies({
 					start: "top top",
 					end: () => `+=${Math.round(window.innerHeight * total * UNIT_VH)}`,
 					pin: true,
+					// Lagged scrub (0.7s catch-up) instead of a hard 1:1 — smooths the pinned
+					// hand-off so fast wheel/trackpad flicks don't snap between panels.
 					scrub: 0.7,
 					invalidateOnRefresh: true,
+					// While a case-study panel fills the viewport, ask the navbar to drop its
+					// solid background (onDark, transparent) so the whole dark photo shows
+					// through when the bar reappears on scroll-up — instead of a white band.
+					onToggle: (self) => setNavOverlay(self.isActive),
 				},
 			});
 
@@ -117,6 +125,10 @@ export function PinnedCaseStudies({
 			});
 
 			ScrollTrigger.refresh();
+
+			// Release the navbar overlay if we unmount mid-section (e.g. client-side nav
+			// away while pinned) — ScrollTrigger.kill() does not fire onToggle(false).
+			return () => setNavOverlay(false);
 		},
 		{ scope: ref },
 	);

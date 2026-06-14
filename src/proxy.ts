@@ -83,8 +83,13 @@ export const config = {
 		 * - studio         embedded Sanity Studio (has its own auth)
 		 * - coming-soon    the placeholder page itself
 		 * - _next/static, _next/image   build assets
-		 * - common metadata files
+		 * - `.*\.`         any path with a file extension → static assets in public/.
+		 *                  CRITICAL: the Next image optimizer fetches a local image via an
+		 *                  internal, cookie-less HTTP request; without this exemption the gate
+		 *                  rewrites that fetch to /coming-soon (HTML) and every optimized
+		 *                  public image 400s. Also covers favicon.ico / robots.txt / sitemap.xml.
+		 *                  Page routes have no extension, so they stay gated.
 		 */
-		"/((?!api|studio|coming-soon|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)",
+		"/((?!api|studio|coming-soon|_next/static|_next/image|.*\\.).*)",
 	],
 };

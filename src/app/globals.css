@@ -37,6 +37,22 @@
 	--text-title--line-height: 6.25rem; /* 100px */
 	--text-title--letter-spacing: 0.05em;
 
+	/*
+	 * Small-screen tiers of the two display titles. The home frames (51:2221 desktop /
+	 * 77:3149 tablet / 77:3150 mobile) are STEP-responsive, not fluid: section titles are
+	 * 40px on BOTH mobile and tablet then jump to `title` (75px) at desktop; the hero brand
+	 * label is 55px on mobile+tablet then `display` (100px) at desktop. The kit type scale
+	 * skips the 40px/55px steps, so these tokens fill the gap — paired with their full-size
+	 * sibling via `lg:` (e.g. `text-title-sm lg:text-title`). Same 5% tracking as the tiers.
+	 */
+	--text-title-sm: 2.5rem; /* 40px — section titles, mobile + tablet */
+	--text-title-sm--line-height: 1.1;
+	--text-title-sm--letter-spacing: 0.05em;
+
+	--text-display-sm: 3.4375rem; /* 55px — hero brand label, mobile + tablet */
+	--text-display-sm--line-height: 1;
+	--text-display-sm--letter-spacing: 0.05em;
+
 	--text-subtitle: 3.125rem; /* 50px */
 	--text-subtitle--line-height: 4.0625rem; /* 65px */
 	--text-subtitle--letter-spacing: 0.05em;

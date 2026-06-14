@@ -1,9 +1,8 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { BrandText } from "../typography/BrandText";
-import { OutlineText } from "../typography/OutlineText";
 import { Button } from "./Button";
+import { SectionTitle } from "./SectionTitle";
 
 export type SplitSectionImage = {
 	src: string;
@@ -59,20 +58,7 @@ export function SplitSection({
 		}
 	}
 
-	const title = (
-		<h2
-			className={cn(
-				"font-display font-semibold text-[2rem] leading-[1.1] tracking-[0.05em] md:text-[2.75rem] lg:text-title lg:leading-[1.05]",
-			)}
-		>
-			<OutlineText tier="title" className="block whitespace-pre-line">
-				{titleOutline}
-			</OutlineText>
-			<span className="block whitespace-pre-line">
-				<BrandText>{titleFill}</BrandText>
-			</span>
-		</h2>
-	);
+	const title = <SectionTitle outline={titleOutline} fill={titleFill} />;
 
 	const body = (
 		<div
@@ -90,10 +76,10 @@ export function SplitSection({
 			/>
 			<p
 				className={cn(
-					"max-w-[40ch] whitespace-pre-line font-display font-semibold",
+					"max-w-[40ch] whitespace-pre-line",
 					isVision
 						? "font-sans font-normal text-body leading-relaxed"
-						: "text-[1.125rem] leading-snug md:text-[1.25rem] lg:text-lead",
+						: "font-display font-semibold text-body leading-snug lg:text-lead",
 				)}
 			>
 				{text}

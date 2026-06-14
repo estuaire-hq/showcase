@@ -7,10 +7,9 @@ import {
 	REALISATIONS_HREF,
 } from "@/content/homeRealisations";
 import {
-	BrandText,
 	Button,
 	HeroSlideshow,
-	OutlineText,
+	SectionTitle,
 	SectorButton,
 	SplitSection,
 } from "@/design-system";
@@ -65,12 +64,11 @@ export default async function HomePage() {
 							{/* LEFT — title (top); wide image + sector pills grouped at the bottom,
 							    clear of the secondary image at the top of the right panel */}
 							<div className="flex flex-col gap-10">
-								<h2 className="font-display font-semibold text-[2.5rem] text-ink leading-[1.08] tracking-[0.05em] md:text-[3.25rem] lg:text-title lg:leading-[1.05]">
-									<OutlineText tier="title">{intro.titleOutline}</OutlineText>
-									<span className="block whitespace-pre-line">
-										<BrandText>{intro.titleFill}</BrandText>
-									</span>
-								</h2>
+								<SectionTitle
+									outline={intro.titleOutline}
+									fill={intro.titleFill}
+									className="text-ink"
+								/>
 								<div className="flex flex-col gap-10 lg:mt-auto">
 									{intro.imagePrimary && (
 										<div
@@ -165,14 +163,11 @@ export default async function HomePage() {
 					<div className="mx-auto max-w-[1920px] px-5 pt-16 md:px-10 lg:px-[7.3%] lg:pt-24">
 						{/* Top row: title (left, bottom-aligned) + feature image (right) */}
 						<div className="grid items-end gap-8 lg:grid-cols-[1fr_674px] lg:gap-16">
-							<h2 className="font-display font-semibold text-[2.5rem] text-ink leading-[1.08] tracking-[0.05em] md:text-[3.25rem] lg:text-title lg:leading-[1.05]">
-								<OutlineText tier="title">
-									{realisations.titleOutline}
-								</OutlineText>
-								<span className="block">
-									<BrandText>{realisations.titleFill}</BrandText>
-								</span>
-							</h2>
+							<SectionTitle
+								outline={realisations.titleOutline}
+								fill={realisations.titleFill}
+								className="text-ink"
+							/>
 							<div
 								data-parallax="6"
 								className="relative aspect-[674/700] w-full overflow-hidden"

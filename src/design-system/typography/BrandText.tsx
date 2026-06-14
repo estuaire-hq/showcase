@@ -2,7 +2,15 @@
 // everything else (lowercase, digits, punctuation, spaces) in Montserrat
 // Alternates. Applied per character so it works for any content, including text
 // coming from Sanity. Server-component safe (no client hooks).
-const UPPER = /\p{Lu}/u;
+export const UPPER = /\p{Lu}/u;
+
+/** Brand casse rule for a single glyph → its font-family CSS value. Use this anywhere a
+ *  per-character font is needed (e.g. the hero's per-glyph title reconstruction) so the
+ *  rule has ONE definition. `BrandText` itself coalesces runs rather than calling it. */
+export const charFont = (ch: string) =>
+	UPPER.test(ch)
+		? "var(--font-montserrat)"
+		: "var(--font-montserrat-alternates)";
 
 export function BrandText({ children }: { children: string }) {
 	const runs: { upper: boolean; text: string }[] = [];

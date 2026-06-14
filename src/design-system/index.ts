@@ -21,6 +21,7 @@ export { MenuToggle } from "./components/MenuToggle";
 export { NavButton } from "./components/NavButton";
 export { NavPanel } from "./components/NavPanel";
 export { ScrollTopButton } from "./components/ScrollTopButton";
+export { SectionTitle } from "./components/SectionTitle";
 export { SectorButton } from "./components/SectorButton";
 export { Select } from "./components/Select";
 export { SiteFooter } from "./components/SiteFooter";

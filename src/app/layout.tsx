@@ -46,9 +46,11 @@ export default async function RootLayout({
 	return (
 		<html
 			lang="fr"
-			className={`${montserrat.variable} ${montserratAlternates.variable}`}
+			className={`overflow-x-clip ${montserrat.variable} ${montserratAlternates.variable}`}
 		>
-			<body className="font-sans antialiased">
+			{/* overflow-x-clip (not hidden) prevents horizontal scroll without creating a
+			    scroll container — safe with Lenis + ScrollTrigger pins (position: fixed). */}
+			<body className="overflow-x-clip font-sans antialiased">
 				{children}
 				{umamiScriptUrl && umamiWebsiteId && (
 					<Script

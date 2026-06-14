@@ -2,8 +2,37 @@ import { defineQuery } from "next-sanity";
 
 export const HOME_PAGE_QUERY = defineQuery(/* groq */ `
   *[_id == "homePage"][0]{
-    title,
-    tagline
+    heroLabel,
+    heroSlides[]{
+      titleOutline,
+      titleFill,
+      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }
+    },
+    introTitleOutline,
+    introTitleFill,
+    introText,
+    introImagePrimary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    introImageSecondary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    expertisesTitleOutline,
+    expertisesTitleFill,
+    expertisesText,
+    expertisesImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    expertisesCtaLabel,
+    expertisesCtaHref,
+    universSectors[]{ label, href },
+    realisationsTitleOutline,
+    realisationsTitleFill,
+    realisationsCtaLabel,
+    realisationsCtaHref,
+    visionTitleOutline,
+    visionTitleFill,
+    visionText,
+    visionImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    visionCtaLabel,
+    visionCtaHref,
+    seoMetaTitle,
+    seoMetaDescription,
+    seoOgImage{ asset, alt }
   }
 `);
 

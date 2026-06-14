@@ -94,8 +94,86 @@ export type HomePage = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  title?: string;
-  tagline?: string;
+  heroLabel?: string;
+  heroSlides?: Array<{
+    image?: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: "image";
+    };
+    titleOutline?: string;
+    titleFill?: string;
+    _type: "heroSlide";
+    _key: string;
+  }>;
+  introTitleOutline?: string;
+  introTitleFill?: string;
+  introText?: string;
+  introImagePrimary?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  introImageSecondary?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  expertisesTitleOutline?: string;
+  expertisesTitleFill?: string;
+  expertisesText?: string;
+  expertisesImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  expertisesCtaLabel?: string;
+  expertisesCtaHref?: string;
+  universSectors?: Array<{
+    label?: string;
+    href?: string;
+    _type: "sector";
+    _key: string;
+  }>;
+  realisationsTitleOutline?: string;
+  realisationsTitleFill?: string;
+  realisationsCtaLabel?: string;
+  realisationsCtaHref?: string;
+  visionTitleOutline?: string;
+  visionTitleFill?: string;
+  visionText?: string;
+  visionImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  visionCtaLabel?: string;
+  visionCtaHref?: string;
+  seoMetaTitle?: string;
+  seoMetaDescription?: string;
+  seoOgImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
 };
 
 export type SanityImagePaletteSwatch = {
@@ -220,19 +298,105 @@ export type AllSanitySchemaTypes =
 
 // Source: src/lib/sanity/queries.ts
 // Variable: HOME_PAGE_QUERY
-// Query: *[_id == "homePage"][0]{    title,    tagline  }
+// Query: *[_id == "homePage"][0]{    heroLabel,    heroSlides[]{      titleOutline,      titleFill,      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }    },    introTitleOutline,    introTitleFill,    introText,    introImagePrimary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    introImageSecondary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    expertisesTitleOutline,    expertisesTitleFill,    expertisesText,    expertisesImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    expertisesCtaLabel,    expertisesCtaHref,    universSectors[]{ label, href },    realisationsTitleOutline,    realisationsTitleFill,    realisationsCtaLabel,    realisationsCtaHref,    visionTitleOutline,    visionTitleFill,    visionText,    visionImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    visionCtaLabel,    visionCtaHref,    seoMetaTitle,    seoMetaDescription,    seoOgImage{ asset, alt }  }
 export type HOME_PAGE_QUERY_RESULT =
   | {
-      title: string | null;
-      tagline: null;
+      heroLabel: null;
+      heroSlides: null;
+      introTitleOutline: null;
+      introTitleFill: null;
+      introText: null;
+      introImagePrimary: null;
+      introImageSecondary: null;
+      expertisesTitleOutline: null;
+      expertisesTitleFill: null;
+      expertisesText: null;
+      expertisesImage: null;
+      expertisesCtaLabel: null;
+      expertisesCtaHref: null;
+      universSectors: null;
+      realisationsTitleOutline: null;
+      realisationsTitleFill: null;
+      realisationsCtaLabel: null;
+      realisationsCtaHref: null;
+      visionTitleOutline: null;
+      visionTitleFill: null;
+      visionText: null;
+      visionImage: null;
+      visionCtaLabel: null;
+      visionCtaHref: null;
+      seoMetaTitle: null;
+      seoMetaDescription: null;
+      seoOgImage: null;
     }
   | {
-      title: null;
-      tagline: string | null;
-    }
-  | {
-      title: string | null;
-      tagline: string | null;
+      heroLabel: string | null;
+      heroSlides: Array<{
+        titleOutline: string | null;
+        titleFill: string | null;
+        image: {
+          asset: SanityImageAssetReference | null;
+          hotspot: SanityImageHotspot | null;
+          crop: SanityImageCrop | null;
+          alt: string | null;
+          lqip: string | null;
+        } | null;
+      }> | null;
+      introTitleOutline: string | null;
+      introTitleFill: string | null;
+      introText: string | null;
+      introImagePrimary: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      introImageSecondary: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      expertisesTitleOutline: string | null;
+      expertisesTitleFill: string | null;
+      expertisesText: string | null;
+      expertisesImage: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      expertisesCtaLabel: string | null;
+      expertisesCtaHref: string | null;
+      universSectors: Array<{
+        label: string | null;
+        href: string | null;
+      }> | null;
+      realisationsTitleOutline: string | null;
+      realisationsTitleFill: string | null;
+      realisationsCtaLabel: string | null;
+      realisationsCtaHref: string | null;
+      visionTitleOutline: string | null;
+      visionTitleFill: string | null;
+      visionText: string | null;
+      visionImage: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      visionCtaLabel: string | null;
+      visionCtaHref: string | null;
+      seoMetaTitle: string | null;
+      seoMetaDescription: string | null;
+      seoOgImage: {
+        asset: SanityImageAssetReference | null;
+        alt: string | null;
+      } | null;
     }
   | null;
 
@@ -247,21 +411,6 @@ export type FOOTER_QUERY_RESULT =
       ctaButtonHref: null;
       ctaImages: null;
       tagline: null;
-      address: null;
-      contactHref: null;
-      linkedInUrl: null;
-      plaquetteLabel: null;
-      plaquetteUrl: null;
-      navLinks: null;
-      legalLinks: null;
-    }
-  | {
-      ctaTitleOutline: null;
-      ctaTitleFill: null;
-      ctaButtonLabel: null;
-      ctaButtonHref: null;
-      ctaImages: null;
-      tagline: string | null;
       address: null;
       contactHref: null;
       linkedInUrl: null;
@@ -303,7 +452,7 @@ export type FOOTER_QUERY_RESULT =
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    '\n  *[_id == "homePage"][0]{\n    title,\n    tagline\n  }\n': HOME_PAGE_QUERY_RESULT;
+    '\n  *[_id == "homePage"][0]{\n    heroLabel,\n    heroSlides[]{\n      titleOutline,\n      titleFill,\n      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n    },\n    introTitleOutline,\n    introTitleFill,\n    introText,\n    introImagePrimary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introImageSecondary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    expertisesTitleOutline,\n    expertisesTitleFill,\n    expertisesText,\n    expertisesImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    expertisesCtaLabel,\n    expertisesCtaHref,\n    universSectors[]{ label, href },\n    realisationsTitleOutline,\n    realisationsTitleFill,\n    realisationsCtaLabel,\n    realisationsCtaHref,\n    visionTitleOutline,\n    visionTitleFill,\n    visionText,\n    visionImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    visionCtaLabel,\n    visionCtaHref,\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': HOME_PAGE_QUERY_RESULT;
     '\n  *[_id == "footer"][0]{\n    ctaTitleOutline,\n    ctaTitleFill,\n    ctaButtonLabel,\n    ctaButtonHref,\n    ctaImages[]{\n      asset,\n      hotspot,\n      crop,\n      alt,\n      "lqip": asset->metadata.lqip\n    },\n    tagline,\n    address,\n    contactHref,\n    linkedInUrl,\n    plaquetteLabel,\n    "plaquetteUrl": plaquetteFile.asset->url,\n    navLinks[]{ label, href },\n    legalLinks[]{ label, href }\n  }\n': FOOTER_QUERY_RESULT;
   }
 }

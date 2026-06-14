@@ -213,6 +213,12 @@ fonts, radii, or re-implement a button / pill / card. Importing = consuming; edi
   responsive per breakpoint, content images → Sanity, verify against the cached Figma render.
 - Before animating: load the **`estuaire-motion`** skill — text static; visuals + section
   transitions carry the motion; line-mask title reveals; honor `prefers-reduced-motion`.
+- **At the END of every maquette-based feature, before any pixel-perfect sign-off: load the
+  **`estuaire-pixel-review`** skill** (MANDATORY). It is the verify counterpart of the build
+  skill: capture the dev page per breakpoint, then **align the two images section by section**
+  (cached Figma render ↔ dev screenshot, same width) with the Pillow helper (side-by-side +
+  overlay + diff) and a per-section checklist — **never sign off from a whole-page thumbnail**.
+  Loop fix→recapture→re-diff until zero gap; name any remaining gap as UNVERIFIED.
 - Pixel-perfect = exact **intrinsic** dims; **dynamic** dims (full-height hero) may deviate;
   responsive **per breakpoint** (Figma frames).
 

@@ -3,9 +3,9 @@ import { defineQuery } from "next-sanity";
 export const HOME_PAGE_QUERY = defineQuery(/* groq */ `
   *[_id == "homePage"][0]{
     heroLabel,
+    heroTrunk,
     heroSlides[]{
-      titleOutline,
-      titleFill,
+      keyword,
       image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }
     },
     introTitleOutline,

@@ -95,6 +95,7 @@ export type HomePage = {
   _updatedAt: string;
   _rev: string;
   heroLabel?: string;
+  heroTrunk?: string;
   heroSlides?: Array<{
     image?: {
       asset?: SanityImageAssetReference;
@@ -104,8 +105,7 @@ export type HomePage = {
       alt?: string;
       _type: "image";
     };
-    titleOutline?: string;
-    titleFill?: string;
+    keyword?: string;
     _type: "heroSlide";
     _key: string;
   }>;
@@ -298,10 +298,11 @@ export type AllSanitySchemaTypes =
 
 // Source: src/lib/sanity/queries.ts
 // Variable: HOME_PAGE_QUERY
-// Query: *[_id == "homePage"][0]{    heroLabel,    heroSlides[]{      titleOutline,      titleFill,      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }    },    introTitleOutline,    introTitleFill,    introText,    introImagePrimary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    introImageSecondary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    expertisesTitleOutline,    expertisesTitleFill,    expertisesText,    expertisesImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    expertisesCtaLabel,    expertisesCtaHref,    universSectors[]{ label, href },    realisationsTitleOutline,    realisationsTitleFill,    realisationsCtaLabel,    realisationsCtaHref,    visionTitleOutline,    visionTitleFill,    visionText,    visionImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    visionCtaLabel,    visionCtaHref,    seoMetaTitle,    seoMetaDescription,    seoOgImage{ asset, alt }  }
+// Query: *[_id == "homePage"][0]{    heroLabel,    heroTrunk,    heroSlides[]{      keyword,      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }    },    introTitleOutline,    introTitleFill,    introText,    introImagePrimary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    introImageSecondary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    expertisesTitleOutline,    expertisesTitleFill,    expertisesText,    expertisesImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    expertisesCtaLabel,    expertisesCtaHref,    universSectors[]{ label, href },    realisationsTitleOutline,    realisationsTitleFill,    realisationsCtaLabel,    realisationsCtaHref,    visionTitleOutline,    visionTitleFill,    visionText,    visionImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    visionCtaLabel,    visionCtaHref,    seoMetaTitle,    seoMetaDescription,    seoOgImage{ asset, alt }  }
 export type HOME_PAGE_QUERY_RESULT =
   | {
       heroLabel: null;
+      heroTrunk: null;
       heroSlides: null;
       introTitleOutline: null;
       introTitleFill: null;
@@ -331,9 +332,9 @@ export type HOME_PAGE_QUERY_RESULT =
     }
   | {
       heroLabel: string | null;
+      heroTrunk: string | null;
       heroSlides: Array<{
-        titleOutline: string | null;
-        titleFill: string | null;
+        keyword: string | null;
         image: {
           asset: SanityImageAssetReference | null;
           hotspot: SanityImageHotspot | null;
@@ -452,7 +453,7 @@ export type FOOTER_QUERY_RESULT =
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    '\n  *[_id == "homePage"][0]{\n    heroLabel,\n    heroSlides[]{\n      titleOutline,\n      titleFill,\n      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n    },\n    introTitleOutline,\n    introTitleFill,\n    introText,\n    introImagePrimary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introImageSecondary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    expertisesTitleOutline,\n    expertisesTitleFill,\n    expertisesText,\n    expertisesImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    expertisesCtaLabel,\n    expertisesCtaHref,\n    universSectors[]{ label, href },\n    realisationsTitleOutline,\n    realisationsTitleFill,\n    realisationsCtaLabel,\n    realisationsCtaHref,\n    visionTitleOutline,\n    visionTitleFill,\n    visionText,\n    visionImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    visionCtaLabel,\n    visionCtaHref,\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': HOME_PAGE_QUERY_RESULT;
+    '\n  *[_id == "homePage"][0]{\n    heroLabel,\n    heroTrunk,\n    heroSlides[]{\n      keyword,\n      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n    },\n    introTitleOutline,\n    introTitleFill,\n    introText,\n    introImagePrimary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introImageSecondary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    expertisesTitleOutline,\n    expertisesTitleFill,\n    expertisesText,\n    expertisesImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    expertisesCtaLabel,\n    expertisesCtaHref,\n    universSectors[]{ label, href },\n    realisationsTitleOutline,\n    realisationsTitleFill,\n    realisationsCtaLabel,\n    realisationsCtaHref,\n    visionTitleOutline,\n    visionTitleFill,\n    visionText,\n    visionImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    visionCtaLabel,\n    visionCtaHref,\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': HOME_PAGE_QUERY_RESULT;
     '\n  *[_id == "footer"][0]{\n    ctaTitleOutline,\n    ctaTitleFill,\n    ctaButtonLabel,\n    ctaButtonHref,\n    ctaImages[]{\n      asset,\n      hotspot,\n      crop,\n      alt,\n      "lqip": asset->metadata.lqip\n    },\n    tagline,\n    address,\n    contactHref,\n    linkedInUrl,\n    plaquetteLabel,\n    "plaquetteUrl": plaquetteFile.asset->url,\n    navLinks[]{ label, href },\n    legalLinks[]{ label, href }\n  }\n': FOOTER_QUERY_RESULT;
   }
 }

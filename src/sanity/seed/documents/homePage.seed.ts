@@ -35,11 +35,11 @@ export default defineSeed<HomePage>({
 
 	// — Hero —
 	heroLabel: c.heroLabel,
+	heroTrunk: c.heroTrunk,
 	heroSlides: c.heroSlides.map((s, i) => ({
 		_type: "heroSlide" as const,
 		image: heroImages[i],
-		titleOutline: s.titleOutline,
-		titleFill: s.titleFill,
+		keyword: s.keyword,
 	})),
 
 	// — Intro —

@@ -57,29 +57,31 @@ export async function getHomePageProps() {
 	const { data: h } = await sanityFetch({ query: HOME_PAGE_QUERY });
 
 	const label = h?.heroLabel ?? DEFAULTS.heroLabel;
+	const trunk = h?.heroTrunk ?? DEFAULTS.heroTrunk;
 
-	// Hero slides: Sanity slides (with images) when present, else the maquette text
+	// The slide alt doubles as the spoken title — `${label} ${trunk} ${keyword}` reads
+	// as the full headline (e.g. "Estuaire, là où les idées prennent forme"), good a11y.
+	const slideAlt = (keyword: string) => `${label} ${trunk} ${keyword}`.trim();
+
+	// Hero slides: Sanity slides (with images) when present, else the maquette keyword
 	// slides as a fallback (image-less — the hero degrades to its dark panel + title;
 	// images arrive once the singleton is seeded). At least one slide always (FR-002).
 	const sanitySlides = (h?.heroSlides ?? []).map((s, i) => {
-		const fill = s.titleFill ?? DEFAULTS.heroSlides[i]?.titleFill ?? "";
-		const image = mapImage(s.image, 1600, `${label} — ${fill}`);
+		const keyword = s.keyword ?? DEFAULTS.heroSlides[i]?.keyword ?? "";
+		const image = mapImage(s.image, 1600, slideAlt(keyword));
 		return {
-			titleOutline:
-				s.titleOutline ?? DEFAULTS.heroSlides[i]?.titleOutline ?? "",
-			titleFill: fill,
+			keyword,
 			src: image?.src,
-			alt: image?.alt ?? `${label} — ${fill}`,
+			alt: image?.alt ?? slideAlt(keyword),
 			blurDataURL: image?.blurDataURL,
 		};
 	});
 	const slides = sanitySlides.length
 		? sanitySlides
 		: DEFAULTS.heroSlides.map((s) => ({
-				titleOutline: s.titleOutline,
-				titleFill: s.titleFill,
+				keyword: s.keyword,
 				src: undefined,
-				alt: `${label} — ${s.titleFill}`,
+				alt: slideAlt(s.keyword),
 				blurDataURL: undefined,
 			}));
 
@@ -90,7 +92,7 @@ export async function getHomePageProps() {
 	);
 
 	return {
-		hero: { label, slides },
+		hero: { label, trunk, slides },
 		intro: {
 			titleOutline: h?.introTitleOutline ?? DEFAULTS.introTitleOutline,
 			titleFill: h?.introTitleFill ?? DEFAULTS.introTitleFill,

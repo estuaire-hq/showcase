@@ -5,60 +5,58 @@ import { useRef, useState } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/motion/gsap";
 import { prefersReducedMotion } from "@/lib/motion/usePrefersReducedMotion";
 import { cn } from "@/lib/utils";
-import { BrandText, charFont } from "../typography/BrandText";
+import { HeroTitle } from "./HeroTitle";
 
 export type HeroSlide = {
-	/** Resolved image URL (page builds it from Sanity via urlFor). Optional: the
-	 *  hero degrades to its dark panel + title when no image is configured yet. */
+	/** Resolved image URL (page builds it from Sanity via urlFor). Optional: the hero
+	 *  degrades to its dark panel + title when no image is configured yet. */
 	src?: string;
 	alt: string;
-	/** Contour lines (may contain \n). Rendered stroked. */
-	titleOutline: string;
-	/** Solid last line. */
-	titleFill: string;
+	/** Keyword completing « <label> <trunk> … » — one per slide, changes in sync. */
+	keyword: string;
 	blurDataURL?: string;
 };
 
-/** Split a slide into render lines: the outline lines (stroked) + the fill line. */
-function slideLines(slide: HeroSlide) {
-	const outline = slide.titleOutline ? slide.titleOutline.split("\n") : [];
-	return [
-		...outline.map((text) => ({ text, outline: true })),
-		{ text: slide.titleFill ?? "", outline: false },
-	];
-}
-
 /**
  * Hero slideshow (maquette « 02/SLIDER v1 », nodes 51:2420 + 51:2221 / 77:3149 /
- * 77:3150). The IMAGE cross-fades; the TITLE is RECONSTRUCTED letter by letter on each
- * slide change — only the characters that differ from the previous slide re-animate
- * (a light fade + downward settle, staggered), the rest stay put. No control, auto
- * (FR-002). The `label` is the constant brand H1 (FR-014) above the rotating title.
+ * 77:3150). The IMAGE cross-fades (clip wipe), and in sync the title's KEYWORD rolls in
+ * a masked odometer — one title = one image. The trunk « <label> / <trunk> » is static;
+ * only the last line (the keyword) moves. No control, auto (FR-002).
  *
- * NOTHING animates on first paint (the initial slide is static); the reconstruction
- * only fires on subsequent slide changes. `prefers-reduced-motion` → no autoplay and
- * no reconstruction (the first slide stays frozen).
+ * The keyword odometer is the SAME motion as the full-screen intro, so the title's
+ * animation is continuous from the intro into the live hero. `paused` freezes the hero
+ * on `startIndex` while the intro plays above it; when it flips false the slideshow
+ * starts. NOTHING animates on first paint; `prefers-reduced-motion` → no autoplay, no
+ * roll (the first slide stays frozen).
  *
- * Per-breakpoint geometry: dark panel left 52% (lg) / 64.2% (md), full on mobile;
- * the image is a contained window straddling the dark/white seam (lg) / a band (mobile).
+ * Per-breakpoint geometry: dark panel left 52% (lg) / 64.2% (md), full on mobile; the
+ * image is a contained window straddling the dark/white seam (lg) / a band (mobile).
  */
 export function HeroSlideshow({
 	label,
+	trunk,
 	slides,
+	paused = false,
+	startIndex = 0,
 	interval = 6000,
 	className,
 }: {
 	label: string;
+	trunk: string;
 	slides: HeroSlide[];
+	/** Freeze on `startIndex` (the intro plays above); slideshow starts when false. */
+	paused?: boolean;
+	/** Initial slide / keyword (intro continuity). */
+	startIndex?: number;
 	/** ms between slides (default 6000). */
 	interval?: number;
 	className?: string;
 }) {
-	const [active, setActive] = useState(0);
+	const [active, setActive] = useState(startIndex);
 	const sectionRef = useRef<HTMLElement>(null);
 	const titleRef = useRef<HTMLDivElement>(null);
 	const imageRef = useRef<HTMLDivElement>(null);
-	const prevLines = useRef<string[] | null>(null);
+	const prevKw = useRef<number | null>(null);
 	const imgInit = useRef(false);
 
 	// Scroll: the hero image keeps moving as the hero scrolls away — a slow parallax
@@ -90,9 +88,11 @@ export function HeroSlideshow({
 		{ scope: sectionRef },
 	);
 
+	// Autoplay: advance the active slide. Paused while the intro plays above; off under
+	// reduced motion or with a single slide.
 	useGSAP(
 		() => {
-			if (slides.length < 2) return;
+			if (slides.length < 2 || paused) return;
 			if (prefersReducedMotion()) return;
 			// Clamp: a misconfigured `interval` (0 / negative) would busy-loop setInterval.
 			const period = Math.max(1000, interval);
@@ -102,56 +102,60 @@ export function HeroSlideshow({
 			);
 			return () => clearInterval(id);
 		},
-		{ dependencies: [slides.length, interval] },
+		{ dependencies: [slides.length, interval, paused] },
 	);
 
-	// Reconstruction: on every `active` change, animate only the glyphs that differ
-	// from the previous slide (by line + index). Skipped on the first run (no first
-	// paint) and under reduced motion.
-	const lines = slides.length ? slideLines(slides[active]) : [];
+	// Keyword odometer — on each `active` change, roll the keyword (IDENTICAL to the
+	// intro: outgoing up + incoming from below, SAME duration + ease, started together).
+	// Skipped on the first run (no first paint) and under reduced motion.
 	useGSAP(
 		() => {
-			const root = titleRef.current;
-			const prev = prevLines.current;
-			const current = lines.map((l) => l.text);
-			prevLines.current = current;
-			if (!root || !prev) return; // first paint → static
-			if (prefersReducedMotion()) return;
+			const title = titleRef.current;
+			if (!title) return;
+			const kws = gsap.utils.toArray<HTMLElement>(
+				title.querySelectorAll("[data-kw]"),
+			);
+			const reduce = prefersReducedMotion();
 
-			// Collect every changed glyph ACROSS ALL LINES, in reading order (top line then
-			// bottom), then animate them with ONE continuous stagger — the whole phrase
-			// rebuilds letter after letter (the bottom line continues the top, never in
-			// parallel). Per line, reconstruct from its first differing glyph to its end.
-			const lineEls = root.querySelectorAll<HTMLElement>("[data-line]");
-			const changed: HTMLElement[] = [];
-			lineEls.forEach((lineEl, li) => {
-				const before = prev[li] ?? "";
-				const cur = current[li] ?? "";
-				let from = 0;
-				while (from < cur.length && before[from] === cur[from]) from++;
-				changed.push(
-					...[...lineEl.querySelectorAll<HTMLElement>("[data-char]")].slice(
-						from,
-					),
+			// First paint (or reduced motion): just show the active keyword, no animation.
+			if (prevKw.current === null || reduce) {
+				gsap.set(kws, { yPercent: 100, autoAlpha: 0 });
+				if (kws[active]) gsap.set(kws[active], { yPercent: 0, autoAlpha: 1 });
+				prevKw.current = active;
+				return;
+			}
+
+			const incoming = kws[active];
+			const outgoing = kws[prevKw.current];
+			if (incoming && incoming !== outgoing) {
+				if (outgoing)
+					gsap.to(outgoing, {
+						yPercent: -100,
+						autoAlpha: 0,
+						duration: 0.7,
+						ease: "expo.out",
+						overwrite: "auto",
+					});
+				gsap.fromTo(
+					incoming,
+					{ yPercent: 100, autoAlpha: 0 },
+					{
+						yPercent: 0,
+						autoAlpha: 1,
+						duration: 0.7,
+						ease: "expo.out",
+						overwrite: "auto",
+					},
 				);
-			});
-			if (changed.length)
-				gsap.from(changed, {
-					autoAlpha: 0,
-					// random start offset per glyph → the rebuild feels organic (kept modest)
-					yPercent: () => gsap.utils.random(20, 70),
-					duration: 0.6,
-					ease: "power3.out",
-					stagger: 0.05,
-				});
+			}
+			prevKw.current = active;
 		},
 		{ dependencies: [active], scope: titleRef },
 	);
 
-	// Image transition: a creative-but-subtle UPWARD clip wipe — the incoming image
-	// does NOT start from zero (clip begins partially open, ~bottom 60% already shown),
-	// crossfades in and settles a slight scale. Nothing on first paint / reduced motion
-	// (the active image is just shown).
+	// Image transition: a creative-but-subtle UPWARD clip wipe — the incoming image does
+	// NOT start from zero (clip begins partially open, ~bottom 60% already shown),
+	// crossfades in and settles a slight scale. Nothing on first paint / reduced motion.
 	useGSAP(
 		() => {
 			const root = imageRef.current;
@@ -192,7 +196,34 @@ export function HeroSlideshow({
 		{ dependencies: [active], scope: imageRef },
 	);
 
+	// The image window stays hidden while the intro plays + retracts above it (so the
+	// slideshow never shows through the shrinking black panel); it fades in only once the
+	// intro hands off (`paused` → false). Window-level (independent of the per-slide
+	// cross-fade above).
+	useGSAP(
+		() => {
+			const root = imageRef.current;
+			if (!root) return;
+			if (prefersReducedMotion()) {
+				gsap.set(root, { autoAlpha: 1 });
+				return;
+			}
+			if (paused) {
+				gsap.set(root, { autoAlpha: 0 });
+				return;
+			}
+			gsap.fromTo(
+				root,
+				{ autoAlpha: 0 },
+				{ autoAlpha: 1, duration: 0.8, ease: "power2.out" },
+			);
+		},
+		{ dependencies: [paused], scope: sectionRef },
+	);
+
 	if (slides.length === 0) return null;
+
+	const firstKeyword = slides[startIndex]?.keyword ?? slides[0]?.keyword ?? "";
 
 	return (
 		<section
@@ -205,51 +236,24 @@ export function HeroSlideshow({
 		>
 			<div
 				aria-hidden
+				data-hero-panel
 				className="absolute inset-0 -z-10 bg-ink md:right-[35.8%] lg:right-[48%]"
 			/>
 
-			{/* Text column */}
+			{/* Text column — the anchor. The accessible heading is the full first phrase;
+			    the visible animated lockup is decorative (the keyword rotates). */}
 			<div className="z-10 flex flex-col justify-start px-5 pt-28 pb-8 md:absolute md:inset-0 md:w-[64.2%] md:justify-center md:px-10 md:pt-0 md:pb-0 lg:w-[52%] lg:justify-end lg:px-[7%] lg:pb-[15%]">
-				<h1 className="font-display font-semibold text-display-sm leading-none lg:text-display">
-					<BrandText>{label}</BrandText>
+				<h1 className="sr-only">
+					{`${label} ${trunk} ${firstKeyword}`.trim()}
 				</h1>
-				{/* Reconstructing rotating title (only changed glyphs re-animate). No
-				    `aria-live`: the title is decorative rotating brand copy and the constant
-				    `<h1>` label is the stable AT anchor — a live region would re-announce the
-				    whole headline every interval. */}
-				<div
-					ref={titleRef}
-					className="mt-3 font-display font-semibold text-title-sm leading-[1.1] tracking-normal md:mt-5 lg:text-title lg:leading-none"
-				>
-					{lines.map((line, li) => (
-						<span
-							// biome-ignore lint/suspicious/noArrayIndexKey: positional lines
-							key={li}
-							data-line
-							className="block"
-							style={
-								line.outline
-									? {
-											WebkitTextStrokeWidth: "2px",
-											WebkitTextStrokeColor: "currentColor",
-											WebkitTextFillColor: "transparent",
-										}
-									: undefined
-							}
-						>
-							{[...line.text].map((ch, ci) => (
-								<span
-									// biome-ignore lint/suspicious/noArrayIndexKey: positional glyphs
-									key={ci}
-									data-char
-									className="inline-block whitespace-pre"
-									style={{ fontFamily: charFont(ch) }}
-								>
-									{ch}
-								</span>
-							))}
-						</span>
-					))}
+				{/* `data-hero-title` is the FLIP target the intro measures to land on. */}
+				<div ref={titleRef} data-hero-title aria-hidden>
+					<HeroTitle
+						label={label}
+						trunk={trunk}
+						keywords={slides.map((s) => s.keyword)}
+						activeIndex={startIndex}
+					/>
 				</div>
 			</div>
 
@@ -266,15 +270,15 @@ export function HeroSlideshow({
 							data-slide-index={i}
 							aria-hidden={i !== active}
 							className="absolute inset-0 will-change-[clip-path,opacity,transform]"
-							// SSR / no-JS: show the first slide; GSAP takes over on mount.
-							style={{ opacity: i === 0 ? 1 : 0 }}
+							// SSR / no-JS: show the start slide; GSAP takes over on mount.
+							style={{ opacity: i === startIndex ? 1 : 0 }}
 						>
 							<Image
 								src={slide.src}
 								alt={slide.alt}
 								fill
 								sizes="(min-width: 1024px) 50vw, (min-width: 768px) 44vw, 90vw"
-								priority={i === 0}
+								priority={i === startIndex}
 								placeholder={slide.blurDataURL ? "blur" : "empty"}
 								blurDataURL={slide.blurDataURL}
 								className="object-cover"

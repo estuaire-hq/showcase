@@ -8,7 +8,6 @@ import {
 } from "@/content/homeRealisations";
 import {
 	Button,
-	HeroSlideshow,
 	SectionTitle,
 	SectorButton,
 	SplitSection,
@@ -16,6 +15,7 @@ import {
 import { Parallax } from "@/lib/motion/Parallax";
 import { PinnedCaseStudies } from "@/lib/motion/PinnedCaseStudies";
 import { getHomePageProps } from "@/lib/sanity/homePage";
+import { HomeHero } from "./_components/HomeHero";
 
 // The home is page-specific content (Principle VIII): this RSC is the connector — it
 // fetches via `getHomePageProps()` (mapping isolated in `@/lib/sanity/homePage.ts`)
@@ -52,9 +52,10 @@ export default async function HomePage() {
 			data-nav-links-tone="onLight"
 			data-nav-toggle-tone="onDark"
 		>
-			{/* 1 — Hero / slider (no entrance animation — the title reconstructs on slide
-			    change; nothing fires on first paint) */}
-			<HeroSlideshow label={hero.label} slides={hero.slides} />
+			{/* 1 — Hero / slider : full-screen intro (keyword odometer) hands off to the
+			    cross-fade slideshow (1 title = 1 image). Orchestrated client-side; the hero
+			    renders underneath from the first paint (SSR → LCP / SEO). */}
+			<HomeHero label={hero.label} trunk={hero.trunk} slides={hero.slides} />
 
 			{/* 2 — Intro de positionnement (depth parallax between the two images) */}
 			<Parallax>

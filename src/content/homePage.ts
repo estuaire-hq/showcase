@@ -20,12 +20,16 @@
  */
 export const homePageContent = {
 	// — Hero (slider 51:2420 + home 51:2221) —
-	heroLabel: "Estuaire",
+	// Title = fixed trunk « Estuaire, / là où les » + a per-slide keyword that changes
+	// (text odometer) in sync with the cross-fading image. The full-screen intro reuses
+	// these keywords; its last phrase = the first slide's keyword (continuity).
+	heroLabel: "Estuaire,",
+	heroTrunk: "là où les",
 	heroSlides: [
-		{ titleOutline: "Là où les\nidées prennent", titleFill: "forme." },
-		{ titleOutline: "Là où les\nsavoir-faire", titleFill: "s'assemblent." },
-		{ titleOutline: "Là où les\ntalents se", titleFill: "rencontrent." },
-		{ titleOutline: "Là où les\nmatériaux se", titleFill: "transforment." },
+		{ keyword: "idées prennent forme" },
+		{ keyword: "savoir-faire s'assemblent" },
+		{ keyword: "talents se rencontrent" },
+		{ keyword: "matériaux se transforment" },
 	],
 
 	// — Intro « Nous sommes agenceur concepteur engagé. » —

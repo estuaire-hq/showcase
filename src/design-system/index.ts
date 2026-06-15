@@ -16,6 +16,8 @@ export { FileInput } from "./components/FileInput";
 export { Filter } from "./components/Filter";
 export { FooterLink } from "./components/FooterLink";
 export { type HeroSlide, HeroSlideshow } from "./components/HeroSlideshow";
+export { HeroTitle } from "./components/HeroTitle";
+export { IntroScreen } from "./components/IntroScreen";
 export { LinkedInButton } from "./components/LinkedInButton";
 export { MenuToggle } from "./components/MenuToggle";
 export { NavButton } from "./components/NavButton";

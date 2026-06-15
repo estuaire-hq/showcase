@@ -16,8 +16,9 @@ import { defineArrayMember, defineField, defineType } from "sanity";
  *  - the realisation case-study cards AND the 12-item "réalisations par secteur"
  *    list are STATIC for now (src/content/homeRealisations.ts), all linking to
  *    /realisations — rebound to the CMS with the future "Réalisations" feature;
- *  - the hero slideshow MECHANICS (autoplay, cross-fade) live in the component,
- *    not here — editors only configure the slides.
+ *  - the hero slideshow MECHANICS (autoplay, cross-fade) + the full-screen intro live
+ *    in the component, not here — editors configure the fixed title trunk + each slide's
+ *    image and keyword.
  */
 
 /**
@@ -62,11 +63,20 @@ export const homePage = defineType({
 		// — Hero —
 		defineField({
 			name: "heroLabel",
-			title: "Label (H1)",
+			title: "Titre — 1ʳᵉ ligne (plein)",
 			type: "string",
 			group: "hero",
 			description:
-				"Petit label de marque rendu en H1 unique (ex. « Estuaire »), constant sur toutes les slides.",
+				"Première ligne du titre, pleine et constante. Ex. « Estuaire, ». Rendue aussi en H1 unique de la page.",
+			validation: (rule) => rule.required(),
+		}),
+		defineField({
+			name: "heroTrunk",
+			title: "Titre — 2ᵉ ligne (contour)",
+			type: "string",
+			group: "hero",
+			description:
+				"Tronc fixe rendu en contour, constant sur toutes les slides. Ex. « là où les ». Le mot-clé de chaque slide le complète.",
 			validation: (rule) => rule.required(),
 		}),
 		defineField({
@@ -75,7 +85,7 @@ export const homePage = defineType({
 			type: "array",
 			group: "hero",
 			description:
-				"Carrousel automatique en fondu (visuel + titre changent ensemble, sans contrôle manuel). La mécanique est gérée par le code.",
+				"Carrousel automatique en fondu : 1 visuel = 1 mot-clé. Le mot-clé change en synchro avec l'image active et complète « [1ʳᵉ ligne] [2ᵉ ligne] … ». Mécanique gérée par le code (sans contrôle manuel).",
 			of: [
 				defineArrayMember({
 					type: "object",
@@ -84,30 +94,19 @@ export const homePage = defineType({
 					fields: [
 						imageField("image", "Visuel"),
 						defineField({
-							name: "titleOutline",
-							title: "Titre — contour",
-							type: "text",
-							rows: 2,
-							description:
-								"Lignes affichées en contour. Ex. « Là où les\nsavoir-faire »",
-						}),
-						defineField({
-							name: "titleFill",
-							title: "Titre — plein",
+							name: "keyword",
+							title: "Mot-clé du titre",
 							type: "string",
 							description:
-								"Dernière ligne affichée pleine. Ex. « s'assemblent. »",
+								"Complète le tronc « Estuaire, là où les … ». Ex. « idées prennent forme ».",
+							validation: (rule) =>
+								rule.required().error("Le mot-clé du titre est requis."),
 						}),
 					],
 					preview: {
-						select: {
-							title: "titleFill",
-							subtitle: "titleOutline",
-							media: "image",
-						},
-						prepare: ({ title, subtitle, media }) => ({
+						select: { title: "keyword", media: "image" },
+						prepare: ({ title, media }) => ({
 							title: title || "Slide",
-							subtitle: subtitle?.replace(/\n/g, " "),
 							media,
 						}),
 					},

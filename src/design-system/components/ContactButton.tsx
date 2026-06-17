@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { MouseEventHandler } from "react";
-import { tv } from "tailwind-variants";
+import { tv } from "@/lib/utils";
 
 /**
  * Nav "contact" CTA (kit « btn contact » bleu/noir). Small filled pill.

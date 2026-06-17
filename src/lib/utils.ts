@@ -1,9 +1,64 @@
 import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { extendTailwindMerge } from "tailwind-merge";
+import { createTV } from "tailwind-variants";
+
+// The brand type scale + palette are CUSTOM `@theme` tokens (`text-title`, `text-body-sm`,
+// `text-ink`, …). Default tailwind-merge doesn't know them, so it mis-grouped e.g.
+// `text-title-sm` and `text-ink` as the same `text-*` conflict and DROPPED the size →
+// section titles collapsed to 16px on mobile (the "tiny titles" bug). Register the custom
+// font-size names (so they classify as font-size) and the custom text colours (so they
+// stay in text-color) — now a size + a colour coexist instead of overriding each other.
+// Shared by BOTH `cn` (tailwind-merge) AND `tv` (tailwind-variants has its OWN internal
+// merge, so it needs the same config or it drops sizes too).
+const twMergeConfig = {
+	extend: {
+		classGroups: {
+			"font-size": [
+				{
+					text: [
+						"display",
+						"display-sm",
+						"title",
+						"title-sm",
+						"subtitle",
+						"subtitle-sm",
+						"lead",
+						"lead-sm",
+						"body",
+						"body-sm",
+						"caption",
+					],
+				},
+			],
+			"text-color": [
+				{
+					text: [
+						"estuaire",
+						"ink",
+						"slate",
+						"warm",
+						"cream",
+						"paper",
+						"disabled",
+					],
+				},
+			],
+		},
+	},
+};
+
+const twMerge = extendTailwindMerge(twMergeConfig);
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
+
+/**
+ * Project `tv` (tailwind-variants) configured with the brand tokens. Import this instead
+ * of `tv` from "tailwind-variants" in DS components, so the variants' internal merge keeps
+ * custom font-sizes alongside colours (same fix as `cn`).
+ */
+export const tv = createTV({ twMergeConfig });
 
 declare global {
 	interface Window {

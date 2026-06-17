@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { MouseEventHandler } from "react";
-import { tv } from "tailwind-variants";
+import { tv } from "@/lib/utils";
 
 /**
  * Nav "nous découvrir" button (kit « btn nous découvrir » noir/blanc). Small

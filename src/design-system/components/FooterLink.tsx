@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { tv } from "tailwind-variants";
+import { tv } from "@/lib/utils";
 
 /**
  * Footer link. `nav` (kit « Menu footer » — Montserrat Alternates, ~24px) for

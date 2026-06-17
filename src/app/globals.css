@@ -53,6 +53,16 @@
 	--text-display-sm--line-height: 1;
 	--text-display-sm--letter-spacing: 0.05em;
 
+	--text-subtitle-sm: 1.875rem; /* 30px — subtitle (statements), mobile + tablet */
+	--text-subtitle-sm--line-height: 1.2;
+	--text-subtitle-sm--letter-spacing: 0.05em;
+
+	--text-lead-sm: 1.25rem; /* 20px — lead (phrases phares), mobile + tablet */
+	--text-lead-sm--line-height: 1.35;
+
+	--text-body-sm: 1rem; /* 16px — body copy, mobile + tablet */
+	--text-body-sm--line-height: 1.5;
+
 	--text-subtitle: 3.125rem; /* 50px */
 	--text-subtitle--line-height: 4.0625rem; /* 65px */
 	--text-subtitle--letter-spacing: 0.05em;

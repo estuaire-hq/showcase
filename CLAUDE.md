@@ -88,6 +88,12 @@ Reuse what is already installed before reaching for a new package.
 ## Environment Variables
 
 - **Dev source**: `.env.development` at the root — encrypted in git via git-crypt, plaintext on disk after `git-crypt unlock`
+- **Use vs. read**: the agent may **use** the dev secrets — never **read** the file. Tooling
+  that loads them via `--env-file=.env.development` (`npm run seed` / `seed:ci`, `npm run figma`,
+  `node --env-file=…`) is fine; this includes the **dev write token**, so the agent CAN seed the
+  *dev* Sanity project (`npm run seed [-- <doc>] [--reset]`) without ever opening the file.
+  Forbidden: `cat`/Read/`grep`/`source` of `.env*` (except `.env.example`) — anything that surfaces
+  a secret value. (Prod write token stays CI-only — no local path to write prod.)
 - **Prod source**: Coolify UI only — no `.env.production` file in the repo
 - **Two separate Sanity projects**: local dev and prod point at **different Sanity
   projects** (distinct `projectId`), not just different datasets. `NEXT_PUBLIC_SANITY_PROJECT_ID`
@@ -234,6 +240,39 @@ fonts, radii, or re-implement a button / pill / card. Importing = consuming; edi
 - Design source files (`.pen`, Figma cache + toolchain) → hidden **`.design/`**.
 - Frontier: *project understanding → repo (vault / specs / DS) · law → constitution · agent
   state & how-to-assist → local memory.* See the constitution's **Memory & Knowledge Architecture**.
+
+## Coming Soon Gate (temporary)
+
+A pre-launch access gate lets the site ship to prod **before it is finished**: the public
+sees a "Site en construction…" placeholder while the owner/client browse the real site via a
+secret link. Implemented in `src/proxy.ts` (a Next.js **`proxy`** — the v16 successor to
+`middleware`, runs in the Node runtime so the token is read at request time, not inlined at
+build). Driven by ONE server-only env var, **`SITE_PREVIEW_TOKEN`** (not `NEXT_PUBLIC_`). See
+**ADR 0007** (`docs/vault/decisions/0007-coming-soon-preview-gate.md`).
+
+- **Token set** → every public route is `rewrite`n to `/coming-soon` (URL preserved, real
+  routes never leak) and `robots.ts` makes the whole site `noindex`. Unlock by visiting the
+  permanent link **`/v/<token>`** once: it drops a long-lived (30 d) `httpOnly` cookie and
+  redirects to a clean `/`; thereafter you browse normal URLs. The link is shareable.
+- **Token absent/empty** → the gate is a **no-op**, the site is fully open and indexable.
+
+**Bypassing it locally**: by default `SITE_PREVIEW_TOKEN` is unset in dev → the gate is
+already a no-op, you reach the real site directly at `localhost:3000`. If it *is* set in
+`.env.development` (to test the gate itself), either leave it empty / comment it out to
+disable, or visit `http://localhost:3000/v/<token>` once to unlock. (`.env.development` is
+git-crypt'd and off-limits to the agent — never read it; assume the gate is off unless told
+otherwise.)
+
+**Be aware of the matcher** (`src/proxy.ts` `config.matcher`): it gates page routes but
+exempts `api`, `studio`, `coming-soon`, `_next`, and **any path with a file extension**. That
+last exemption is load-bearing — the Next image optimizer fetches local `public/` images over
+an internal cookie-less request; without it the gate rewrites those to `/coming-soon` (HTML)
+and every optimized local image 400s (post-mortem 0005). Keep new gated routes extension-less.
+
+**Temporary — remove at public launch.** The gate is a launch convenience, not a permanent
+feature. Going public = **remove `SITE_PREVIEW_TOKEN` in Coolify** (no code change, no
+rebuild). Afterwards the proxy/placeholder/robots logic can stay dormant (no-op) or be deleted
+outright (`src/proxy.ts`, `src/app/coming-soon/`, the gate branch of `robots.ts`).
 
 ## Lab (temporary)
 

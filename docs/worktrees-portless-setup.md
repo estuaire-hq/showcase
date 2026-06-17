@@ -68,6 +68,20 @@ node --env-file=.env.development ./node_modules/.bin/sanity cors add 'http://*.e
 
 (le wildcard demande une confirmation interactive → répondre oui)
 
+## 6. tmux — pour le handoff `/speckit.specify` (recommandé)
+
+`/speckit.specify` crée un worktree et, si Claude tourne **dans tmux**, ouvre une nouvelle fenêtre tmux
+avec Claude dans ce worktree (sinon il imprime `wt switch <slug> -x claude` à lancer à la main). Pour en
+profiter, lance ta session Claude dans tmux :
+
+```bash
+sudo apt install tmux     # 3.4+
+tmux                      # puis, dans tmux :
+claude
+```
+
+Voir l'[ADR 0014](vault/decisions/0014-speckit-worktree-tmux-handoff.md).
+
 ## Vérifier
 
 ```bash

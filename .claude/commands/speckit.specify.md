@@ -46,7 +46,7 @@ Given that feature description, do this:
    - Always include the JSON flag (`--json` for Bash, `-Json` for PowerShell) so the output can be parsed reliably
    - You must only ever run this script once per feature
    - The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for
-   - The JSON output will contain BRANCH_NAME and SPEC_FILE paths
+   - The JSON output contains BRANCH_NAME, SPEC_FILE, and **WORKTREE_PATH**. The script creates a dedicated git **worktree** (via worktrunk) for the feature and writes the spec INSIDE it; this checkout (main) is left on its current branch. `SPEC_FILE` is an absolute path into the worktree — write to it as-is.
    - For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot")
 
 3. Load `.specify/templates/spec-template.md` to understand required sections.
@@ -171,9 +171,23 @@ Given that feature description, do this:
 
    d. **Update Checklist**: After each validation iteration, update the checklist file with current pass/fail status
 
-7. Report completion with branch name, spec file path, checklist results, and readiness for the next phase (`/speckit.clarify` or `/speckit.plan`).
+7. Report completion with branch name, spec file path, checklist results, and the worktree's dev URL.
 
-**NOTE:** The script creates and checks out the new branch and initializes the spec file before writing.
+8. **Hand off to the feature's worktree session.** The script created a dedicated git **worktree** for this feature (`WORKTREE_PATH` from the JSON), with its portless dev server starting in the background. Planning/implementation must run in a Claude session rooted **inside that worktree** — this (main) session cannot move there. Open it:
+
+   - **If inside tmux** (check: `printenv TMUX` is non-empty): open a new tmux window rooted in the worktree and launch Claude there with a bootstrap prompt. Substitute `<WORKTREE_PATH>` and `<BRANCH_NAME>`; keep the prompt apostrophe-free (it is single-quoted):
+
+     ```bash
+     tmux new-window -c "<WORKTREE_PATH>" "claude 'Worktree de la feature <BRANCH_NAME>. Le spec est pret: specs/<BRANCH_NAME>/spec.md. Enchaine le flux spec-driven en lancant la commande /speckit.plan, puis /speckit.tasks, puis /speckit.implement. Dev: http://<BRANCH_NAME>.estuaire.localhost:1355 (PORTLESS=0 npm run dev pour localhost:3000).'"
+     ```
+
+     A new tmux window opens (auto-focused) with Claude already running in the worktree, ready to continue.
+
+   - **If NOT inside tmux**: do not spawn anything — tell the user to continue with `wt switch <BRANCH_NAME> -x claude`.
+
+   **Then STOP.** Do NOT run `/speckit.plan`, `/speckit.tasks`, or `/speckit.implement` in THIS session — the worktree session owns them. This session's job ends after the hand-off.
+
+**NOTE:** The script creates a dedicated git **worktree** (via worktrunk) for the feature and initializes the spec file inside it; this checkout (main) is left untouched. See ADR 0014.
 
 ## General Guidelines
 

@@ -278,25 +278,46 @@ if [ ${#BRANCH_NAME} -gt $MAX_BRANCH_LENGTH ]; then
     >&2 echo "[specify] Truncated to: $BRANCH_NAME (${#BRANCH_NAME} bytes)"
 fi
 
+# --- Estuaire customization (ADR 0014): create a dedicated git WORKTREE via worktrunk
+# instead of switching THIS checkout. main stays clean; the feature gets its own worktree
+# + portless dev server through worktrunk's post-start hooks. Falls back to a classic
+# in-place branch if worktrunk (`wt`) is unavailable. NOTE: this block is a local customization
+# of the vendored spec-kit script — re-apply it if you upgrade spec-kit.
+WORKTREE_PATH="$REPO_ROOT"
 if [ "$HAS_GIT" = true ]; then
-    if ! git checkout -b "$BRANCH_NAME" 2>/dev/null; then
-        # Check if branch already exists
-        if git branch --list "$BRANCH_NAME" | grep -q .; then
-            >&2 echo "Error: Branch '$BRANCH_NAME' already exists. Please use a different feature name or specify a different number with --number."
+    if git show-ref --verify --quiet "refs/heads/$BRANCH_NAME"; then
+        >&2 echo "Error: Branch '$BRANCH_NAME' already exists. Please use a different feature name or specify a different number with --number."
+        exit 1
+    fi
+    # `wt` is a shell function (from `wt config shell install`) → reachable only via a login shell.
+    if bash -lic 'command -v wt >/dev/null 2>&1'; then
+        if ! bash -lic "cd '$REPO_ROOT' && wt switch -c '$BRANCH_NAME' --yes" >/dev/null 2>&1; then
+            >&2 echo "Error: 'wt switch -c $BRANCH_NAME' failed (worktrunk). Check the worktrunk + git-crypt worktree setup (docs/worktrees-portless-setup.md)."
             exit 1
-        else
+        fi
+        # Resolve the new worktree's absolute path from git's worktree registry.
+        WORKTREE_PATH=$(git worktree list --porcelain | awk -v b="refs/heads/$BRANCH_NAME" '$1=="worktree"{p=$2} $1=="branch" && $2==b{print p; exit}')
+        if [ -z "$WORKTREE_PATH" ] || [ ! -d "$WORKTREE_PATH" ]; then
+            >&2 echo "Error: could not resolve the worktree path for '$BRANCH_NAME'."
+            exit 1
+        fi
+    else
+        >&2 echo "[specify] worktrunk (wt) not found; creating an in-place branch instead of a worktree."
+        if ! git checkout -b "$BRANCH_NAME" 2>/dev/null; then
             >&2 echo "Error: Failed to create git branch '$BRANCH_NAME'. Please check your git configuration and try again."
             exit 1
         fi
+        WORKTREE_PATH="$REPO_ROOT"
     fi
 else
-    >&2 echo "[specify] Warning: Git repository not detected; skipped branch creation for $BRANCH_NAME"
+    >&2 echo "[specify] Warning: Git repository not detected; skipped worktree/branch creation for $BRANCH_NAME"
 fi
 
-FEATURE_DIR="$SPECS_DIR/$BRANCH_NAME"
+FEATURE_DIR="$WORKTREE_PATH/specs/$BRANCH_NAME"
 mkdir -p "$FEATURE_DIR"
 
-TEMPLATE="$REPO_ROOT/.specify/templates/spec-template.md"
+TEMPLATE="$WORKTREE_PATH/.specify/templates/spec-template.md"
+[ -f "$TEMPLATE" ] || TEMPLATE="$REPO_ROOT/.specify/templates/spec-template.md"
 SPEC_FILE="$FEATURE_DIR/spec.md"
 if [ -f "$TEMPLATE" ]; then cp "$TEMPLATE" "$SPEC_FILE"; else touch "$SPEC_FILE"; fi
 
@@ -304,10 +325,11 @@ if [ -f "$TEMPLATE" ]; then cp "$TEMPLATE" "$SPEC_FILE"; else touch "$SPEC_FILE"
 export SPECIFY_FEATURE="$BRANCH_NAME"
 
 if $JSON_MODE; then
-    printf '{"BRANCH_NAME":"%s","SPEC_FILE":"%s","FEATURE_NUM":"%s"}\n' "$BRANCH_NAME" "$SPEC_FILE" "$FEATURE_NUM"
+    printf '{"BRANCH_NAME":"%s","SPEC_FILE":"%s","FEATURE_NUM":"%s","WORKTREE_PATH":"%s"}\n' "$BRANCH_NAME" "$SPEC_FILE" "$FEATURE_NUM" "$WORKTREE_PATH"
 else
     echo "BRANCH_NAME: $BRANCH_NAME"
     echo "SPEC_FILE: $SPEC_FILE"
     echo "FEATURE_NUM: $FEATURE_NUM"
+    echo "WORKTREE_PATH: $WORKTREE_PATH"
     echo "SPECIFY_FEATURE environment variable set to: $BRANCH_NAME"
 fi

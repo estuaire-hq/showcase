@@ -62,6 +62,15 @@ The `post-start` hook in `.config/wt.toml` installs deps then starts the server 
 (`wt step tether`), so it dies on `wt remove`. The first `wt switch -c` per machine asks to approve
 those hook commands — pre-approve once with `wt config approvals add` (see setup), or pass `--yes`.
 
+### Spec-driven features get their own worktree (`/speckit.specify`)
+
+`/speckit.specify` is wired (ADR 0014) to create a **worktree** (not just a branch) via worktrunk,
+write the spec inside it, and — when Claude runs **inside tmux** — open a new tmux window with Claude
+rooted in that worktree, ready to continue `/speckit.plan → /speckit.tasks → /speckit.implement` there.
+Out of tmux it prints `wt switch <slug> -x claude` instead. The session boundary is inherent (Claude
+can't move its own cwd); the spec/plan/tasks files carry the context across it. So: **run Claude inside
+tmux** to get the auto-opened worktree session (see the setup guide).
+
 ### Driving the dev server (as the agent)
 
 - **Find the URL**: `wt list` or `portless list`.

@@ -338,7 +338,8 @@ export default async function AboutPage() {
 							const textLeft = i % 2 === 0;
 							return (
 								<div
-									key={step.number}
+									// biome-ignore lint/suspicious/noArrayIndexKey: positional step list; `number` may be empty under partial seed
+									key={i}
 									className="flex flex-col gap-8 md:grid md:grid-cols-2 md:items-center md:gap-x-[6%]"
 								>
 									{/* Text block */}
@@ -349,7 +350,9 @@ export default async function AboutPage() {
 										)}
 									>
 										<h3 className="font-display font-semibold text-subtitle-sm text-ink leading-tight lg:text-subtitle">
-											<span className="font-sans">{step.number}/</span>{" "}
+											{step.number && (
+												<span className="font-sans">{step.number}/ </span>
+											)}
 											<BrandText>{step.title}</BrandText>
 										</h3>
 										{step.text && (
@@ -451,8 +454,12 @@ function StepImages({
 		);
 	}
 
-	// Two-image clusters — bbox + per-image left/top/width read on the nodes.
-	const layouts: Record<number, { box: string; a: string; b: string }> = {
+	// Two-image clusters — bbox + per-image left/top/width read on the nodes. Keyed by
+	// step index (01/03/04); index 1 (step 02) is the single-image branch above. `Partial`
+	// so the lookup is `… | undefined` and the fallback below is type-enforced, not dead.
+	const layouts: Partial<
+		Record<number, { box: string; a: string; b: string }>
+	> = {
 		0: {
 			// 01 Analyse — bbox 751×614
 			box: "aspect-[751/614]",
@@ -473,6 +480,7 @@ function StepImages({
 		},
 	};
 	const l = layouts[index] ?? layouts[0];
+	if (!l) return null; // unreachable (0 is always defined) — satisfies the type
 	return (
 		<div className={cn("relative w-full", l.box)}>
 			<Figure

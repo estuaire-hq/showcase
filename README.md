@@ -8,6 +8,7 @@ Site vitrine pour Mosaique Production / marque Estuaire. Construit avec Next.js 
 - **npm** 10+
 - **git-crypt** (`sudo apt install git-crypt` ou `brew install git-crypt`)
 - Cle symetrique git-crypt (demander au lead dev)
+- **portless** (`npm i -g portless`) — proxy de dev requis par `npm run dev` (voir « Développement parallèle »)
 
 ## Installation
 
@@ -22,11 +23,15 @@ git-crypt unlock /chemin/vers/estuaire.key
 # 3. Installer les dependances
 npm install
 
-# 4. Lancer le serveur de developpement
+# 4. Installer portless (proxy de dev) et son proxy local — une seule fois
+npm i -g portless
+portless service install --port 1355 --no-tls
+
+# 5. Lancer le serveur de developpement
 npm run dev
 ```
 
-Le serveur demarre sur `http://localhost:3000`. Le Studio Sanity est accessible a `http://localhost:3000/studio`.
+Le serveur démarre sur **`http://estuaire.localhost:1355`** (via portless). Le Studio Sanity est à `http://estuaire.localhost:1355/studio`. Pour revenir au classique `localhost:3000` (ou si portless n'est pas installé) : `PORTLESS=0 npm run dev`.
 
 ## Scripts disponibles
 
@@ -37,6 +42,20 @@ Le serveur demarre sur `http://localhost:3000`. Le Studio Sanity est accessible 
 | `npm run start` | Demarrer le serveur de production |
 | `npm run lint` | Verification Biome (lint + format) |
 | `npm run format` | Correction automatique Biome |
+
+## Développement parallèle (worktrees)
+
+Pour mener plusieurs features de front sans que les serveurs de dev se marchent dessus, on combine **worktrunk** (`wt` — `cargo install worktrunk` ou `brew install worktrunk`) et **portless**. Chaque worktree obtient une URL nommée stable : `http://<branche>.estuaire.localhost:1355`.
+
+Setup machine (une seule fois) : voir le guide [`docs/worktrees-portless-setup.md`](docs/worktrees-portless-setup.md).
+
+```bash
+wt switch -c ma-feature   # cree branche + worktree, installe les deps, demarre le serveur
+wt list                   # liste les worktrees et leur URL de dev
+wt remove                 # supprime le worktree (son serveur est arrete automatiquement)
+```
+
+Logs du serveur, restart et autres détails : voir la section « Parallel Dev — Worktrees » de [`CLAUDE.md`](CLAUDE.md) et l'[ADR 0013](docs/vault/decisions/0013-parallel-worktrees-portless.md).
 
 ## Structure du projet
 

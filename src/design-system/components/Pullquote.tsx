@@ -8,7 +8,7 @@ import { BrandText } from "../typography/BrandText";
  * surface — set it on the parent (white on the blue panels, paper on the veiled image).
  * Presentational only (Principle VIII). `\n` is honoured (`whitespace-pre-line`).
  *
- * Sizes from the maquette: `lead` (the blue panel phrases — 22px mobile/tablet → 35px
+ * Sizes from the maquette: `lead` (the blue panel phrases — 20px mobile/tablet → 35px
  * desktop) · `title` (the big-image incrustation — 40px → 75px desktop).
  */
 const pullquote = tv({

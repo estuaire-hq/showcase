@@ -36,6 +36,50 @@ export const HOME_PAGE_QUERY = defineQuery(/* groq */ `
   }
 `);
 
+export const ABOUT_PAGE_QUERY = defineQuery(/* groq */ `
+  *[_id == "aboutPage"][0]{
+    heroEyebrow,
+    heroTitleOutline,
+    heroTitleFill,
+    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    introStatement,
+    introText,
+    introImagePrimary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    introImageSecondary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    introHighlight,
+    visionTitleOutline,
+    visionTitleFill,
+    visionText,
+    visionImages[]{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    atelierTitleOutline,
+    atelierTitleFill,
+    atelierText,
+    atelierPillarsLead,
+    atelierPillars,
+    atelierCapabilities,
+    atelierImages[]{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    atelierHighlight,
+    processTitleOutline,
+    processTitleFill,
+    processIntro,
+    processIntroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    processSteps[]{
+      number,
+      title,
+      text,
+      bullets,
+      images[]{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }
+    },
+    statementImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    statementText,
+    ctaLabel,
+    ctaHref,
+    seoMetaTitle,
+    seoMetaDescription,
+    seoOgImage{ asset, alt }
+  }
+`);
+
 export const FOOTER_QUERY = defineQuery(/* groq */ `
   *[_id == "footer"][0]{
     ctaTitleOutline,

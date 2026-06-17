@@ -16,12 +16,73 @@ Site vitrine Next.js + Sanity pour Mosaique Production / marque Estuaire, deploy
 ## Commands
 
 ```bash
-npm run dev       # Local dev server
+npm run dev       # Dev server via portless → http://estuaire.localhost:1355 (PORTLESS=0 → :3000)
 npm run build     # Production build
 npm run lint      # Biome check (lint + format)
 ```
 
 **Deploy**: `git push` on main → Coolify auto-deploys on OVH VPS. No manual Docker/Coolify config changes without explicit mention.
+
+## Parallel Dev — Worktrees (worktrunk + portless)
+
+Run several features/agents at once, each in its own git worktree, **without dev servers
+fighting over port 3000**. Two complementary tools (see **ADR 0013**):
+
+- **worktrunk** (`wt`) — git worktree lifecycle (create / switch / list / remove) + hooks.
+- **portless** — local reverse proxy on `:1355` giving each worktree a **named, stable URL**
+  instead of a port. `npm run dev` is wired to `portless run next dev`.
+
+### Dev URL changed — `npm run dev` no longer uses `localhost:3000`
+
+portless routes by **name** (stable across restarts — by name, not port):
+
+- main checkout → `http://estuaire.localhost:1355` (Studio: append `/studio`)
+- worktree on branch `feat-x` → `http://feat-x.estuaire.localhost:1355`
+
+**Escape hatch**: `PORTLESS=0 npm run dev` bypasses the proxy → classic `http://localhost:3000`
+(use this for tooling that still assumes `:3000`, e.g. the pixel-review / run / verify skills).
+**portless must be installed** for `npm run dev` to work at all (dev prerequisite).
+
+### One-time machine setup
+
+Install (worktrunk + portless), the `:1355` proxy, the git-crypt×worktree fix, worktrunk hook
+approvals, and the **dev** Sanity CORS origins — all documented in
+**[`docs/worktrees-portless-setup.md`](docs/worktrees-portless-setup.md)**.
+
+### Worktree workflow
+
+```bash
+wt switch -c feat-x     # new branch+worktree → hook runs `npm ci`, then starts the dev server
+wt list                 # all worktrees + their portless dev URL
+wt switch feat-x        # jump into an existing worktree
+wt remove               # delete worktree (its tethered dev server is killed automatically)
+```
+
+The `post-start` hook in `.config/wt.toml` installs deps then starts the server **tethered**
+(`wt step tether`), so it dies on `wt remove`. The first `wt switch -c` per machine asks to approve
+those hook commands — pre-approve once with `wt config approvals add` (see setup), or pass `--yes`.
+
+### Driving the dev server (as the agent)
+
+- **Find the URL**: `wt list` or `portless list`.
+- **Read its logs** (compile errors, runtime, HMR) of the auto-started server:
+  `tail -f "$(wt config state logs get --hook=user:post-start:server)"`
+- **Restart** — required after a Tailwind **`@theme`** change (Turbopack won't recompile it live)
+  or a crash: `portless run --force next dev` (URL unchanged). If you instead launch it in your
+  own background shell, read its logs from that shell.
+- **Cleanup**: `portless prune` kills orphaned dev servers from crashed sessions.
+
+### Gotchas
+
+- **Shared dev dataset** — every worktree uses the same `.env.development` → the **same dev
+  Sanity project**. Don't `npm run seed -- --reset` while another worktree is working.
+- `.env.development` (git-crypt) decrypts in a fresh worktree **thanks to the one-time git-crypt
+  filter config above** — without it, `git worktree add` aborts on the smudge filter. ADR 0013.
+- New origins are already in `allowedDevOrigins` (`next.config.ts`); they must also be in the
+  dev project's Sanity CORS (above) for the embedded Studio to authenticate.
+- A worktree checks out the **committed** branch state — the portless wiring (`package.json`'s
+  `dev` script, `.config/wt.toml`) must be **committed** on the base branch, else `npm run dev`
+  in a worktree falls back to plain `next dev` on `:3000` (no portless route).
 
 ## Project Structure
 
@@ -257,9 +318,10 @@ build). Driven by ONE server-only env var, **`SITE_PREVIEW_TOKEN`** (not `NEXT_P
 - **Token absent/empty** → the gate is a **no-op**, the site is fully open and indexable.
 
 **Bypassing it locally**: by default `SITE_PREVIEW_TOKEN` is unset in dev → the gate is
-already a no-op, you reach the real site directly at `localhost:3000`. If it *is* set in
+already a no-op, you reach the real site directly at the dev URL (`http://estuaire.localhost:1355`;
+`PORTLESS=0` → `localhost:3000`). If it *is* set in
 `.env.development` (to test the gate itself), either leave it empty / comment it out to
-disable, or visit `http://localhost:3000/v/<token>` once to unlock. (`.env.development` is
+disable, or visit `http://estuaire.localhost:1355/v/<token>` once to unlock. (`.env.development` is
 git-crypt'd and off-limits to the agent — never read it; assume the gate is off unless told
 otherwise.)
 

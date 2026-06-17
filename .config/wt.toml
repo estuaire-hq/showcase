@@ -1,0 +1,23 @@
+# Worktrunk — project config (committed, shared with the team & agents).
+# Lifecycle of parallel git worktrees. Dev URLs are owned by portless. See ADR 0013.
+# Docs: https://worktrunk.dev/config/
+#
+# NB: `worktree-path` (where worktrees are created) is a USER setting and lives in
+# ~/.config/worktrunk/config.toml — not here. The default (sibling dir, e.g.
+# ../showcase.<branch>) is fine.
+
+[list]
+# Each worktree's dev URL via portless (the branch becomes a subdomain).
+# The main checkout is served WITHOUT a prefix (http://estuaire.localhost:1355);
+# `wt list` will render a "main." prefix on that one row — harmless.
+url = "http://{{ branch }}.estuaire.localhost:1355"
+
+# On worktree creation (sequential pipeline): clean install, THEN start the dev server,
+# tethered so it is killed automatically on `wt remove` (no pre-remove hook needed).
+# The `server` hook name is what `wt config state logs get --hook=user:post-start:server`
+# targets to tail the server's logs.
+[[post-start]]
+install = "npm ci"
+
+[[post-start]]
+server = "wt step tether -- npm run dev"

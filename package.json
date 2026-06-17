@@ -2,8 +2,11 @@
 	"name": "estuaire",
 	"version": "0.1.0",
 	"private": true,
+	"portless": {
+		"name": "estuaire"
+	},
 	"scripts": {
-		"dev": "next dev",
+		"dev": "portless run next dev",
 		"build": "next build",
 		"start": "next start",
 		"lint": "biome check .",

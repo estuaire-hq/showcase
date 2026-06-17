@@ -1,5 +1,6 @@
 import { HomeIcon } from "@sanity/icons";
 import { defineArrayMember, defineField, defineType } from "sanity";
+import { imageField } from "../fields";
 
 /**
  * Home page (Webdesign-homepage-ESTUAIRE-V1) — a singleton (enforced in
@@ -19,30 +20,6 @@ import { defineArrayMember, defineField, defineType } from "sanity";
  *  - the hero slideshow MECHANICS (autoplay, cross-fade) live in the component,
  *    not here — editors only configure the slides.
  */
-
-/**
- * Image field shared by every content image: hotspot crop + required-ish alt.
- * `group` is omitted for images nested inside an object type (e.g. heroSlide), which
- * has no field groups of its own — a `group` may only reference a group defined on the
- * same type, so passing one there crashes the Studio editor.
- */
-const imageField = (name: string, title: string, group?: string) =>
-	defineField({
-		name,
-		title,
-		type: "image",
-		...(group ? { group } : {}),
-		options: { hotspot: true },
-		fields: [
-			defineField({
-				name: "alt",
-				title: "Texte alternatif",
-				type: "string",
-				validation: (rule) =>
-					rule.required().warning("Important pour l'accessibilité et le SEO"),
-			}),
-		],
-	});
 
 export const homePage = defineType({
 	name: "homePage",

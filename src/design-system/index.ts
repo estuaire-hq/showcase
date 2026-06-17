@@ -20,6 +20,8 @@ export { LinkedInButton } from "./components/LinkedInButton";
 export { MenuToggle } from "./components/MenuToggle";
 export { NavButton } from "./components/NavButton";
 export { NavPanel } from "./components/NavPanel";
+export { PageHero, type PageHeroImage } from "./components/PageHero";
+export { Pullquote } from "./components/Pullquote";
 export { ScrollTopButton } from "./components/ScrollTopButton";
 export { SectionTitle } from "./components/SectionTitle";
 export { SectorButton } from "./components/SectorButton";

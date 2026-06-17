@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ComponentProps } from "react";
-import { tv } from "tailwind-variants";
+import { tv } from "@/lib/utils";
 import { BrandText } from "../typography/BrandText";
 
 /**

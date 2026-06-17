@@ -1,54 +1,19 @@
-import type { SanityImageSource } from "@sanity/image-url";
 import { homePageContent } from "@/content/homePage";
-import type { SanityImageAssetReference } from "@/sanity.types";
-import { urlFor } from "./image";
 import { sanityFetch } from "./live";
+import { mapImage } from "./mapImage";
 import { HOME_PAGE_QUERY } from "./queries";
 
 // Types derive from the schema via TypeGen (`sanity.types.ts`) — never hand-typed
 // (constitution Principle IX). Mirror of `footer.ts`: fetch the singleton, apply the
 // maquette defaults (`homePageContent`, single source with the seed), resolve images
-// via `urlFor` + LQIP. Page-specific content → fetched by the page connector, not a
-// global `src/components/` wrapper (Principle VIII).
+// via the shared `mapImage` (`urlFor` + LQIP). Page-specific content → fetched by the
+// page connector, not a global `src/components/` wrapper (Principle VIII).
 
-/** The accessor shape `mapImage` needs across every projected image: full content images
- *  carry `lqip`, the OG image omits it (no blur placeholder needed). `asset` is the
- *  generated reference type — not `unknown` — so this is the canonical shape, not a loose
- *  duplicate of the schema. */
-type QueryImage =
-	| {
-			asset: SanityImageAssetReference | null;
-			alt?: string | null;
-			lqip?: string | null;
-	  }
-	| null
-	| undefined;
-
-/** Resolved image as the design-system components expect it. */
-export type ResolvedImage = { src: string; alt: string; blurDataURL?: string };
+/** Resolved image as the design-system components expect it. Re-exported for callers
+ *  that imported it from here before `mapImage` was extracted. */
+export type { ResolvedImage } from "./mapImage";
 
 const DEFAULTS = homePageContent;
-
-/** Map a projected Sanity image to `{ src, alt, blurDataURL }`, or undefined if no asset. */
-function mapImage(
-	img: QueryImage,
-	width: number,
-	fallbackAlt = "",
-): ResolvedImage | undefined {
-	// Guards a missing asset, NOT a dangling ref (asset present but its document deleted):
-	// urlFor would then build a URL that 404s. Acceptable — the common case is no asset.
-	if (!img?.asset) return undefined;
-	return {
-		// Cast as in footer.ts: the projection is a valid image source at runtime, but its
-		// generated type is not structurally `SanityImageSource`.
-		src: urlFor(img as SanityImageSource)
-			.width(width)
-			.auto("format")
-			.url(),
-		alt: img.alt ?? fallbackAlt,
-		blurDataURL: img.lqip ?? undefined,
-	};
-}
 
 type Sector = { label: string; href: string };
 

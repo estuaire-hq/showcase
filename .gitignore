@@ -52,3 +52,6 @@ schema.json
 
 # Playwright
 .playwright-mcp/
+
+# /dispatch — per-worktree briefing scratch file (ADR 0015), never committed
+.dispatch/

@@ -148,22 +148,21 @@ export default async function ExpertisesPage() {
 					titleFill={levels.titleFill}
 					image={levels.image}
 				/>
-				{/* The 3 full-width level cards (FeatureBlock) */}
+				{/* The 3 full-width level cards (FeatureBlock). Aspect is square on mobile →
+				    768·718 tablet → 1920·718 desktop; content anchored lower-left (maquette). */}
 				{levels.items.map((level) => (
 					<FeatureBlock
 						key={level.ctaHref || level.title}
-						image={level.image?.src ?? ""}
+						image={level.image?.src}
 						alt={level.image?.alt ?? level.title.replace(/\n/g, " ")}
+						blurDataURL={level.image?.blurDataURL}
 						title={level.title}
 						titleAs="h3"
-						cta={{
-							label: level.ctaLabel,
-							href: level.ctaHref,
-							tracking: {
-								"data-umami-event": "expertise_level_click",
-								"data-umami-event-level": level.slug,
-							},
-						}}
+						cta={{ label: level.ctaLabel, href: level.ctaHref }}
+						ctaUmamiEvent="expertise_level_click"
+						ctaUmamiData={{ level: level.slug }}
+						className="aspect-square md:aspect-[768/718] lg:aspect-[1920/718]"
+						contentClassName="justify-end gap-6 pb-9 md:px-[11.7%] md:pb-[13%] lg:px-[6.8%] lg:pb-[9.5%]"
 					/>
 				))}
 			</section>

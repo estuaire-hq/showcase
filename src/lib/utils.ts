@@ -70,6 +70,24 @@ declare global {
 }
 
 /**
+ * Build the declarative Umami data-attributes for a CTA (Principle VI). Returns
+ * `{ "data-umami-event": <event>, "data-umami-event-<k>": <v>, … }`, or `{}` when no
+ * event — spread onto a Button/Link. Centralises the idiom shared by the DS bands
+ * (`SplitSection`, `FeatureBlock`). No PII in keys/values.
+ */
+export function umamiAttrs(
+	event?: string,
+	data?: Record<string, string>,
+): Record<string, string> {
+	if (!event) return {};
+	const attrs: Record<string, string> = { "data-umami-event": event };
+	for (const [k, v] of Object.entries(data ?? {})) {
+		attrs[`data-umami-event-${k}`] = v;
+	}
+	return attrs;
+}
+
+/**
  * Fire a custom Umami event from the client (Principle VI). Guarded: a no-op when
  * the tracker script is absent (e.g. dev without the Umami env) or during SSR. No
  * PII in the event name/props. See research §8.

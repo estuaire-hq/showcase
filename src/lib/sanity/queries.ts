@@ -107,6 +107,28 @@ export const EXPERTISES_PAGE_QUERY = defineQuery(/* groq */ `
   }
 `);
 
+export const SECTORS_PAGE_QUERY = defineQuery(/* groq */ `
+  *[_id == "sectorsPage"][0]{
+    heroEyebrow,
+    heroTitleOutline,
+    heroTitleFill,
+    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    introStatement,
+    introText,
+    introImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    sectors[]{
+      label,
+      promise,
+      href,
+      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }
+    },
+    keyFigures[]{ value, support },
+    seoMetaTitle,
+    seoMetaDescription,
+    seoOgImage{ asset, alt }
+  }
+`);
+
 export const FOOTER_QUERY = defineQuery(/* groq */ `
   *[_id == "footer"][0]{
     ctaTitleOutline,

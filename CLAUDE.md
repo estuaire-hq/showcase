@@ -151,7 +151,10 @@ src/
 ## Language Conventions
 
 - **French**: documentation only (README, docs, specs)
-- **English**: code, commits, branch names, code comments
+- **English**: code, commits, branch names, code comments, **and pull request titles + descriptions**
+- **Pull requests**: written in **English**, and MUST follow `.github/PULL_REQUEST_TEMPLATE.md`
+  (fill the sections, delete those that don't apply). `gh pr create` does NOT auto-apply the
+  template, so paste it into `--body` explicitly.
 
 ## Code Conventions
 

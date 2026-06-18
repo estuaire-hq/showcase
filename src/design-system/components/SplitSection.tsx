@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { cn, umamiAttrs } from "@/lib/utils";
 import { Button } from "./Button";
 import { SectionTitle } from "./SectionTitle";
 
@@ -50,13 +50,7 @@ export function SplitSection({
 }) {
 	const isVision = variant === "vision";
 
-	const umamiAttrs: Record<string, string> = {};
-	if (ctaUmamiEvent) {
-		umamiAttrs["data-umami-event"] = ctaUmamiEvent;
-		for (const [k, v] of Object.entries(ctaUmamiData ?? {})) {
-			umamiAttrs[`data-umami-event-${k}`] = v;
-		}
-	}
+	const umami = umamiAttrs(ctaUmamiEvent, ctaUmamiData);
 
 	const title = <SectionTitle outline={titleOutline} fill={titleFill} />;
 
@@ -89,7 +83,7 @@ export function SplitSection({
 				href={cta.href}
 				arrow
 				className="mt-1 w-full max-w-[398px]"
-				{...umamiAttrs}
+				{...umami}
 			>
 				{cta.label}
 			</Button>

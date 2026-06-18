@@ -6,7 +6,13 @@ import {
 } from "@sanity/icons";
 import type { StructureResolver } from "sanity/structure";
 
-const SINGLETONS = ["homePage", "aboutPage", "expertisesPage", "footer"];
+const SINGLETONS = [
+	"homePage",
+	"aboutPage",
+	"expertisesPage",
+	"sectorsPage",
+	"footer",
+];
 
 export const structure: StructureResolver = (S) =>
 	S.list()
@@ -38,6 +44,15 @@ export const structure: StructureResolver = (S) =>
 						.schemaType("expertisesPage")
 						.documentId("expertisesPage")
 						.title("Expertises"),
+				),
+			S.listItem()
+				.title("Univers")
+				.icon(ThLargeIcon)
+				.child(
+					S.document()
+						.schemaType("sectorsPage")
+						.documentId("sectorsPage")
+						.title("Univers"),
 				),
 			S.listItem()
 				.title("Pied de page")

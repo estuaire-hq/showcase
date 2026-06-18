@@ -18,7 +18,7 @@ testable indépendamment. Charger les skills avant la tâche correspondante :
 **Done (30/33)** : Setup (T001–T002), Foundational (T003–T013), US1 (T014–T019), US2
 (T020–T024), seed dev (T025 — `npm run seed -- expertisesPage`, 9 visuels uploadés),
 a11y + reduced-motion (T028–T029), pixel review across the 3 breakpoints (T019/T024/T031),
-gates (T032), vault (T033 → ADR 0015). Dev `expertisesPage` seeded + rendered (gate off):
+gates (T032), vault (T033 → ADR 0016). Dev `expertisesPage` seeded + rendered (gate off):
 `/expertises` 200, single `<h1>` (hero), `<h2>` section title + `<h3>` cards, nav tones, 4
 sections in maquette order + the shell « BIG FOOTER », all images, umami `expertise_level_click`
 with per-level slug. Gates: `lint` ✓, `typegen` ✓ (`ExpertisesPage`), `seed:check` ✓,
@@ -34,7 +34,7 @@ with per-level slug. Gates: `lint` ✓, `typegen` ✓ (`ExpertisesPage`), `seed:
   puts « Notre expertise : » on its own line on tablet/mobile where the node flows it inline with
   « réaliser » (refactoring would risk the shared about hero); the hero cartouche is ~30/70 px
   taller on tablet/mobile; centred statement/intro line wrapping differs by a word (font-metric).
-- **Motion: static by decision** (ADR 0015 §Motion, as on the about page) — T018/T023 record the
+- **Motion: static by decision** (ADR 0016 §Motion, as on the about page) — T018/T023 record the
   deliberate choice to ship US1/US2 static; `prefers-reduced-motion` is therefore satisfied (FR-012).
 
 **Remaining open (3/33):**

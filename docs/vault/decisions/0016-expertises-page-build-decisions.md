@@ -3,7 +3,7 @@ tags: [decision, expertises-page, design-system, sanity, pixel-perfect]
 status: accepted
 date: 2026-06-17
 ---
-# 0015 — « Expertises » build decisions & design-system extensions
+# 0016 — « Expertises » build decisions & design-system extensions
 
 ## Context
 Feature `008-expertises-page` builds `/expertises` from a new `expertisesPage` Sanity singleton.

@@ -3,7 +3,7 @@ tags: [post-mortem, portless, worktrees, coming-soon-gate, dev-server, methodolo
 status: resolved
 date: 2026-06-17
 ---
-# 0009 — Portless named-URL 404 + the coming-soon gate blocking worktree review
+# 0010 — Portless named-URL 404 + the coming-soon gate blocking worktree review
 
 ## Symptom
 During the pixel review of feature `008-expertises-page` (in a `wt` worktree), the running dev

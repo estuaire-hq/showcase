@@ -23,7 +23,7 @@ url = "http://{{ branch }}.estuaire.localhost:1355"
 # /coming-soon and make local/pixel review impossible without a restart. Setting it empty
 # here (process.env wins over .env files in Next) keeps the named portless URL serving the
 # real site. To test the gate itself, run the server explicitly without this override.
-# See post-mortem 0009.
+# See post-mortem 0010.
 [[post-start]]
 install = "npm ci"
 

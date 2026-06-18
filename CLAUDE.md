@@ -104,10 +104,10 @@ so this session stays free and the work runs in parallel. If they decline, imple
 - **A 404 on `*.estuaire.localhost:1355` means NO portless route**, not a broken app — the
   machine-wide proxy 404s any subdomain it has no live route for. Check `portless list`; if the
   route is missing, restart cleanly (above). Don't conclude the page is broken and bypass via the
-  raw port — that abandons the named-URL convention. (Post-mortem 0010.)
+  raw port — that abandons the named-URL convention. (Post-mortem 0011.)
 - **Gate is OFF in worktree dev servers** — the `.config/wt.toml` server hook runs with
   `SITE_PREVIEW_TOKEN=` empty, so the named URL serves the **real** site (not `/coming-soon`), even
-  when the shared `.env.development` carries a token. No restart needed to review. (Post-mortem 0010.)
+  when the shared `.env.development` carries a token. No restart needed to review. (Post-mortem 0011.)
 - **Cleanup**: `portless prune` kills orphaned dev servers from crashed sessions.
 
 ### Gotchas
@@ -362,7 +362,7 @@ build). Driven by ONE server-only env var, **`SITE_PREVIEW_TOKEN`** (not `NEXT_P
 already a no-op, you reach the real site directly at the dev URL (`http://estuaire.localhost:1355`;
 `PORTLESS=0` → `localhost:3000`). **In worktrees the gate is forced OFF** by the `.config/wt.toml`
 server hook (`SITE_PREVIEW_TOKEN=`), so the named portless URL serves the real site even if
-`.env.development` carries a token — no action needed (post-mortem 0010). If you start the dev
+`.env.development` carries a token — no action needed (post-mortem 0011). If you start the dev
 server **yourself** (outside the hook) and the token *is* set, prefix your command with
 `SITE_PREVIEW_TOKEN=` (do **not** use `portless run --force`, which can drop the route — stop +
 `npm run dev` instead), or visit `http://<branch>.estuaire.localhost:1355/v/<token>` once to unlock.

@@ -1,4 +1,4 @@
-# 0015 — Décisions de build : page « Univers » (secteurs)
+# 0016 — Décisions de build : page « Univers » (secteurs)
 
 - **Statut** : accepté
 - **Date** : 2026-06-17
@@ -70,5 +70,5 @@ cohérence + lisibilité (SC-003), pas diffés.
 Les bandes Retail et Scénographie ont **deux calques image** dans Figma ; le **premier listé
 est le calque visible** (au-dessus). Donc : Retail ← `51-3454` (intérieur chaleureux, pas le
 `51-3455` en dessous), Scénographie ← `51-3494` (structure bois, pas `51-3495`). Vérifié en
-ouvrant les assets et en les comparant au render (cf. [[post-mortems/0009-reseed-not-reflected-cdn-and-next-fetch-cache]]
+ouvrant les assets et en les comparant au render (cf. [[post-mortems/0010-reseed-not-reflected-cdn-and-next-fetch-cache]]
 pour le piège de propagation au re-seed).

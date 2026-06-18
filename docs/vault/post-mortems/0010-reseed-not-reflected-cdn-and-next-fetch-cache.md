@@ -1,8 +1,8 @@
-# 0009 — Un re-seed dev ne se reflète pas : CDN Sanity + fetch-cache Next
+# 0010 — Un re-seed dev ne se reflète pas : CDN Sanity + fetch-cache Next
 
 - **Date** : 2026-06-17
 - **Feature** : `009-sectors-page`
-- **Lien** : [[decisions/0015-sectors-page-build-decisions]], [[decisions/0006-schema-derived-types-and-typed-seeds]]
+- **Lien** : [[decisions/0016-sectors-page-build-decisions]], [[decisions/0006-schema-derived-types-and-typed-seeds]]
 
 ## Symptôme
 

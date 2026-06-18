@@ -31,8 +31,8 @@ centrage vertical du cartouche hero (~4 % vs ancrage-haut) ; images **Bureau/Ré
 Tablette (768) / mobile (390) : pas de frame de référence → **cohérence + lisibilité
 vérifiées** (ordre des sections, empilements, contraste), pas diffées (SC-003).
 
-**Decisions consignées** : ADR 0015 (FeatureBlock étendu, PageHero `split`, listes
-embarquées, cinématiques) ; post-mortem 0009 (re-seed non reflété : CDN Sanity +
+**Decisions consignées** : ADR 0016 (FeatureBlock étendu, PageHero `split`, listes
+embarquées, cinématiques) ; post-mortem 0010 (re-seed non reflété : CDN Sanity +
 fetch-cache Next).
 
 **Reste ouvert (1/32) :**
@@ -100,7 +100,7 @@ dépendre des sections suivantes.
 
 ### Implementation for User Story 1
 
-- [X] T014 [P] [US1] Bande secteur DS — **réalisée en étendant `FeatureBlock`** (déjà `aspect-[1920/718]` + voile `bg-ink/25` + CTA `Button tone="light"`), pas un nouveau `SectorBand` : props optionnelles ajoutées `body` (promesse, `text-body`), `rule` (trait), `blurDataURL` (LQIP), `ctaUmamiEvent`/`ctaUmamiData`, `image` rendu optionnel, titre responsive `text-title-sm lg:text-title` + `BrandText`. Réutiliser avant créer (Principe IV/X) ; rétro-compatible (seul le lab le consomme). Décision consignée → ADR 0015.
+- [X] T014 [P] [US1] Bande secteur DS — **réalisée en étendant `FeatureBlock`** (déjà `aspect-[1920/718]` + voile `bg-ink/25` + CTA `Button tone="light"`), pas un nouveau `SectorBand` : props optionnelles ajoutées `body` (promesse, `text-body`), `rule` (trait), `blurDataURL` (LQIP), `ctaUmamiEvent`/`ctaUmamiData`, `image` rendu optionnel, titre responsive `text-title-sm lg:text-title` + `BrandText`. Réutiliser avant créer (Principe IV/X) ; rétro-compatible (seul le lab le consomme). Décision consignée → ADR 0016.
 - [X] T015 [US1] Composer la section **hero** dans `src/app/(site)/univers/page.tsx` avec `PageHero` (props `hero.eyebrow`/`hero.titleOutline`/`hero.titleFill`/`hero.image`) ; **si le fond split** (noir gauche `bg-ink` / blanc droite) n'est pas couvert par `PageHero`, lui ajouter une prop/variante `background` (additif DS, pas de réimplémentation locale) (dépend de T013).
 - [X] T016 [US1] Composer la section **intro** en-ligne dans `page.tsx` (panneau `bg-cream` + visuel `intro.image` `next/image`+LQIP à gauche dans `<Parallax>` ; phrase de positionnement `text-subtitle` + texte `text-body whitespace-pre-line` à droite) (dépend de T013).
 - [X] T017 [US1] Composer la section **secteurs** dans `page.tsx` : `props.sectors.map()` → `SectorBand` (label, promise, href, image) avec `ctaUmamiEvent="sector_cta_click"` + `ctaUmamiData={{ sector: <slug dérivé de href> }}` ; la mise en page ne casse pas pour 3 ou 5 entrées (cas limite) ; chaque bande dans `<Parallax>` (dépend de T013/T014).

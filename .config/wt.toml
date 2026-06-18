@@ -16,8 +16,16 @@ url = "http://{{ branch }}.estuaire.localhost:1355"
 # tethered so it is killed automatically on `wt remove` (no pre-remove hook needed).
 # The `server` hook name is what `wt config state logs get --hook=user:post-start:server`
 # targets to tail the server's logs.
+#
+# `SITE_PREVIEW_TOKEN=` forces the coming-soon gate OFF for worktree dev servers (the
+# documented dev default — see CLAUDE.md "Coming Soon Gate"). The shared `.env.development`
+# sometimes carries a token (to test the gate), which would rewrite every page to
+# /coming-soon and make local/pixel review impossible without a restart. Setting it empty
+# here (process.env wins over .env files in Next) keeps the named portless URL serving the
+# real site. To test the gate itself, run the server explicitly without this override.
+# See post-mortem 0009.
 [[post-start]]
 install = "npm ci"
 
 [[post-start]]
-server = "wt step tether -- npm run dev"
+server = "wt step tether -- env SITE_PREVIEW_TOKEN= npm run dev"

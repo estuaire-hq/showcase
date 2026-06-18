@@ -7,36 +7,115 @@ import { OutlineText } from "../typography/OutlineText";
 export type PageHeroImage = { src: string; alt: string; blurDataURL?: string };
 
 /**
- * Hero of a content page (maquette « 02/ SLIDER », nodes 51:2699 / 78:4374 / 78:4626):
- * a full-bleed visual with a dark title cartouche overlapping its bottom-left. The
- * cartouche carries an eyebrow, a separator rule, and the page H1 in the kit's
- * outline/fill device (stroked lines + one solid line, brand casse via BrandText).
+ * Hero of a content page. Two layouts (same dark title cartouche — eyebrow, separator
+ * rule, H1 in the kit outline/fill device, brand casse via BrandText):
  *
- * STATIC — no autoplay, no controls (distinct from the home `HeroSlideshow`, whose
- * letter-by-letter reconstruction is home-specific). Reusable by future content pages.
+ *  - `overlay` (default, « Nous découvrir » node 51:2699): a full-bleed visual with the
+ *    cartouche overlapping its bottom-left.
+ *  - `split` (« Univers » node 51:3386): a dark cartouche panel beside a clean image —
+ *    panel left / image right on desktop, cartouche on top / image below on mobile (so
+ *    the transparent navbar's logo + toggle sit over the dark cartouche → `onDark`, while
+ *    the desktop links sit over the paper half → `onLight`).
  *
- * Per-breakpoint geometry (read on the maquette):
- *  - mobile (390): image (aspect 390/259) under a 25% ink veil, then a FULL-WIDTH
- *    cartouche below (no overlap);
- *  - tablet (768) / desktop (1920): clean image (aspect ~2.04), cartouche pulled up to
- *    overlap the image bottom (negative margin = the maquette overlap, proportional to
- *    width so it holds at any viewport), left-inset, ~90% / 71% wide.
+ * STATIC — no autoplay, no controls (distinct from the home `HeroSlideshow`). Reusable
+ * by every content page. Per-breakpoint geometry is read on the maquette (Principle VII).
  */
 export function PageHero({
 	eyebrow,
 	titleOutline,
 	titleFill,
 	image,
+	variant = "overlay",
 	className,
 }: {
 	eyebrow?: string;
 	/** Stroked H1 lines (may contain \n). */
 	titleOutline?: string;
-	/** Solid H1 line. */
+	/** Solid H1 line(s) (may contain \n). */
 	titleFill: string;
 	image?: PageHeroImage;
+	variant?: "overlay" | "split";
 	className?: string;
 }) {
+	// Shared cartouche content (eyebrow + rule + H1) — each variant wraps it in its own
+	// positioned dark panel. Single H1 (FR-014): outline lines (stroked) + the solid line.
+	const cartouche = (
+		<div className="flex flex-col gap-5 lg:gap-12">
+			{eyebrow && (
+				<p className="whitespace-pre-line font-display font-semibold text-caption lg:text-lead">
+					<BrandText>{eyebrow}</BrandText>
+				</p>
+			)}
+			<div className="h-px w-full bg-paper lg:h-[3px]" />
+			<h1 className="font-display font-semibold text-title-sm leading-[1.1] tracking-[0.02em] lg:text-title lg:leading-[1.1]">
+				{titleOutline && (
+					<OutlineText tier="title" className="block whitespace-pre-line">
+						{titleOutline}
+					</OutlineText>
+				)}
+				<span className="block whitespace-pre-line">
+					<BrandText>{titleFill}</BrandText>
+				</span>
+			</h1>
+		</div>
+	);
+
+	if (variant === "split") {
+		return (
+			<section className={cn("relative isolate bg-paper", className)}>
+				{/* Full-bleed ink panel (desktop) — WIDER than the cartouche column so the image
+				    column overlaps its right edge (maquette: ink 0→1090, image 1029→1780, ~61px
+				    overlap). Behind the content (z-0); the image (z-10) paints over it. On mobile
+				    the cartouche carries its own bg-ink (full-bleed, stacked). */}
+				<div
+					aria-hidden
+					className="absolute inset-y-0 left-0 z-0 hidden w-[56.8%] bg-ink lg:block"
+				/>
+				{/* Full screen-height hero. Content TOP-aligns below the fixed navbar (transparent,
+				    112px desktop / 80px mobile) — `items-start` + a top padding that clears the navbar
+				    on short viewports and centres the block on tall ones (`max(7.5rem,14vh)`). Both
+				    the cartouche and the image start at the same Y (maquette: eyebrow + image top at
+				    220). Without this the centred content slid under the navbar on laptops. */}
+				<div className="relative z-10 flex min-h-svh flex-col lg:grid lg:grid-cols-[1029fr_891fr] lg:items-start lg:pb-[8vh] lg:pt-[max(7.5rem,14vh)]">
+					{/* Dark cartouche panel — top (mobile) / left (desktop). The transparent navbar
+					    overlays it, so it carries its own navbar clearance on mobile/tablet
+					    (pt-28 / md:pt-32 > the 80–112px navbar). Inline padding matches the page
+					    container (px-5 / md:px-10 / lg 7.29vw = the same content edge as
+					    `lg:px-[7.29%]` of a full-width container) so the title aligns with the rest of
+					    the page; `lg:pl` is viewport-relative (vw), NOT column-relative. On desktop the
+					    cartouche is transparent — the absolute ink panel above provides the black. */}
+					<div className="bg-ink px-5 pt-28 pb-12 text-paper md:px-10 md:pt-32 md:pb-16 lg:bg-transparent lg:py-0 lg:pr-[6%] lg:pl-[7.29vw]">
+						{cartouche}
+					</div>
+					{/* Clean image — below (mobile) / right (desktop). Inline padding matches the
+					    page container so the image's right edge aligns with the page content edge
+					    (lg:pr 7.29vw). `flex-1` fills the remaining height on mobile (full-height hero);
+					    `lg:items-start` top-aligns it with the cartouche on desktop. NO background:
+					    the cell is transparent so the ink panel behind shows through above/below the
+					    image — that's what makes the image overlap the ink (maquette: ink right edge
+					    1090, image left 1029 → ~61px overlap, ink visible around it). */}
+					<div className="flex flex-1 items-center justify-center px-5 pb-12 md:px-10 lg:flex-none lg:items-start lg:px-0 lg:py-0 lg:pr-[7.29vw] lg:pl-0">
+						<div className="relative aspect-[751/603] w-full overflow-hidden bg-cream">
+							{image && (
+								<Image
+									src={image.src}
+									alt={image.alt}
+									fill
+									priority
+									sizes="(min-width: 1024px) 43vw, 100vw"
+									placeholder={image.blurDataURL ? "blur" : "empty"}
+									blurDataURL={image.blurDataURL}
+									className="object-cover"
+								/>
+							)}
+						</div>
+					</div>
+				</div>
+			</section>
+		);
+	}
+
+	// overlay (default)
 	return (
 		<section className={cn("relative bg-paper", className)}>
 			{/* Full-bleed visual. Mobile carries a 25% ink veil (maquette); tablet/desktop
@@ -60,25 +139,7 @@ export function PageHero({
 			{/* Dark title cartouche. Full-width below the image on mobile; overlapping the
 			    image bottom-left on tablet/desktop (negative margin = maquette overlap). */}
 			<div className="relative z-10 bg-ink px-[22px] py-9 text-paper md:-mt-[21%] md:ml-[5.2%] md:w-[89.6%] md:px-[50px] md:py-10 lg:-mt-[16.8%] lg:ml-[7.29%] lg:w-[71%] lg:px-[7%] lg:py-[6.3%]">
-				<div className="flex flex-col gap-5 lg:gap-12">
-					{eyebrow && (
-						<p className="font-display font-semibold text-caption lg:text-lead">
-							<BrandText>{eyebrow}</BrandText>
-						</p>
-					)}
-					<div className="h-px w-full bg-paper lg:h-[3px]" />
-					{/* Single H1 (FR-016): outline lines (stroked) + the solid fill line. */}
-					<h1 className="font-display font-semibold text-title-sm leading-[1.1] tracking-[0.02em] lg:text-title lg:leading-[1.1]">
-						{titleOutline && (
-							<OutlineText tier="title" className="block whitespace-pre-line">
-								{titleOutline}
-							</OutlineText>
-						)}
-						<span className="block whitespace-pre-line">
-							<BrandText>{titleFill}</BrandText>
-						</span>
-					</h1>
-				</div>
+				{cartouche}
 			</div>
 		</section>
 	);

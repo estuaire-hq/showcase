@@ -6,5 +6,6 @@
 import aboutPage from "./documents/aboutPage.seed";
 import footer from "./documents/footer.seed";
 import homePage from "./documents/homePage.seed";
+import sectorsPage from "./documents/sectorsPage.seed";
 
-export const seeds = [homePage, aboutPage, footer];
+export const seeds = [homePage, aboutPage, sectorsPage, footer];

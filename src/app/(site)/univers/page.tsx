@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { BrandText, FeatureBlock, PageHero } from "@/design-system";
-import { Parallax } from "@/lib/motion/Parallax";
 import { getSectorsPageProps } from "@/lib/sanity/sectorsPage";
 import { cn } from "@/lib/utils";
 
@@ -10,11 +9,8 @@ import { cn } from "@/lib/utils";
 // and composes the design-system components. Source of truth: Figma node 51:3386 (desktop
 // only — no tablet/mobile frame; responsive is adapted per breakpoint).
 //
-// MOTION (estuaire-motion): text is the static anchor; visuals carry the motion. The hero
-// is static (first-screen readability, SC-007). The intro visual and each sector band
-// clip-reveal once on enter. The « infos clés » section has no visuals → static (its big
-// numbers + cross dividers are the anchor; FR-011 places motion on visuals, not text).
-// All reveals honour `prefers-reduced-motion` (handled by `Parallax`).
+// MOTION: the page is static — no scroll/appearance animations on the images (removed at
+// the owner's request). The full-height hero is also static (first-screen readability).
 
 const CONTAINER = "mx-auto w-full max-w-[1920px] px-5 md:px-10 lg:px-[7.29%]";
 
@@ -51,7 +47,7 @@ export default async function UniversPage() {
 			data-nav-links-tone="onLight"
 			data-nav-toggle-tone="onDark"
 		>
-			{/* 1 — Hero (split: dark cartouche + image). Static. */}
+			{/* 1 — Hero (split: dark cartouche + image), full screen height. Static. */}
 			<PageHero
 				variant="split"
 				eyebrow={hero.eyebrow}
@@ -67,12 +63,9 @@ export default async function UniversPage() {
 					aria-hidden
 					className="absolute inset-y-0 left-0 hidden w-[35.2%] bg-cream lg:block"
 				/>
-				<Parallax className={cn(CONTAINER, "relative")}>
+				<div className={cn(CONTAINER, "relative")}>
 					<div className="flex flex-col gap-10 py-14 md:py-20 lg:grid lg:grid-cols-[36%_minmax(0,1fr)] lg:items-center lg:gap-x-[8%] lg:py-[7%]">
-						<div
-							data-reveal-clip
-							className="relative aspect-[613/764] w-full overflow-hidden bg-cream"
-						>
+						<div className="relative aspect-[613/764] w-full overflow-hidden bg-cream">
 							{intro.image && (
 								<Image
 									src={intro.image.src}
@@ -94,35 +87,28 @@ export default async function UniversPage() {
 							</p>
 						</div>
 					</div>
-				</Parallax>
+				</div>
 			</section>
 
 			{/* 3 — Secteurs: four full-bleed bands (image + veil + title + rule + promise + CTA) */}
-			<Parallax>
-				<div className="flex flex-col">
-					{sectors.map((sector) => (
-						<div
-							key={sector.href || sector.label}
-							data-reveal-clip
-							className="relative"
-						>
-							<FeatureBlock
-								display
-								image={sector.image?.src}
-								alt={sector.image?.alt ?? `Estuaire — ${sector.label}`}
-								blurDataURL={sector.image?.blurDataURL}
-								title={sector.label}
-								body={sector.promise}
-								rule
-								cta={{ label: SECTOR_CTA_LABEL, href: sector.href }}
-								ctaUmamiEvent="sector_cta_click"
-								ctaUmamiData={{ sector: sectorSlug(sector.href, sector.label) }}
-								className="aspect-[390/470] md:aspect-[768/520] lg:aspect-[1920/718]"
-							/>
-						</div>
-					))}
-				</div>
-			</Parallax>
+			<div className="flex flex-col">
+				{sectors.map((sector) => (
+					<FeatureBlock
+						key={sector.href || sector.label}
+						display
+						image={sector.image?.src}
+						alt={sector.image?.alt ?? `Estuaire — ${sector.label}`}
+						blurDataURL={sector.image?.blurDataURL}
+						title={sector.label}
+						body={sector.promise}
+						rule
+						cta={{ label: SECTOR_CTA_LABEL, href: sector.href }}
+						ctaUmamiEvent="sector_cta_click"
+						ctaUmamiData={{ sector: sectorSlug(sector.href, sector.label) }}
+						className="aspect-[390/470] md:aspect-[768/520] lg:aspect-[1920/718]"
+					/>
+				))}
+			</div>
 
 			{/* 4 — Infos clés: 2×2 grid of figures with cross dividers (static — text anchor) */}
 			<section className="bg-cream">

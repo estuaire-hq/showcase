@@ -62,14 +62,39 @@ export function PageHero({
 
 	if (variant === "split") {
 		return (
-			<section className={cn("relative bg-paper", className)}>
-				<div className="flex flex-col lg:grid lg:min-h-[49vw] lg:grid-cols-[1090fr_830fr] lg:items-stretch">
-					{/* Dark cartouche panel — top (mobile) / left (desktop). The navbar overlays it. */}
-					<div className="bg-ink px-[22px] py-12 text-paper md:px-[50px] md:py-16 lg:flex lg:flex-col lg:justify-center lg:px-[7.29%] lg:py-[6%]">
+			<section className={cn("relative isolate bg-paper", className)}>
+				{/* Full-bleed ink panel (desktop) — WIDER than the cartouche column so the image
+				    column overlaps its right edge (maquette: ink 0→1090, image 1029→1780, ~61px
+				    overlap). Behind the content (z-0); the image (z-10) paints over it. On mobile
+				    the cartouche carries its own bg-ink (full-bleed, stacked). */}
+				<div
+					aria-hidden
+					className="absolute inset-y-0 left-0 z-0 hidden w-[56.8%] bg-ink lg:block"
+				/>
+				{/* Full screen-height hero. Content TOP-aligns below the fixed navbar (transparent,
+				    112px desktop / 80px mobile) — `items-start` + a top padding that clears the navbar
+				    on short viewports and centres the block on tall ones (`max(7.5rem,14vh)`). Both
+				    the cartouche and the image start at the same Y (maquette: eyebrow + image top at
+				    220). Without this the centred content slid under the navbar on laptops. */}
+				<div className="relative z-10 flex min-h-svh flex-col lg:grid lg:grid-cols-[1029fr_891fr] lg:items-start lg:pb-[8vh] lg:pt-[max(7.5rem,14vh)]">
+					{/* Dark cartouche panel — top (mobile) / left (desktop). The transparent navbar
+					    overlays it, so it carries its own navbar clearance on mobile/tablet
+					    (pt-28 / md:pt-32 > the 80–112px navbar). Inline padding matches the page
+					    container (px-5 / md:px-10 / lg 7.29vw = the same content edge as
+					    `lg:px-[7.29%]` of a full-width container) so the title aligns with the rest of
+					    the page; `lg:pl` is viewport-relative (vw), NOT column-relative. On desktop the
+					    cartouche is transparent — the absolute ink panel above provides the black. */}
+					<div className="bg-ink px-5 pt-28 pb-12 text-paper md:px-10 md:pt-32 md:pb-16 lg:bg-transparent lg:py-0 lg:pr-[6%] lg:pl-[7.29vw]">
 						{cartouche}
 					</div>
-					{/* Clean image — below (mobile) / right (desktop), inset on the paper panel. */}
-					<div className="bg-paper lg:flex lg:items-center lg:justify-center lg:py-[3.6%] lg:pr-[7.29%] lg:pl-[4%]">
+					{/* Clean image — below (mobile) / right (desktop). Inline padding matches the
+					    page container so the image's right edge aligns with the page content edge
+					    (lg:pr 7.29vw). `flex-1` fills the remaining height on mobile (full-height hero);
+					    `lg:items-start` top-aligns it with the cartouche on desktop. NO background:
+					    the cell is transparent so the ink panel behind shows through above/below the
+					    image — that's what makes the image overlap the ink (maquette: ink right edge
+					    1090, image left 1029 → ~61px overlap, ink visible around it). */}
+					<div className="flex flex-1 items-center justify-center px-5 pb-12 md:px-10 lg:flex-none lg:items-start lg:px-0 lg:py-0 lg:pr-[7.29vw] lg:pl-0">
 						<div className="relative aspect-[751/603] w-full overflow-hidden bg-cream">
 							{image && (
 								<Image

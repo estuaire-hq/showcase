@@ -134,6 +134,7 @@ export const expertisesPage = defineType({
 							type: "string",
 							description:
 								"Destination (sous-page d'expertise). Ex. « /expertises/agencement-sur-mesure ».",
+							validation: (rule) => rule.required(),
 						}),
 					],
 					preview: {

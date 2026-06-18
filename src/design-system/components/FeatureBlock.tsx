@@ -42,17 +42,21 @@ export function FeatureBlock({
 	return (
 		<section
 			className={cn(
-				"group relative isolate aspect-square overflow-hidden md:aspect-[768/718] lg:aspect-[1920/718]",
+				// `bg-ink` is the degraded backdrop when no image is configured yet, so the
+				// veiled card stays dark (white title legible) instead of a broken empty image.
+				"group relative isolate aspect-square overflow-hidden bg-ink md:aspect-[768/718] lg:aspect-[1920/718]",
 				className,
 			)}
 		>
-			<Image
-				src={image}
-				alt={alt}
-				fill
-				sizes="100vw"
-				className="scale-105 object-cover transition-[filter] duration-500 ease-out group-hover:blur-[15px]"
-			/>
+			{image && (
+				<Image
+					src={image}
+					alt={alt}
+					fill
+					sizes="100vw"
+					className="scale-105 object-cover transition-[filter] duration-500 ease-out group-hover:blur-[15px]"
+				/>
+			)}
 			{/* Kit Rectangle 397 veil = ink @ 0.253 (constant) */}
 			<div className="absolute inset-0 bg-ink/25" />
 			{/* Content sits lower-left (maquette): title then CTA, anchored to the bottom. */}
@@ -65,7 +69,9 @@ export function FeatureBlock({
 				>
 					{title}
 				</Heading>
-				{cta && (
+				{/* Render the CTA only with a real destination — an empty href would be a
+				    dead link to the current page. */}
+				{cta?.href && (
 					<Button
 						tone="light"
 						href={cta.href}

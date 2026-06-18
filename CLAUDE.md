@@ -71,6 +71,25 @@ Out of tmux it prints `wt switch <slug> -x claude` instead. The session boundary
 can't move its own cwd); the spec/plan/tasks files carry the context across it. So: **run Claude inside
 tmux** to get the auto-opened worktree session (see the setup guide).
 
+### Ad-hoc work gets its own worktree too (`/dispatch`)
+
+`/speckit.specify` is the spec-driven path; **`/dispatch`** is the **same worktree+tmux handoff for
+ad-hoc work** — a feature or change that doesn't warrant a full spec (ADR 0015, generalizes ADR 0014).
+It derives a slug, creates a worktree via worktrunk, writes a **brief** to `<worktree>/.dispatch/brief.md`
+(the context carrier across the session boundary — there is no spec.md), and — inside tmux — opens a
+new tmux window with a fresh Claude rooted in the worktree that reads the brief and works. Out of tmux
+it prints the `wt switch <slug> -x claude` fallback. The command itself decides:
+
+- **pass-through vs enriched brief** — a clean one-shot request → the raw prompt; a request refined
+  through discussion → a synthesized brief capturing the decisions made;
+- **`direct` vs `reflect` mode** — a clear mechanical task → the new session implements straight away;
+  a task needing design/trade-offs → it proposes its approach first, then implements.
+
+**Proactively offer `/dispatch`** when, in a normal conversation, a **substantial** implementation is
+ready to start (a feature or a multi-file change — NOT a one-line fix, a quick question, or a tweak to
+the current diff): before editing, ask whether to run it in a worktree + tmux session via `/dispatch`,
+so this session stays free and the work runs in parallel. If they decline, implement here as usual.
+
 ### Driving the dev server (as the agent)
 
 - **Find the URL**: `wt list` or `portless list`.

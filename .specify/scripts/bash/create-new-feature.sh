@@ -116,8 +116,13 @@ get_highest_from_branches() {
     
     if [ -n "$branches" ]; then
         while IFS= read -r branch; do
-            # Clean branch name: remove leading markers and remote prefixes
-            clean_branch=$(echo "$branch" | sed 's/^[* ]*//; s|^remotes/[^/]*/||')
+            # Clean branch name: remove leading markers and remote prefixes.
+            # NOTE (ADR 0014 worktree customization): `git branch -a` prefixes a branch
+            # checked out in ANOTHER worktree with `+` (e.g. "+ 008-feat"). Since feature
+            # branches now live in worktrees, that `+` MUST be stripped too — otherwise those
+            # branches don't match `^[0-9]{3}-` and the next-number scan ignores them,
+            # producing duplicate numbers (post-mortem 0009). Hence `[*+ ]`, not `[* ]`.
+            clean_branch=$(echo "$branch" | sed 's/^[*+ ]*//; s|^remotes/[^/]*/||')
             
             # Extract feature number if branch matches pattern ###-*
             if echo "$clean_branch" | grep -q '^[0-9]\{3\}-'; then

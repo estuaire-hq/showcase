@@ -80,6 +80,33 @@ export const ABOUT_PAGE_QUERY = defineQuery(/* groq */ `
   }
 `);
 
+export const EXPERTISES_PAGE_QUERY = defineQuery(/* groq */ `
+  *[_id == "expertisesPage"][0]{
+    heroEyebrow,
+    heroTitleOutline,
+    heroTitleFill,
+    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    introStatement,
+    introText,
+    introImagePrimary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    introImageSecondary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    levelsTitleOutline,
+    levelsTitleFill,
+    levelsImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    levels[]{
+      title,
+      ctaLabel,
+      ctaHref,
+      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }
+    },
+    statementImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    statementText,
+    seoMetaTitle,
+    seoMetaDescription,
+    seoOgImage{ asset, alt }
+  }
+`);
+
 export const SECTORS_PAGE_QUERY = defineQuery(/* groq */ `
   *[_id == "sectorsPage"][0]{
     heroEyebrow,

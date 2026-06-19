@@ -4,18 +4,24 @@ import { BrandText } from "../typography/BrandText";
 import { Button } from "./Button";
 
 /**
- * Full-bleed image feature band (kit « Notre vision du métier d'agenceur » + the
- * sectors page « 04/ SECTEURS » bands, node 51:3386). A full-bleed image under a ~25%
- * ink veil with overlaid content — a title, an optional separator rule + promise line,
- * and an optional light CTA. Aspect defaults to the kit band 1920/718; pass a responsive
- * `aspect-*` via `className` for a taller stacked layout on small screens.
+ * Full-bleed image feature band — shared by the sectors page « 04/ SECTEURS » bands
+ * (node 51:3386) and the expertises « level cards » (kit « Notre vision du métier
+ * d'agenceur », nodes 51:2958/2969/2981). A full-bleed image under a ~25% ink veil with
+ * overlaid content — a title, an optional separator rule + promise line, and an optional
+ * light CTA pill with a trailing arrow. On hover (kit survol): the image blurs (LAYER_BLUR
+ * 15px) and the CTA turns cream — not a zoom.
+ *
+ * Aspect defaults to the kit band 1920/718; pass a responsive `aspect-*` via `className`
+ * for a taller stacked layout on small screens (expertises: square mobile / 768·718 tablet;
+ * sectors: 390·470 / 768·520). The content layout defaults to centred; pass
+ * `contentClassName` to anchor it elsewhere (expertises cards anchor lower-left). Heading
+ * level is overridable (`titleAs`) so cards can sit as `<h3>` under a section `<h2>`
+ * (semantic hierarchy — FR-014).
  *
  * The title defaults to Montserrat (font-sans, « Notre vision… »); pass `display` for
  * Montserrat Alternates with the brand casse (BrandText) — used by the sector bands
- * (« Retail », « Bureau »…). On hover (kit survol): the image blurs (LAYER_BLUR 15px)
- * and the CTA turns cream — not a zoom.
- *
- * Presentational only (Principle VIII) — image, copy, CTA href + tracking are passed in.
+ * (« Retail », « Bureau »…). Presentational only (Principle VIII) — image, copy, CTA href +
+ * tracking are passed in; the CTA fires a declarative Umami event (`ctaUmamiEvent`).
  */
 export function FeatureBlock({
 	image,
@@ -28,7 +34,9 @@ export function FeatureBlock({
 	ctaUmamiEvent,
 	ctaUmamiData,
 	display = false,
+	titleAs = "h2",
 	className,
+	contentClassName,
 }: {
 	/** Background image src. Absent (unseeded) → the band degrades to its dark backdrop. */
 	image?: string;
@@ -46,8 +54,13 @@ export function FeatureBlock({
 	ctaUmamiEvent?: string;
 	ctaUmamiData?: Record<string, string>;
 	display?: boolean;
+	titleAs?: "h2" | "h3";
 	className?: string;
+	/** Override the overlaid content box (alignment/padding) per consumer — defaults to a
+	 *  centred band; expertises cards anchor it lower-left. */
+	contentClassName?: string;
 }) {
+	const Heading = titleAs;
 	const umami = umamiAttrs(ctaUmamiEvent, ctaUmamiData);
 
 	return (
@@ -70,15 +83,20 @@ export function FeatureBlock({
 			)}
 			{/* Kit Rectangle 397 veil = ink @ 0.253 (constant) */}
 			<div className="absolute inset-0 bg-ink/25" />
-			<div className="relative z-10 flex h-full flex-col justify-center gap-7 px-5 py-12 text-paper md:gap-8 md:px-10 lg:px-[7.29%]">
-				<h2
+			<div
+				className={cn(
+					"relative z-10 flex h-full flex-col justify-center gap-7 px-5 py-12 text-paper md:gap-8 md:px-10 lg:px-[7.29%]",
+					contentClassName,
+				)}
+			>
+				<Heading
 					className={cn(
 						"max-w-[18ch] whitespace-pre-line font-semibold text-title-sm leading-[1.13] lg:text-title",
 						display ? "font-display" : "font-sans",
 					)}
 				>
 					{display ? <BrandText>{title}</BrandText> : title}
-				</h2>
+				</Heading>
 				{(rule || body) && (
 					<div className="flex max-w-[88%] flex-col gap-4 lg:max-w-[85.4%]">
 						{rule && <div className="h-[2px] w-full bg-paper lg:h-[3px]" />}
@@ -89,8 +107,9 @@ export function FeatureBlock({
 						)}
 					</div>
 				)}
-				{cta && (
-					/* Kit BTN = 398×61 (fixed width, not content). Survol: cream on block hover. */
+				{/* Render the CTA only with a real destination — an empty href would be a
+				    dead link to the current page. */}
+				{cta?.href && (
 					<Button
 						tone="light"
 						href={cta.href}

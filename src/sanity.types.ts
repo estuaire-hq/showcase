@@ -148,6 +148,87 @@ export type SectorsPage = {
   };
 };
 
+export type ExpertisesPage = {
+  _id: string;
+  _type: "expertisesPage";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  heroEyebrow?: string;
+  heroTitleOutline?: string;
+  heroTitleFill?: string;
+  heroImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  introStatement?: string;
+  introText?: string;
+  introImagePrimary?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  introImageSecondary?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  levelsTitleOutline?: string;
+  levelsTitleFill?: string;
+  levelsImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  levels?: Array<{
+    title?: string;
+    image?: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: "image";
+    };
+    ctaLabel?: string;
+    ctaHref?: string;
+    _type: "expertiseLevel";
+    _key: string;
+  }>;
+  statementImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  statementText?: string;
+  seoMetaTitle?: string;
+  seoMetaDescription?: string;
+  seoOgImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+};
+
 export type AboutPage = {
   _id: string;
   _type: "aboutPage";
@@ -461,6 +542,7 @@ export type AllSanitySchemaTypes =
   | SanityImageCrop
   | SanityImageHotspot
   | SectorsPage
+  | ExpertisesPage
   | AboutPage
   | HomePage
   | SanityImagePaletteSwatch
@@ -514,6 +596,50 @@ export type HOME_PAGE_QUERY_RESULT =
       introText: string | null;
       introImagePrimary: null;
       introImageSecondary: null;
+      expertisesTitleOutline: null;
+      expertisesTitleFill: null;
+      expertisesText: null;
+      expertisesImage: null;
+      expertisesCtaLabel: null;
+      expertisesCtaHref: null;
+      universSectors: null;
+      realisationsTitleOutline: null;
+      realisationsTitleFill: null;
+      realisationsCtaLabel: null;
+      realisationsCtaHref: null;
+      visionTitleOutline: null;
+      visionTitleFill: null;
+      visionText: null;
+      visionImage: null;
+      visionCtaLabel: null;
+      visionCtaHref: null;
+      seoMetaTitle: string | null;
+      seoMetaDescription: string | null;
+      seoOgImage: {
+        asset: SanityImageAssetReference | null;
+        alt: string | null;
+      } | null;
+    }
+  | {
+      heroLabel: null;
+      heroSlides: null;
+      introTitleOutline: null;
+      introTitleFill: null;
+      introText: string | null;
+      introImagePrimary: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      introImageSecondary: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
       expertisesTitleOutline: null;
       expertisesTitleFill: null;
       expertisesText: null;
@@ -813,6 +939,68 @@ export type ABOUT_PAGE_QUERY_RESULT =
         alt: string | null;
         lqip: string | null;
       } | null;
+      introHighlight: null;
+      visionTitleOutline: null;
+      visionTitleFill: null;
+      visionText: null;
+      visionImages: null;
+      atelierTitleOutline: null;
+      atelierTitleFill: null;
+      atelierText: null;
+      atelierPillarsLead: null;
+      atelierPillars: null;
+      atelierCapabilities: null;
+      atelierImages: null;
+      atelierHighlight: null;
+      processTitleOutline: null;
+      processTitleFill: null;
+      processIntro: null;
+      processIntroImage: null;
+      processSteps: null;
+      statementImage: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      statementText: string | null;
+      ctaLabel: null;
+      ctaHref: null;
+      seoMetaTitle: string | null;
+      seoMetaDescription: string | null;
+      seoOgImage: {
+        asset: SanityImageAssetReference | null;
+        alt: string | null;
+      } | null;
+    }
+  | {
+      heroEyebrow: string | null;
+      heroTitleOutline: string | null;
+      heroTitleFill: string | null;
+      heroImage: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      introStatement: string | null;
+      introText: string | null;
+      introImagePrimary: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      introImageSecondary: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
       introHighlight: string | null;
       visionTitleOutline: string | null;
       visionTitleFill: string | null;
@@ -871,6 +1059,202 @@ export type ABOUT_PAGE_QUERY_RESULT =
       statementText: string | null;
       ctaLabel: string | null;
       ctaHref: string | null;
+      seoMetaTitle: string | null;
+      seoMetaDescription: string | null;
+      seoOgImage: {
+        asset: SanityImageAssetReference | null;
+        alt: string | null;
+      } | null;
+    }
+  | null;
+
+// Source: src/lib/sanity/queries.ts
+// Variable: EXPERTISES_PAGE_QUERY
+// Query: *[_id == "expertisesPage"][0]{    heroEyebrow,    heroTitleOutline,    heroTitleFill,    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    introStatement,    introText,    introImagePrimary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    introImageSecondary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    levelsTitleOutline,    levelsTitleFill,    levelsImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    levels[]{      title,      ctaLabel,      ctaHref,      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }    },    statementImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    statementText,    seoMetaTitle,    seoMetaDescription,    seoOgImage{ asset, alt }  }
+export type EXPERTISES_PAGE_QUERY_RESULT =
+  | {
+      heroEyebrow: null;
+      heroTitleOutline: null;
+      heroTitleFill: null;
+      heroImage: null;
+      introStatement: null;
+      introText: null;
+      introImagePrimary: null;
+      introImageSecondary: null;
+      levelsTitleOutline: null;
+      levelsTitleFill: null;
+      levelsImage: null;
+      levels: null;
+      statementImage: null;
+      statementText: null;
+      seoMetaTitle: null;
+      seoMetaDescription: null;
+      seoOgImage: null;
+    }
+  | {
+      heroEyebrow: null;
+      heroTitleOutline: null;
+      heroTitleFill: null;
+      heroImage: null;
+      introStatement: null;
+      introText: string | null;
+      introImagePrimary: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      introImageSecondary: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      levelsTitleOutline: null;
+      levelsTitleFill: null;
+      levelsImage: null;
+      levels: null;
+      statementImage: null;
+      statementText: null;
+      seoMetaTitle: string | null;
+      seoMetaDescription: string | null;
+      seoOgImage: {
+        asset: SanityImageAssetReference | null;
+        alt: string | null;
+      } | null;
+    }
+  | {
+      heroEyebrow: string | null;
+      heroTitleOutline: string | null;
+      heroTitleFill: string | null;
+      heroImage: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      introStatement: string | null;
+      introText: string | null;
+      introImagePrimary: null;
+      introImageSecondary: null;
+      levelsTitleOutline: null;
+      levelsTitleFill: null;
+      levelsImage: null;
+      levels: null;
+      statementImage: null;
+      statementText: null;
+      seoMetaTitle: string | null;
+      seoMetaDescription: string | null;
+      seoOgImage: {
+        asset: SanityImageAssetReference | null;
+        alt: string | null;
+      } | null;
+    }
+  | {
+      heroEyebrow: string | null;
+      heroTitleOutline: string | null;
+      heroTitleFill: string | null;
+      heroImage: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      introStatement: string | null;
+      introText: string | null;
+      introImagePrimary: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      introImageSecondary: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      levelsTitleOutline: null;
+      levelsTitleFill: null;
+      levelsImage: null;
+      levels: null;
+      statementImage: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      statementText: string | null;
+      seoMetaTitle: string | null;
+      seoMetaDescription: string | null;
+      seoOgImage: {
+        asset: SanityImageAssetReference | null;
+        alt: string | null;
+      } | null;
+    }
+  | {
+      heroEyebrow: string | null;
+      heroTitleOutline: string | null;
+      heroTitleFill: string | null;
+      heroImage: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      introStatement: string | null;
+      introText: string | null;
+      introImagePrimary: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      introImageSecondary: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      levelsTitleOutline: string | null;
+      levelsTitleFill: string | null;
+      levelsImage: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      levels: Array<{
+        title: string | null;
+        ctaLabel: string | null;
+        ctaHref: string | null;
+        image: {
+          asset: SanityImageAssetReference | null;
+          hotspot: SanityImageHotspot | null;
+          crop: SanityImageCrop | null;
+          alt: string | null;
+          lqip: string | null;
+        } | null;
+      }> | null;
+      statementImage: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      statementText: string | null;
       seoMetaTitle: string | null;
       seoMetaDescription: string | null;
       seoOgImage: {
@@ -1037,6 +1421,7 @@ declare module "@sanity/client" {
   interface SanityQueries {
     '\n  *[_id == "homePage"][0]{\n    heroLabel,\n    heroSlides[]{\n      titleOutline,\n      titleFill,\n      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n    },\n    introTitleOutline,\n    introTitleFill,\n    introText,\n    introImagePrimary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introImageSecondary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    expertisesTitleOutline,\n    expertisesTitleFill,\n    expertisesText,\n    expertisesImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    expertisesCtaLabel,\n    expertisesCtaHref,\n    universSectors[]{ label, href },\n    realisationsTitleOutline,\n    realisationsTitleFill,\n    realisationsCtaLabel,\n    realisationsCtaHref,\n    visionTitleOutline,\n    visionTitleFill,\n    visionText,\n    visionImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    visionCtaLabel,\n    visionCtaHref,\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': HOME_PAGE_QUERY_RESULT;
     '\n  *[_id == "aboutPage"][0]{\n    heroEyebrow,\n    heroTitleOutline,\n    heroTitleFill,\n    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introStatement,\n    introText,\n    introImagePrimary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introImageSecondary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introHighlight,\n    visionTitleOutline,\n    visionTitleFill,\n    visionText,\n    visionImages[]{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    atelierTitleOutline,\n    atelierTitleFill,\n    atelierText,\n    atelierPillarsLead,\n    atelierPillars,\n    atelierCapabilities,\n    atelierImages[]{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    atelierHighlight,\n    processTitleOutline,\n    processTitleFill,\n    processIntro,\n    processIntroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    processSteps[]{\n      number,\n      title,\n      text,\n      bullets,\n      images[]{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n    },\n    statementImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    statementText,\n    ctaLabel,\n    ctaHref,\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': ABOUT_PAGE_QUERY_RESULT;
+    '\n  *[_id == "expertisesPage"][0]{\n    heroEyebrow,\n    heroTitleOutline,\n    heroTitleFill,\n    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introStatement,\n    introText,\n    introImagePrimary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introImageSecondary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    levelsTitleOutline,\n    levelsTitleFill,\n    levelsImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    levels[]{\n      title,\n      ctaLabel,\n      ctaHref,\n      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n    },\n    statementImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    statementText,\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': EXPERTISES_PAGE_QUERY_RESULT;
     '\n  *[_id == "sectorsPage"][0]{\n    heroEyebrow,\n    heroTitleOutline,\n    heroTitleFill,\n    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introStatement,\n    introText,\n    introImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    sectors[]{\n      label,\n      promise,\n      href,\n      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n    },\n    keyFigures[]{ value, support },\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': SECTORS_PAGE_QUERY_RESULT;
     '\n  *[_id == "footer"][0]{\n    ctaTitleOutline,\n    ctaTitleFill,\n    ctaButtonLabel,\n    ctaButtonHref,\n    ctaImages[]{\n      asset,\n      hotspot,\n      crop,\n      alt,\n      "lqip": asset->metadata.lqip\n    },\n    tagline,\n    address,\n    contactHref,\n    linkedInUrl,\n    plaquetteLabel,\n    "plaquetteUrl": plaquetteFile.asset->url,\n    navLinks[]{ label, href },\n    legalLinks[]{ label, href }\n  }\n': FOOTER_QUERY_RESULT;
   }

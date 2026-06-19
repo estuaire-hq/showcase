@@ -27,6 +27,7 @@ export function PageHero({
 	image,
 	variant = "overlay",
 	className,
+	cartoucheClassName,
 }: {
 	eyebrow?: string;
 	/** Stroked H1 lines (may contain \n). */
@@ -36,6 +37,9 @@ export function PageHero({
 	image?: PageHeroImage;
 	variant?: "overlay" | "split";
 	className?: string;
+	/** Override the dark title cartouche box (e.g. its width) per page — the default
+	 *  geometry is tuned to « Nous découvrir »; other pages may need a wider cartouche. */
+	cartoucheClassName?: string;
 }) {
 	// Shared cartouche content (eyebrow + rule + H1) — each variant wraps it in its own
 	// positioned dark panel. Single H1 (FR-014): outline lines (stroked) + the solid line.
@@ -138,7 +142,12 @@ export function PageHero({
 
 			{/* Dark title cartouche. Full-width below the image on mobile; overlapping the
 			    image bottom-left on tablet/desktop (negative margin = maquette overlap). */}
-			<div className="relative z-10 bg-ink px-[22px] py-9 text-paper md:-mt-[21%] md:ml-[5.2%] md:w-[89.6%] md:px-[50px] md:py-10 lg:-mt-[16.8%] lg:ml-[7.29%] lg:w-[71%] lg:px-[7%] lg:py-[6.3%]">
+			<div
+				className={cn(
+					"relative z-10 bg-ink px-[22px] py-9 text-paper md:-mt-[21%] md:ml-[5.2%] md:w-[89.6%] md:px-[50px] md:py-10 lg:-mt-[16.8%] lg:ml-[7.29%] lg:w-[71%] lg:px-[7%] lg:py-[6.3%]",
+					cartoucheClassName,
+				)}
+			>
 				{cartouche}
 			</div>
 		</section>

@@ -39,7 +39,12 @@ scripts/end-session.sh --json [--force]
 ```
 
 The script guards against running on the **main checkout** or the **main/master branch** and exits
-non-zero if so. It returns JSON `{"BRANCH","WORKTREE_PATH","MAIN_ROOT","PORTLESS_STOPPED","SERVER_PID"}`.
+non-zero if so. It returns JSON
+`{"BRANCH","WORKTREE_PATH","MAIN_ROOT","PORTLESS_STOPPED","SERVER_PID","TMUX_WINDOW","TMUX_SESSION"}`.
+`TMUX_WINDOW` / `TMUX_SESSION` are the **explicit tmux ids of THIS session's window/session**,
+captured by the script up front from `$TMUX_PANE` (the pane running this session) while the
+environment is intact. They are empty when not running inside tmux. **Step 3 closes the window by
+these ids — never by a bare command.**
 
 ### 2. On failure — report and STOP (do NOT touch tmux)
 
@@ -50,21 +55,32 @@ If the script exits non-zero, relay its error message and **stop**. The window s
 - **Dirty worktree** (uncommitted/untracked changes) → tell the user to commit/stash, **or** re-run
   `/end-session --force` (which DISCARDS those changes). Do not force on your own initiative.
 
-### 3. On success — confirm, then close the tmux window
+### 3. On success — confirm, then close the tmux window **by explicit id**
 
 Briefly confirm what was torn down (branch, worktree path, whether the portless server was stopped).
 
 Then close the session window. The worktree directory no longer exists (the script deleted it), so
-this is a `tmux` IPC call that does not depend on the working directory:
+this is a `tmux` IPC call that does not depend on the working directory.
 
-- **If inside tmux** (`printenv TMUX` is non-empty):
-  - default → `tmux kill-window` (closes this window; ends the session if it was the last window);
-  - if the user passed `--kill-session` in `$ARGUMENTS` → `tmux kill-session` instead (closes the
-    whole session, including any sibling windows — use only when the worktree had its own session).
+⚠️ **NEVER run a bare `tmux kill-window` / `tmux kill-session`.** With no `-t`, tmux targets the
+attached client's **active window** — which is whatever the user happens to be looking at, NOT
+necessarily this session's window. That destroyed an unrelated in-progress window once
+(post-mortem 0012). ALWAYS pass the explicit id captured by the script.
 
-  This is the **final** action: it terminates this Claude session, so do it last, after the confirmation.
+Use the `TMUX_WINDOW` / `TMUX_SESSION` ids from the script's JSON:
 
-- **If NOT inside tmux**: there is no window to close. Just confirm the worktree + branch are gone and stop.
+- **If `TMUX_WINDOW` is non-empty** (we were inside tmux):
+  - default → `tmux kill-window -t "<TMUX_WINDOW>"` (closes exactly this window; ends the session
+    if it was the last window);
+  - if the user passed `--kill-session` in `$ARGUMENTS` → `tmux kill-session -t "<TMUX_SESSION>"`
+    instead (closes the whole session — use only when the worktree had its own dedicated session).
+
+  Substitute the literal id from the JSON (e.g. `tmux kill-window -t @7`). This is the **final**
+  action: it terminates this Claude session, so do it last, after the confirmation.
+
+- **If `TMUX_WINDOW` is empty** (not inside tmux, or the pane could not be resolved): there is no
+  window to close — and you MUST NOT guess one. Just confirm the worktree + branch are gone and tell
+  the user they can close the window manually.
 
 ## Notes
 
@@ -78,3 +94,9 @@ this is a `tmux` IPC call that does not depend on the working directory:
   branch by name.
 - **`--force`**: passes `-f` to `wt remove` to drop a dirty worktree. The default (no `-f`) lets
   uncommitted work block removal — the safety net.
+- **Why kill the window by explicit id (`-t <TMUX_WINDOW>`), never bare**: `tmux kill-window` with
+  no target kills the attached client's *active* window — the one the user is focused on, which may
+  be a different worktree's session or unrelated work, not this one. The script captures this
+  session's own window id from `$TMUX_PANE` up front (env intact, before teardown) and returns it,
+  so the close is deterministic and scoped. A bare `kill-window` once destroyed an unrelated
+  in-progress window — see [[post-mortems/0012-end-session-killed-wrong-tmux-window]].

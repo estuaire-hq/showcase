@@ -63,6 +63,20 @@ if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ] || [ "$BRANCH" = "HEAD" ];
   exit 1
 fi
 
+# Capture THIS session's tmux window/session UP FRONT, while the environment is intact
+# (before any teardown disturbs the cwd). The /end-session command uses these to close
+# EXACTLY this window by id (`kill-window -t <id>`) — never a bare `tmux kill-window`,
+# which targets the attached client's ACTIVE window and so killed the WRONG window once
+# (an unrelated in-progress session). Resolve via $TMUX_PANE (the pane running this
+# session), NOT the client's notion of "current". Empty ⇒ not inside tmux ⇒ the command
+# closes nothing. See docs/vault/post-mortems/0012-end-session-killed-wrong-tmux-window.md.
+TMUX_WINDOW=""
+TMUX_SESSION=""
+if [ -n "${TMUX:-}" ] && [ -n "${TMUX_PANE:-}" ]; then
+  TMUX_WINDOW=$(tmux display-message -p -t "$TMUX_PANE" '#{window_id}' 2>/dev/null) || true
+  TMUX_SESSION=$(tmux display-message -p -t "$TMUX_PANE" '#{session_id}' 2>/dev/null) || true
+fi
+
 # --- 1. Stop ONLY this branch's portless dev server (if running). No prune. ---
 # A worktree is served at http://<branch>.estuaire.localhost:1355 (see .config/wt.toml).
 # `portless list` is the authoritative route->pid map; grab the pid for THIS branch's host.
@@ -102,11 +116,12 @@ fi
 
 # --- 3. Report. tmux teardown is the /end-session command's job (only on success). ---
 if $JSON_MODE; then
-  printf '{"BRANCH":"%s","WORKTREE_PATH":"%s","MAIN_ROOT":"%s","PORTLESS_STOPPED":%s,"SERVER_PID":"%s"}\n' \
-    "$BRANCH" "$CURRENT" "$MAIN_ROOT" "$PORTLESS_STOPPED" "$SERVER_PID"
+  printf '{"BRANCH":"%s","WORKTREE_PATH":"%s","MAIN_ROOT":"%s","PORTLESS_STOPPED":%s,"SERVER_PID":"%s","TMUX_WINDOW":"%s","TMUX_SESSION":"%s"}\n' \
+    "$BRANCH" "$CURRENT" "$MAIN_ROOT" "$PORTLESS_STOPPED" "$SERVER_PID" "$TMUX_WINDOW" "$TMUX_SESSION"
 else
   echo "Stopped portless server: $PORTLESS_STOPPED${SERVER_PID:+ (pid $SERVER_PID)}"
   echo "Removed worktree:        $CURRENT"
   echo "Deleted local branch:    $BRANCH"
   echo "MAIN_ROOT:               $MAIN_ROOT"
+  echo "tmux window/session:     ${TMUX_WINDOW:-(none - not in tmux)}${TMUX_SESSION:+ / $TMUX_SESSION}"
 fi

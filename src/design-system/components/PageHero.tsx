@@ -1,4 +1,5 @@
 import Image from "next/image";
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { BrandText } from "../typography/BrandText";
 import { OutlineText } from "../typography/OutlineText";
@@ -26,6 +27,7 @@ export function PageHero({
 	titleFill,
 	image,
 	variant = "overlay",
+	breadcrumb,
 	className,
 	cartoucheClassName,
 }: {
@@ -36,15 +38,19 @@ export function PageHero({
 	titleFill: string;
 	image?: PageHeroImage;
 	variant?: "overlay" | "split";
+	/** Optional breadcrumb rendered above the eyebrow, inside the cartouche (sector pages:
+	 *  « univers / <Secteur> »). Colour is inherited from the cartouche (paper on ink). */
+	breadcrumb?: ReactNode;
 	className?: string;
 	/** Override the dark title cartouche box (e.g. its width) per page — the default
 	 *  geometry is tuned to « Nous découvrir »; other pages may need a wider cartouche. */
 	cartoucheClassName?: string;
 }) {
-	// Shared cartouche content (eyebrow + rule + H1) — each variant wraps it in its own
-	// positioned dark panel. Single H1 (FR-014): outline lines (stroked) + the solid line.
+	// Shared cartouche content (breadcrumb + eyebrow + rule + H1) — each variant wraps it in
+	// its own positioned dark panel. Single H1 (FR-014): outline lines (stroked) + solid line.
 	const cartouche = (
 		<div className="flex flex-col gap-5 lg:gap-12">
+			{breadcrumb && <div className="-mb-1 lg:-mb-6">{breadcrumb}</div>}
 			{eyebrow && (
 				<p className="whitespace-pre-line font-display font-semibold text-caption lg:text-lead">
 					<BrandText>{eyebrow}</BrandText>

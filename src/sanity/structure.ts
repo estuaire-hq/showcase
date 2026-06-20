@@ -14,6 +14,10 @@ const SINGLETONS = [
 	"footer",
 ];
 
+// Non-singleton types listed explicitly above; excluded from the auto-filter so they
+// don't appear twice in « Contenu ».
+const EXPLICIT_TYPES = [...SINGLETONS, "sectorDetail"];
+
 export const structure: StructureResolver = (S) =>
 	S.list()
 		.title("Contenu")
@@ -55,6 +59,14 @@ export const structure: StructureResolver = (S) =>
 						.title("Univers"),
 				),
 			S.listItem()
+				.title("Univers — secteurs")
+				.icon(ThLargeIcon)
+				.child(
+					S.documentTypeList("sectorDetail")
+						.title("Univers — secteurs")
+						.defaultOrdering([{ field: "title", direction: "asc" }]),
+				),
+			S.listItem()
 				.title("Pied de page")
 				.icon(InlineIcon)
 				.child(
@@ -65,6 +77,6 @@ export const structure: StructureResolver = (S) =>
 				),
 			S.divider(),
 			...S.documentTypeListItems().filter(
-				(listItem) => !SINGLETONS.includes(listItem.getId() as string),
+				(listItem) => !EXPLICIT_TYPES.includes(listItem.getId() as string),
 			),
 		]);

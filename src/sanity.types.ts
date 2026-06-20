@@ -88,6 +88,95 @@ export type SanityImageHotspot = {
   width?: number;
 };
 
+export type SectorDetail = {
+  _id: string;
+  _type: "sectorDetail";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  slug?: Slug;
+  heroEyebrow?: string;
+  heroTitleOutline?: string;
+  heroTitleFill?: string;
+  heroImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  introStatement?: string;
+  introText?: string;
+  introImageMain?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  introImagePortrait?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  introImageSquare?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  enjeuxTitleOutline?: string;
+  enjeuxTitleFill?: string;
+  enjeux?: Array<string>;
+  contraintesTitleOutline?: string;
+  contraintesTitleFill?: string;
+  contraintes?: Array<{
+    label?: string;
+    emphasis?: "outline" | "ink" | "accent";
+    _type: "constraintChip";
+    _key: string;
+  }>;
+  argument?: string;
+  citations?: Array<{
+    quote?: string;
+    attribution?: string;
+    image?: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: "image";
+    };
+    _type: "testimonial";
+    _key: string;
+  }>;
+  seoMetaTitle?: string;
+  seoMetaDescription?: string;
+  seoOgImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+};
+
+export type Slug = {
+  _type: "slug";
+  current?: string;
+  source?: string;
+};
+
 export type SectorsPage = {
   _id: string;
   _type: "sectorsPage";
@@ -529,18 +618,14 @@ export type Geopoint = {
   alt?: number;
 };
 
-export type Slug = {
-  _type: "slug";
-  current?: string;
-  source?: string;
-};
-
 export type AllSanitySchemaTypes =
   | SanityImageAssetReference
   | SanityFileAssetReference
   | Footer
   | SanityImageCrop
   | SanityImageHotspot
+  | SectorDetail
+  | Slug
   | SectorsPage
   | ExpertisesPage
   | AboutPage
@@ -552,8 +637,7 @@ export type AllSanitySchemaTypes =
   | SanityFileAsset
   | SanityAssetSourceData
   | SanityImageAsset
-  | Geopoint
-  | Slug;
+  | Geopoint;
 
 // Source: src/lib/sanity/queries.ts
 // Variable: HOME_PAGE_QUERY
@@ -1368,6 +1452,74 @@ export type SECTORS_PAGE_QUERY_RESULT =
   | null;
 
 // Source: src/lib/sanity/queries.ts
+// Variable: SECTOR_DETAIL_QUERY
+// Query: *[_type == "sectorDetail" && slug.current == $slug][0]{    title,    "slug": slug.current,    heroEyebrow,    heroTitleOutline,    heroTitleFill,    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    introStatement,    introText,    introImageMain{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    introImagePortrait{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    introImageSquare{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    enjeuxTitleOutline,    enjeuxTitleFill,    enjeux,    contraintesTitleOutline,    contraintesTitleFill,    contraintes[]{ label, emphasis },    argument,    citations[]{      quote,      attribution,      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }    },    seoMetaTitle,    seoMetaDescription,    seoOgImage{ asset, alt }  }
+export type SECTOR_DETAIL_QUERY_RESULT = {
+  title: string | null;
+  slug: string | null;
+  heroEyebrow: string | null;
+  heroTitleOutline: string | null;
+  heroTitleFill: string | null;
+  heroImage: {
+    asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+    alt: string | null;
+    lqip: string | null;
+  } | null;
+  introStatement: string | null;
+  introText: string | null;
+  introImageMain: {
+    asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+    alt: string | null;
+    lqip: string | null;
+  } | null;
+  introImagePortrait: {
+    asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+    alt: string | null;
+    lqip: string | null;
+  } | null;
+  introImageSquare: {
+    asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+    alt: string | null;
+    lqip: string | null;
+  } | null;
+  enjeuxTitleOutline: string | null;
+  enjeuxTitleFill: string | null;
+  enjeux: Array<string> | null;
+  contraintesTitleOutline: string | null;
+  contraintesTitleFill: string | null;
+  contraintes: Array<{
+    label: string | null;
+    emphasis: "accent" | "ink" | "outline" | null;
+  }> | null;
+  argument: string | null;
+  citations: Array<{
+    quote: string | null;
+    attribution: string | null;
+    image: {
+      asset: SanityImageAssetReference | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      alt: string | null;
+      lqip: string | null;
+    } | null;
+  }> | null;
+  seoMetaTitle: string | null;
+  seoMetaDescription: string | null;
+  seoOgImage: {
+    asset: SanityImageAssetReference | null;
+    alt: string | null;
+  } | null;
+} | null;
+
+// Source: src/lib/sanity/queries.ts
 // Variable: FOOTER_QUERY
 // Query: *[_id == "footer"][0]{    ctaTitleOutline,    ctaTitleFill,    ctaButtonLabel,    ctaButtonHref,    ctaImages[]{      asset,      hotspot,      crop,      alt,      "lqip": asset->metadata.lqip    },    tagline,    address,    contactHref,    linkedInUrl,    plaquetteLabel,    "plaquetteUrl": plaquetteFile.asset->url,    navLinks[]{ label, href },    legalLinks[]{ label, href }  }
 export type FOOTER_QUERY_RESULT =
@@ -1423,6 +1575,7 @@ declare module "@sanity/client" {
     '\n  *[_id == "aboutPage"][0]{\n    heroEyebrow,\n    heroTitleOutline,\n    heroTitleFill,\n    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introStatement,\n    introText,\n    introImagePrimary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introImageSecondary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introHighlight,\n    visionTitleOutline,\n    visionTitleFill,\n    visionText,\n    visionImages[]{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    atelierTitleOutline,\n    atelierTitleFill,\n    atelierText,\n    atelierPillarsLead,\n    atelierPillars,\n    atelierCapabilities,\n    atelierImages[]{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    atelierHighlight,\n    processTitleOutline,\n    processTitleFill,\n    processIntro,\n    processIntroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    processSteps[]{\n      number,\n      title,\n      text,\n      bullets,\n      images[]{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n    },\n    statementImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    statementText,\n    ctaLabel,\n    ctaHref,\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': ABOUT_PAGE_QUERY_RESULT;
     '\n  *[_id == "expertisesPage"][0]{\n    heroEyebrow,\n    heroTitleOutline,\n    heroTitleFill,\n    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introStatement,\n    introText,\n    introImagePrimary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introImageSecondary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    levelsTitleOutline,\n    levelsTitleFill,\n    levelsImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    levels[]{\n      title,\n      ctaLabel,\n      ctaHref,\n      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n    },\n    statementImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    statementText,\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': EXPERTISES_PAGE_QUERY_RESULT;
     '\n  *[_id == "sectorsPage"][0]{\n    heroEyebrow,\n    heroTitleOutline,\n    heroTitleFill,\n    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introStatement,\n    introText,\n    introImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    sectors[]{\n      label,\n      promise,\n      href,\n      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n    },\n    keyFigures[]{ value, support },\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': SECTORS_PAGE_QUERY_RESULT;
+    '\n  *[_type == "sectorDetail" && slug.current == $slug][0]{\n    title,\n    "slug": slug.current,\n    heroEyebrow,\n    heroTitleOutline,\n    heroTitleFill,\n    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introStatement,\n    introText,\n    introImageMain{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introImagePortrait{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introImageSquare{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    enjeuxTitleOutline,\n    enjeuxTitleFill,\n    enjeux,\n    contraintesTitleOutline,\n    contraintesTitleFill,\n    contraintes[]{ label, emphasis },\n    argument,\n    citations[]{\n      quote,\n      attribution,\n      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n    },\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': SECTOR_DETAIL_QUERY_RESULT;
     '\n  *[_id == "footer"][0]{\n    ctaTitleOutline,\n    ctaTitleFill,\n    ctaButtonLabel,\n    ctaButtonHref,\n    ctaImages[]{\n      asset,\n      hotspot,\n      crop,\n      alt,\n      "lqip": asset->metadata.lqip\n    },\n    tagline,\n    address,\n    contactHref,\n    linkedInUrl,\n    plaquetteLabel,\n    "plaquetteUrl": plaquetteFile.asset->url,\n    navLinks[]{ label, href },\n    legalLinks[]{ label, href }\n  }\n': FOOTER_QUERY_RESULT;
   }
 }

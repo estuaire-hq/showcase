@@ -23,7 +23,10 @@ type SubpageImages = {
 function subpageSeed(slug: string, images: SubpageImages) {
 	const c: ExpertiseSubpageContent = expertiseSubpagesContent[slug];
 	return defineSeed<ExpertiseSubpage>({
-		_id: `expertiseSubpage.${slug}`,
+		// Dot-free id: a `.` in a Sanity _id is a reserved namespace (`drafts.`/`versions.`),
+		// so a dotted id is treated as a non-published version and never reaches the public
+		// `published` perspective (post-mortem 0010). Mirror `sectorDetail-<slug>`.
+		_id: `expertiseSubpage-${slug}`,
 		_type: "expertiseSubpage",
 		title: c.seoMetaTitle,
 		slug: { _type: "slug", current: slug },

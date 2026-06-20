@@ -272,6 +272,13 @@ The schema is the single source of truth; types are **generated, never hand-writ
   field or a referenced asset absent on disk. Run it before `npm run seed`.
 - Write policy: `npm run seed` = `createIfNotExists` (never clobbers editor edits); add `--reset`
   to reset documents to the maquette. Restrict to one type with a positional arg (`-- footer`).
+- **NEVER put a `.` in a seed document `_id`.** Sanity reserves the dot as an `_id` namespace
+  (`drafts.…`, `versions.<release>.…`): a dotted `_id` is treated as a *version*, so it is
+  **never served on the public `published` perspective** — the doc reads fine with a token (Studio
+  + authenticated reads) but is **invisible to anonymous/SSR reads**, so the front renders text
+  fallback **without** the Sanity images. Use a hyphen for multi-instance ids
+  (`expertiseSubpage-agencement-sur-mesure`, like `sectorDetail-retail`), never
+  `expertiseSubpage.<slug>`. Symptom + decisive test in post-mortem 0010 (addendum).
 - Maquette copy shared between a seed and the front fallback lives once in `src/content/<doc>.ts`.
 - **Seed source images live in `seed-assets/`** — committed (so a fresh checkout / CI has them),
   **outside `public/`** (so they are never served by Next nor copied into the runtime image),

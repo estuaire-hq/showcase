@@ -107,6 +107,41 @@ export const EXPERTISES_PAGE_QUERY = defineQuery(/* groq */ `
   }
 `);
 
+export const EXPERTISE_SUBPAGE_QUERY = defineQuery(/* groq */ `
+  *[_type == "expertiseSubpage" && slug.current == $slug][0]{
+    "slug": slug.current,
+    breadcrumb,
+    heroEyebrow,
+    heroTitleOutline,
+    heroTitleFill,
+    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    introStatement,
+    introText,
+    introImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    responsableTitleOutline,
+    responsableTitleFill,
+    responsableText,
+    responsableImages[]{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    engagementsTitleOutline,
+    engagementsTitleFill,
+    engagements[]{ title },
+    caseStudyTitleOutline,
+    caseStudyTitleFill,
+    caseStudyImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    caseStudyProjectTitle,
+    caseStudyMeta,
+    caseStudyCtaLabel,
+    caseStudyCtaHref,
+    seoMetaTitle,
+    seoMetaDescription,
+    seoOgImage{ asset, alt }
+  }
+`);
+
+export const EXPERTISE_SUBPAGE_SLUGS_QUERY = defineQuery(/* groq */ `
+  *[_type == "expertiseSubpage" && defined(slug.current)]{ "slug": slug.current }
+`);
+
 export const SECTORS_PAGE_QUERY = defineQuery(/* groq */ `
   *[_id == "sectorsPage"][0]{
     heroEyebrow,

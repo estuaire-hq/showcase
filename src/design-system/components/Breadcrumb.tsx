@@ -3,11 +3,12 @@ import { cn } from "@/lib/utils";
 import { BrandText } from "../typography/BrandText";
 
 /**
- * Breadcrumb — « univers / <Secteur> » (maquette: sector hero, node 51:3520 @140,152,
- * Montserrat Alternates 400 16px, paper over the dark hero panel). Presentational only
- * (Principle VIII); colour is inherited (`currentColor`) so it adapts to its surface —
- * set it on a parent (paper in the dark hero). The last item is the current page; any
- * earlier item with an `href` is a link back (e.g. « univers » → `/univers`, FR-004).
+ * Breadcrumb — « univers / <Secteur> » (sector hero) and « univers / <expertise> sur-mesure »
+ * (expertise sub-page hero), node @140,152, Montserrat Alternates 400 16px, paper over the
+ * dark hero. Presentational only (Principle VIII); colour is inherited (`currentColor`) so it
+ * adapts to its surface — set it on a parent (paper in the dark hero). The last item is the
+ * current page; any earlier item with an `href` is a link back (e.g. « univers » → `/univers`,
+ * « univers » → `/expertises` for the expertise sub-pages).
  */
 export type BreadcrumbItem = { label: string; href?: string };
 
@@ -20,6 +21,7 @@ export function Breadcrumb({
 	separator?: string;
 	className?: string;
 }) {
+	if (items.length === 0) return null;
 	return (
 		<nav
 			aria-label="Fil d'ariane"
@@ -43,7 +45,7 @@ export function Breadcrumb({
 						{item.href && !isLast ? (
 							<Link
 								href={item.href}
-								className="transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:underline"
+								className="transition-opacity hover:opacity-70 focus-visible:underline focus-visible:outline-none"
 							>
 								<BrandText>{item.label}</BrandText>
 							</Link>

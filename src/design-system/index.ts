@@ -12,6 +12,7 @@ export {
 	type CaseStudyPanelData,
 } from "./components/CaseStudyPanel";
 export { ContactButton } from "./components/ContactButton";
+export { EngagementsGrid } from "./components/EngagementsGrid";
 export { FeatureBlock } from "./components/FeatureBlock";
 export { FileInput } from "./components/FileInput";
 export { Filter } from "./components/Filter";

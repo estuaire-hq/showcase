@@ -1,4 +1,5 @@
 import {
+	DocumentsIcon,
 	HomeIcon,
 	InfoOutlineIcon,
 	InlineIcon,
@@ -13,6 +14,11 @@ const SINGLETONS = [
 	"sectorsPage",
 	"footer",
 ];
+
+// Types with an explicit desk entry below — excluded from the auto-listed types after the
+// divider so they are not duplicated. `expertiseSubpage` is multi-instance (NOT a singleton)
+// but gets its own curated list (the 3 expertise sub-pages).
+const EXPLICIT = [...SINGLETONS, "expertiseSubpage"];
 
 export const structure: StructureResolver = (S) =>
 	S.list()
@@ -46,6 +52,14 @@ export const structure: StructureResolver = (S) =>
 						.title("Expertises"),
 				),
 			S.listItem()
+				.title("Sous-pages d'expertise")
+				.icon(DocumentsIcon)
+				.child(
+					S.documentTypeList("expertiseSubpage").title(
+						"Sous-pages d'expertise",
+					),
+				),
+			S.listItem()
 				.title("Univers")
 				.icon(ThLargeIcon)
 				.child(
@@ -65,6 +79,6 @@ export const structure: StructureResolver = (S) =>
 				),
 			S.divider(),
 			...S.documentTypeListItems().filter(
-				(listItem) => !SINGLETONS.includes(listItem.getId() as string),
+				(listItem) => !EXPLICIT.includes(listItem.getId() as string),
 			),
 		]);

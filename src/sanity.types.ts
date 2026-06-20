@@ -148,6 +148,87 @@ export type SectorsPage = {
   };
 };
 
+export type ExpertiseSubpage = {
+  _id: string;
+  _type: "expertiseSubpage";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  slug?: Slug;
+  breadcrumb?: string;
+  heroEyebrow?: string;
+  heroTitleOutline?: string;
+  heroTitleFill?: string;
+  heroImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  introStatement?: string;
+  introText?: string;
+  introImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  responsableTitleOutline?: string;
+  responsableTitleFill?: string;
+  responsableText?: string;
+  responsableImages?: Array<{
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+    _key: string;
+  }>;
+  engagementsTitleOutline?: string;
+  engagementsTitleFill?: string;
+  engagements?: Array<{
+    title?: string;
+    _type: "engagement";
+    _key: string;
+  }>;
+  caseStudyTitleOutline?: string;
+  caseStudyTitleFill?: string;
+  caseStudyImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  caseStudyProjectTitle?: string;
+  caseStudyMeta?: Array<string>;
+  caseStudyCtaLabel?: string;
+  caseStudyCtaHref?: string;
+  seoMetaTitle?: string;
+  seoMetaDescription?: string;
+  seoOgImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+};
+
+export type Slug = {
+  _type: "slug";
+  current?: string;
+  source?: string;
+};
+
 export type ExpertisesPage = {
   _id: string;
   _type: "expertisesPage";
@@ -529,12 +610,6 @@ export type Geopoint = {
   alt?: number;
 };
 
-export type Slug = {
-  _type: "slug";
-  current?: string;
-  source?: string;
-};
-
 export type AllSanitySchemaTypes =
   | SanityImageAssetReference
   | SanityFileAssetReference
@@ -542,6 +617,8 @@ export type AllSanitySchemaTypes =
   | SanityImageCrop
   | SanityImageHotspot
   | SectorsPage
+  | ExpertiseSubpage
+  | Slug
   | ExpertisesPage
   | AboutPage
   | HomePage
@@ -552,8 +629,7 @@ export type AllSanitySchemaTypes =
   | SanityFileAsset
   | SanityAssetSourceData
   | SanityImageAsset
-  | Geopoint
-  | Slug;
+  | Geopoint;
 
 // Source: src/lib/sanity/queries.ts
 // Variable: HOME_PAGE_QUERY
@@ -1265,6 +1341,74 @@ export type EXPERTISES_PAGE_QUERY_RESULT =
   | null;
 
 // Source: src/lib/sanity/queries.ts
+// Variable: EXPERTISE_SUBPAGE_QUERY
+// Query: *[_type == "expertiseSubpage" && slug.current == $slug][0]{    "slug": slug.current,    breadcrumb,    heroEyebrow,    heroTitleOutline,    heroTitleFill,    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    introStatement,    introText,    introImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    responsableTitleOutline,    responsableTitleFill,    responsableText,    responsableImages[]{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    engagementsTitleOutline,    engagementsTitleFill,    engagements[]{ title },    caseStudyTitleOutline,    caseStudyTitleFill,    caseStudyImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    caseStudyProjectTitle,    caseStudyMeta,    caseStudyCtaLabel,    caseStudyCtaHref,    seoMetaTitle,    seoMetaDescription,    seoOgImage{ asset, alt }  }
+export type EXPERTISE_SUBPAGE_QUERY_RESULT = {
+  slug: string | null;
+  breadcrumb: string | null;
+  heroEyebrow: string | null;
+  heroTitleOutline: string | null;
+  heroTitleFill: string | null;
+  heroImage: {
+    asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+    alt: string | null;
+    lqip: string | null;
+  } | null;
+  introStatement: string | null;
+  introText: string | null;
+  introImage: {
+    asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+    alt: string | null;
+    lqip: string | null;
+  } | null;
+  responsableTitleOutline: string | null;
+  responsableTitleFill: string | null;
+  responsableText: string | null;
+  responsableImages: Array<{
+    asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+    alt: string | null;
+    lqip: string | null;
+  }> | null;
+  engagementsTitleOutline: string | null;
+  engagementsTitleFill: string | null;
+  engagements: Array<{
+    title: string | null;
+  }> | null;
+  caseStudyTitleOutline: string | null;
+  caseStudyTitleFill: string | null;
+  caseStudyImage: {
+    asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+    alt: string | null;
+    lqip: string | null;
+  } | null;
+  caseStudyProjectTitle: string | null;
+  caseStudyMeta: Array<string> | null;
+  caseStudyCtaLabel: string | null;
+  caseStudyCtaHref: string | null;
+  seoMetaTitle: string | null;
+  seoMetaDescription: string | null;
+  seoOgImage: {
+    asset: SanityImageAssetReference | null;
+    alt: string | null;
+  } | null;
+} | null;
+
+// Source: src/lib/sanity/queries.ts
+// Variable: EXPERTISE_SUBPAGE_SLUGS_QUERY
+// Query: *[_type == "expertiseSubpage" && defined(slug.current)]{ "slug": slug.current }
+export type EXPERTISE_SUBPAGE_SLUGS_QUERY_RESULT = Array<{
+  slug: string | null;
+}>;
+
+// Source: src/lib/sanity/queries.ts
 // Variable: SECTORS_PAGE_QUERY
 // Query: *[_id == "sectorsPage"][0]{    heroEyebrow,    heroTitleOutline,    heroTitleFill,    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    introStatement,    introText,    introImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    sectors[]{      label,      promise,      href,      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }    },    keyFigures[]{ value, support },    seoMetaTitle,    seoMetaDescription,    seoOgImage{ asset, alt }  }
 export type SECTORS_PAGE_QUERY_RESULT =
@@ -1313,6 +1457,35 @@ export type SECTORS_PAGE_QUERY_RESULT =
       introStatement: string | null;
       introText: string | null;
       introImage: null;
+      sectors: null;
+      keyFigures: null;
+      seoMetaTitle: string | null;
+      seoMetaDescription: string | null;
+      seoOgImage: {
+        asset: SanityImageAssetReference | null;
+        alt: string | null;
+      } | null;
+    }
+  | {
+      heroEyebrow: string | null;
+      heroTitleOutline: string | null;
+      heroTitleFill: string | null;
+      heroImage: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      introStatement: string | null;
+      introText: string | null;
+      introImage: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
       sectors: null;
       keyFigures: null;
       seoMetaTitle: string | null;
@@ -1422,6 +1595,8 @@ declare module "@sanity/client" {
     '\n  *[_id == "homePage"][0]{\n    heroLabel,\n    heroSlides[]{\n      titleOutline,\n      titleFill,\n      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n    },\n    introTitleOutline,\n    introTitleFill,\n    introText,\n    introImagePrimary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introImageSecondary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    expertisesTitleOutline,\n    expertisesTitleFill,\n    expertisesText,\n    expertisesImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    expertisesCtaLabel,\n    expertisesCtaHref,\n    universSectors[]{ label, href },\n    realisationsTitleOutline,\n    realisationsTitleFill,\n    realisationsCtaLabel,\n    realisationsCtaHref,\n    visionTitleOutline,\n    visionTitleFill,\n    visionText,\n    visionImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    visionCtaLabel,\n    visionCtaHref,\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': HOME_PAGE_QUERY_RESULT;
     '\n  *[_id == "aboutPage"][0]{\n    heroEyebrow,\n    heroTitleOutline,\n    heroTitleFill,\n    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introStatement,\n    introText,\n    introImagePrimary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introImageSecondary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introHighlight,\n    visionTitleOutline,\n    visionTitleFill,\n    visionText,\n    visionImages[]{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    atelierTitleOutline,\n    atelierTitleFill,\n    atelierText,\n    atelierPillarsLead,\n    atelierPillars,\n    atelierCapabilities,\n    atelierImages[]{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    atelierHighlight,\n    processTitleOutline,\n    processTitleFill,\n    processIntro,\n    processIntroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    processSteps[]{\n      number,\n      title,\n      text,\n      bullets,\n      images[]{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n    },\n    statementImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    statementText,\n    ctaLabel,\n    ctaHref,\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': ABOUT_PAGE_QUERY_RESULT;
     '\n  *[_id == "expertisesPage"][0]{\n    heroEyebrow,\n    heroTitleOutline,\n    heroTitleFill,\n    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introStatement,\n    introText,\n    introImagePrimary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introImageSecondary{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    levelsTitleOutline,\n    levelsTitleFill,\n    levelsImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    levels[]{\n      title,\n      ctaLabel,\n      ctaHref,\n      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n    },\n    statementImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    statementText,\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': EXPERTISES_PAGE_QUERY_RESULT;
+    '\n  *[_type == "expertiseSubpage" && slug.current == $slug][0]{\n    "slug": slug.current,\n    breadcrumb,\n    heroEyebrow,\n    heroTitleOutline,\n    heroTitleFill,\n    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introStatement,\n    introText,\n    introImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    responsableTitleOutline,\n    responsableTitleFill,\n    responsableText,\n    responsableImages[]{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    engagementsTitleOutline,\n    engagementsTitleFill,\n    engagements[]{ title },\n    caseStudyTitleOutline,\n    caseStudyTitleFill,\n    caseStudyImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    caseStudyProjectTitle,\n    caseStudyMeta,\n    caseStudyCtaLabel,\n    caseStudyCtaHref,\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': EXPERTISE_SUBPAGE_QUERY_RESULT;
+    '\n  *[_type == "expertiseSubpage" && defined(slug.current)]{ "slug": slug.current }\n': EXPERTISE_SUBPAGE_SLUGS_QUERY_RESULT;
     '\n  *[_id == "sectorsPage"][0]{\n    heroEyebrow,\n    heroTitleOutline,\n    heroTitleFill,\n    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introStatement,\n    introText,\n    introImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    sectors[]{\n      label,\n      promise,\n      href,\n      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n    },\n    keyFigures[]{ value, support },\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': SECTORS_PAGE_QUERY_RESULT;
     '\n  *[_id == "footer"][0]{\n    ctaTitleOutline,\n    ctaTitleFill,\n    ctaButtonLabel,\n    ctaButtonHref,\n    ctaImages[]{\n      asset,\n      hotspot,\n      crop,\n      alt,\n      "lqip": asset->metadata.lqip\n    },\n    tagline,\n    address,\n    contactHref,\n    linkedInUrl,\n    plaquetteLabel,\n    "plaquetteUrl": plaquetteFile.asset->url,\n    navLinks[]{ label, href },\n    legalLinks[]{ label, href }\n  }\n': FOOTER_QUERY_RESULT;
   }

@@ -28,6 +28,8 @@ export function PageHero({
 	variant = "overlay",
 	className,
 	cartoucheClassName,
+	breadcrumb,
+	imageOverlayClassName = "bg-ink/25 md:hidden",
 }: {
 	eyebrow?: string;
 	/** Stroked H1 lines (may contain \n). */
@@ -40,6 +42,13 @@ export function PageHero({
 	/** Override the dark title cartouche box (e.g. its width) per page — the default
 	 *  geometry is tuned to « Nous découvrir »; other pages may need a wider cartouche. */
 	cartoucheClassName?: string;
+	/** Optional breadcrumb (overlay variant only) — placed top-left over the visual, below the
+	 *  fixed navbar. The caller controls its colour + per-breakpoint visibility (e.g. desktop
+	 *  only, matching the expertise sub-page maquettes). */
+	breadcrumb?: React.ReactNode;
+	/** Veil over the hero image (overlay variant). Default `bg-ink/25 md:hidden` (mobile only,
+	 *  « Nous découvrir »); the expertise sub-pages veil tablet+desktop (`bg-ink/25 hidden md:block`). */
+	imageOverlayClassName?: string;
 }) {
 	// Shared cartouche content (eyebrow + rule + H1) — each variant wraps it in its own
 	// positioned dark panel. Single H1 (FR-014): outline lines (stroked) + the solid line.
@@ -121,9 +130,10 @@ export function PageHero({
 
 	// overlay (default)
 	return (
-		<section className={cn("relative bg-paper", className)}>
-			{/* Full-bleed visual. Mobile carries a 25% ink veil (maquette); tablet/desktop
-			    are clean. `bg-ink` is the degraded backdrop when no image is configured yet. */}
+		<section className={cn("relative isolate bg-paper", className)}>
+			{/* Full-bleed visual. Veil is configurable per page (default: mobile only — « Nous
+			    découvrir »; expertise sub-pages veil tablet+desktop). `bg-ink` is the degraded
+			    backdrop when no image is configured yet. */}
 			<div className="relative aspect-[390/259] w-full overflow-hidden bg-ink md:aspect-[768/377] lg:aspect-[1920/943]">
 				{image && (
 					<Image
@@ -137,8 +147,16 @@ export function PageHero({
 						className="object-cover"
 					/>
 				)}
-				<div className="absolute inset-0 bg-ink/25 md:hidden" />
+				<div className={cn("absolute inset-0", imageOverlayClassName)} />
 			</div>
+
+			{/* Breadcrumb over the visual, top-left, clearing the fixed navbar. Caller sets
+			    colour + per-breakpoint visibility. */}
+			{breadcrumb && (
+				<div className="absolute inset-x-0 top-[104px] z-20 mx-auto w-full max-w-[1920px] px-5 text-paper md:top-[120px] md:px-10 lg:px-[7.29%]">
+					{breadcrumb}
+				</div>
+			)}
 
 			{/* Dark title cartouche. Full-width below the image on mobile; overlapping the
 			    image bottom-left on tablet/desktop (negative margin = maquette overlap). */}

@@ -164,6 +164,37 @@ export const SECTORS_PAGE_QUERY = defineQuery(/* groq */ `
   }
 `);
 
+export const SECTOR_DETAIL_QUERY = defineQuery(/* groq */ `
+  *[_type == "sectorDetail" && slug.current == $slug][0]{
+    title,
+    "slug": slug.current,
+    heroEyebrow,
+    heroTitleOutline,
+    heroTitleFill,
+    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    introStatement,
+    introText,
+    introImageMain{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    introImagePortrait{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    introImageSquare{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    enjeuxTitleOutline,
+    enjeuxTitleFill,
+    enjeux,
+    contraintesTitleOutline,
+    contraintesTitleFill,
+    contraintes[]{ label, emphasis },
+    argument,
+    citations[]{
+      quote,
+      attribution,
+      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }
+    },
+    seoMetaTitle,
+    seoMetaDescription,
+    seoOgImage{ asset, alt }
+  }
+`);
+
 export const FOOTER_QUERY = defineQuery(/* groq */ `
   *[_id == "footer"][0]{
     ctaTitleOutline,

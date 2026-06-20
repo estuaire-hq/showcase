@@ -15,10 +15,10 @@ const SINGLETONS = [
 	"footer",
 ];
 
-// Types with an explicit desk entry below — excluded from the auto-listed types after the
-// divider so they are not duplicated. `expertiseSubpage` is multi-instance (NOT a singleton)
-// but gets its own curated list (the 3 expertise sub-pages).
-const EXPLICIT = [...SINGLETONS, "expertiseSubpage"];
+// Non-singleton types with an explicit desk entry below — excluded from the auto-listed types
+// after the divider so they don't appear twice. `expertiseSubpage` (3 sub-pages) and
+// `sectorDetail` (4 sectors) are multi-instance, each with its own curated list.
+const EXPLICIT = [...SINGLETONS, "expertiseSubpage", "sectorDetail"];
 
 export const structure: StructureResolver = (S) =>
 	S.list()
@@ -67,6 +67,14 @@ export const structure: StructureResolver = (S) =>
 						.schemaType("sectorsPage")
 						.documentId("sectorsPage")
 						.title("Univers"),
+				),
+			S.listItem()
+				.title("Univers — secteurs")
+				.icon(ThLargeIcon)
+				.child(
+					S.documentTypeList("sectorDetail")
+						.title("Univers — secteurs")
+						.defaultOrdering([{ field: "title", direction: "asc" }]),
 				),
 			S.listItem()
 				.title("Pied de page")

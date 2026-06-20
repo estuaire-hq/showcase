@@ -111,7 +111,7 @@ export default async function ExpertiseSubpage({
 				cartoucheClassName="lg:w-[78.2%]"
 				imageOverlayClassName="bg-ink/25 hidden md:block"
 				breadcrumb={
-					<Breadcrumb items={breadcrumb.items} className="hidden lg:block" />
+					<Breadcrumb items={breadcrumb.items} className="hidden lg:flex" />
 				}
 			/>
 

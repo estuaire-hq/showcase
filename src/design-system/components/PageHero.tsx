@@ -1,4 +1,5 @@
 import Image from "next/image";
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { BrandText } from "../typography/BrandText";
 import { OutlineText } from "../typography/OutlineText";
@@ -11,11 +12,13 @@ export type PageHeroImage = { src: string; alt: string; blurDataURL?: string };
  * rule, H1 in the kit outline/fill device, brand casse via BrandText):
  *
  *  - `overlay` (default, « Nous découvrir » node 51:2699): a full-bleed visual with the
- *    cartouche overlapping its bottom-left.
+ *    cartouche overlapping its bottom-left. An optional breadcrumb sits top-left over the
+ *    visual, below the navbar (expertise sub-pages).
  *  - `split` (« Univers » node 51:3386): a dark cartouche panel beside a clean image —
  *    panel left / image right on desktop, cartouche on top / image below on mobile (so
  *    the transparent navbar's logo + toggle sit over the dark cartouche → `onDark`, while
- *    the desktop links sit over the paper half → `onLight`).
+ *    the desktop links sit over the paper half → `onLight`). An optional breadcrumb sits
+ *    inside the cartouche, above the eyebrow (sector pages).
  *
  * STATIC — no autoplay, no controls (distinct from the home `HeroSlideshow`). Reusable
  * by every content page. Per-breakpoint geometry is read on the maquette (Principle VII).
@@ -26,9 +29,9 @@ export function PageHero({
 	titleFill,
 	image,
 	variant = "overlay",
+	breadcrumb,
 	className,
 	cartoucheClassName,
-	breadcrumb,
 	imageOverlayClassName = "bg-ink/25 md:hidden",
 }: {
 	eyebrow?: string;
@@ -38,22 +41,27 @@ export function PageHero({
 	titleFill: string;
 	image?: PageHeroImage;
 	variant?: "overlay" | "split";
+	/** Optional breadcrumb. In `split` it renders inside the cartouche, above the eyebrow
+	 *  (sector pages: « univers / <Secteur> »). In `overlay` it renders top-left over the
+	 *  visual, below the navbar (expertise sub-pages); the caller sets colour + per-breakpoint
+	 *  visibility. Colour is inherited (paper on the dark hero). */
+	breadcrumb?: ReactNode;
 	className?: string;
 	/** Override the dark title cartouche box (e.g. its width) per page — the default
 	 *  geometry is tuned to « Nous découvrir »; other pages may need a wider cartouche. */
 	cartoucheClassName?: string;
-	/** Optional breadcrumb (overlay variant only) — placed top-left over the visual, below the
-	 *  fixed navbar. The caller controls its colour + per-breakpoint visibility (e.g. desktop
-	 *  only, matching the expertise sub-page maquettes). */
-	breadcrumb?: React.ReactNode;
 	/** Veil over the hero image (overlay variant). Default `bg-ink/25 md:hidden` (mobile only,
 	 *  « Nous découvrir »); the expertise sub-pages veil tablet+desktop (`bg-ink/25 hidden md:block`). */
 	imageOverlayClassName?: string;
 }) {
-	// Shared cartouche content (eyebrow + rule + H1) — each variant wraps it in its own
-	// positioned dark panel. Single H1 (FR-014): outline lines (stroked) + the solid line.
-	const cartouche = (
+	// Shared cartouche content (eyebrow + rule + H1). `withBreadcrumb` includes the breadcrumb
+	// inside it (split variant); the overlay variant places the breadcrumb over the visual
+	// instead. Single H1 (FR-014): outline lines (stroked) + the solid line.
+	const cartouche = (withBreadcrumb: boolean) => (
 		<div className="flex flex-col gap-5 lg:gap-12">
+			{withBreadcrumb && breadcrumb && (
+				<div className="-mb-1 lg:-mb-6">{breadcrumb}</div>
+			)}
 			{eyebrow && (
 				<p className="whitespace-pre-line font-display font-semibold text-caption lg:text-lead">
 					<BrandText>{eyebrow}</BrandText>
@@ -98,7 +106,7 @@ export function PageHero({
 					    the page; `lg:pl` is viewport-relative (vw), NOT column-relative. On desktop the
 					    cartouche is transparent — the absolute ink panel above provides the black. */}
 					<div className="bg-ink px-5 pt-28 pb-12 text-paper md:px-10 md:pt-32 md:pb-16 lg:bg-transparent lg:py-0 lg:pr-[6%] lg:pl-[7.29vw]">
-						{cartouche}
+						{cartouche(true)}
 					</div>
 					{/* Clean image — below (mobile) / right (desktop). Inline padding matches the
 					    page container so the image's right edge aligns with the page content edge
@@ -166,7 +174,7 @@ export function PageHero({
 					cartoucheClassName,
 				)}
 			>
-				{cartouche}
+				{cartouche(false)}
 			</div>
 		</section>
 	);

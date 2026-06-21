@@ -137,7 +137,7 @@ export function PinnedCaseStudies({
 		<div ref={ref} className="relative">
 			{cards.map((card, i) => (
 				<div
-					key={card.image}
+					key={card.title}
 					data-cs-layer
 					data-umami-event="home_realisation_click"
 					data-umami-event-card={String(i)}

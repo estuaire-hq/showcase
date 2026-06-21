@@ -195,6 +195,89 @@ export const SECTOR_DETAIL_QUERY = defineQuery(/* groq */ `
   }
 `);
 
+// — Réalisations (collection) —
+
+// Page liste : projection légère de toutes les réalisations sauf brouillon, triées par récence.
+// `published` = cliquables ; `upcoming` = aperçu grisé non cliquable. Le filtrage (Univers /
+// Expertises / Clients) + l'affichage progressif se font côté client (research D4).
+export const REALISATIONS_LIST_QUERY = defineQuery(/* groq */ `
+  *[_type == "realisation" && status in ["published","upcoming"]] | order(order desc, publishedAt desc){
+    "slug": slug.current,
+    title,
+    client,
+    status,
+    univers,
+    expertises,
+    location,
+    year,
+    area,
+    cover{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }
+  }
+`);
+
+// Page détail : une réalisation PUBLIÉE par slug (récit complet + galerie). Le filtre `status ==
+// "published"` garantit qu'une URL « à venir »/« brouillon »/inexistante renvoie null → notFound.
+export const REALISATION_QUERY = defineQuery(/* groq */ `
+  *[_type == "realisation" && slug.current == $slug && status == "published"][0]{
+    "slug": slug.current,
+    title,
+    client,
+    univers,
+    expertises,
+    layout,
+    location,
+    year,
+    area,
+    context,
+    enjeu,
+    interventions,
+    challenges[]{ title, body },
+    skills,
+    photoCredit,
+    cover{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    gallery[]{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    seoMetaTitle,
+    seoMetaDescription,
+    seoOgImage{ asset, alt }
+  }
+`);
+
+// Liste ordonnée des slugs publiés — sert à calculer les voisins précédent/suivant (bornés).
+export const REALISATION_SLUGS_QUERY = defineQuery(/* groq */ `
+  *[_type == "realisation" && status == "published"] | order(order desc, publishedAt desc){
+    "slug": slug.current,
+    title
+  }
+`);
+
+// Réalisations publiées les plus récentes (home + « Dernières Réalisations »). Renvoie jusqu'à 6
+// (le connecteur tranche : 3 cartes + visuels décoratifs de la home — demock, FR-023).
+export const LATEST_REALISATIONS_QUERY = defineQuery(/* groq */ `
+  *[_type == "realisation" && status == "published"] | order(order desc, publishedAt desc)[0...6]{
+    "slug": slug.current,
+    title,
+    client,
+    location,
+    year,
+    area,
+    cover{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }
+  }
+`);
+
+// Réalisation publiée la plus récente rattachée à une expertise (demock des sous-pages, FR-024).
+// `null` si aucune → repli dégradé propre côté connecteur.
+export const EXPERTISE_LATEST_REALISATION_QUERY = defineQuery(/* groq */ `
+  *[_type == "realisation" && status == "published" && $expertise in expertises]
+    | order(order desc, publishedAt desc)[0]{
+    "slug": slug.current,
+    title,
+    location,
+    year,
+    area,
+    cover{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }
+  }
+`);
+
 export const FOOTER_QUERY = defineQuery(/* groq */ `
   *[_id == "footer"][0]{
     ctaTitleOutline,

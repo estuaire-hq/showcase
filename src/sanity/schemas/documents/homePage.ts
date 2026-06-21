@@ -13,10 +13,10 @@ import { imageField } from "../fields";
  * (OutlineText) and the second as a solid fill — both run through BrandText for
  * the UPPERCASE→Montserrat / lowercase→Montserrat Alternates casse rule.
  *
- * Out of this model (deliberate, see spec 005 + ADR 0011):
+ * Out of this model (deliberate, see spec 005 + ADR 0011 / 0020):
  *  - the realisation case-study cards AND the 12-item "réalisations par secteur"
- *    list are STATIC for now (src/content/homeRealisations.ts), all linking to
- *    /realisations — rebound to the CMS with the future "Réalisations" feature;
+ *    list are driven by the `realisation` collection (3 latest + per-univers
+ *    deep-links — feature 012 demock, FR-023), not this singleton;
  *  - the hero slideshow MECHANICS (autoplay, cross-fade) live in the component,
  *    not here — editors only configure the slides.
  */
@@ -180,9 +180,9 @@ export const homePage = defineType({
 		}),
 
 		// — Réalisations —
-		// The case-study cards and the 12-item "par secteur" list are STATIC
-		// (src/content/homeRealisations.ts) — only the section's editorial chrome
-		// (title + CTA) is editable here. See ADR 0011.
+		// The case-study cards and the 12-item "par secteur" list come from the
+		// `realisation` collection (feature 012 demock) — only the section's editorial
+		// chrome (title + CTA) is editable here. See ADR 0011 / 0020.
 		defineField({
 			name: "realisationsTitleOutline",
 			title: "Titre — contour",

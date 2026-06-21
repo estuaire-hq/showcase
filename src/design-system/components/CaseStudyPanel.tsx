@@ -38,15 +38,19 @@ export function CaseStudyPanel({
 				className,
 			)}
 		>
-			{/* Oversized so the background parallax never reveals an edge (no black band). */}
+			{/* Oversized so the background parallax never reveals an edge (no black band).
+			    Guarded: a missing image degrades to the ink panel (the article is `bg-ink`)
+			    rather than a broken `<Image src="">`. */}
 			<div data-cs-image className="absolute inset-0 scale-125">
-				<Image
-					src={image}
-					alt={title}
-					fill
-					sizes="100vw"
-					className="object-cover"
-				/>
+				{image && (
+					<Image
+						src={image}
+						alt={title}
+						fill
+						sizes="100vw"
+						className="object-cover"
+					/>
+				)}
 			</div>
 			<div className="absolute inset-0 bg-ink/35" />
 

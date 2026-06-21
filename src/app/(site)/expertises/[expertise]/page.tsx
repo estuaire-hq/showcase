@@ -13,6 +13,7 @@ import {
 } from "@/design-system";
 import { getExpertiseSubpageProps } from "@/lib/sanity/expertiseSubpage";
 import type { ResolvedImage } from "@/lib/sanity/mapImage";
+import { getLatestRealisationForExpertise } from "@/lib/sanity/realisation";
 import { cn, umamiAttrs } from "@/lib/utils";
 
 // Expertise sub-pages are page-specific content (Principle VIII): this dynamic RSC is the
@@ -95,6 +96,22 @@ export default async function ExpertiseSubpage({
 	const { breadcrumb, hero, intro, responsable, engagements, caseStudy, slug } =
 		props;
 	const caseStudyUmami = umamiAttrs("case_study_click", { expertise: slug });
+
+	// Demock (FR-024) : la section « cas study » met en avant la réalisation publiée la plus
+	// récente de cette expertise (CMS). Repli dégradé propre sur le contenu du doc si aucune.
+	const featured = await getLatestRealisationForExpertise(slug);
+	const cs = {
+		image: featured?.cover ?? caseStudy.image,
+		projectTitle: featured?.title ?? caseStudy.projectTitle,
+		meta: featured?.meta.length ? featured.meta : caseStudy.meta,
+		// The card opens the featured realisation's own detail page; the CTA below leads to the
+		// portfolio filtered on this expertise.
+		cardHref: featured?.slug
+			? `/realisations/${featured.slug}`
+			: caseStudy.ctaHref,
+		ctaHref: featured ? `/realisations?expertise=${slug}` : caseStudy.ctaHref,
+		ctaLabel: caseStudy.ctaLabel,
+	};
 
 	return (
 		<main
@@ -217,18 +234,19 @@ export default async function ExpertiseSubpage({
 				</div>
 				{/* Band: full-bleed on mobile, container-width from md (maquette). */}
 				<div className="mx-auto mt-8 w-full max-w-[1920px] px-0 md:mt-10 md:px-10 lg:px-[7.29%]">
-					{caseStudy.image ? (
+					{cs.image ? (
 						<CaseStudyCard
-							image={caseStudy.image.src}
-							alt={caseStudy.image.alt}
-							title={caseStudy.projectTitle}
-							meta={caseStudy.meta}
+							image={cs.image.src}
+							alt={cs.image.alt}
+							title={cs.projectTitle}
+							meta={cs.meta}
+							href={cs.cardHref}
 							className="aspect-[390/355] md:aspect-[686/300] lg:aspect-[1640/718]"
 						/>
 					) : (
 						<div className="flex aspect-[390/355] items-center justify-center bg-ink text-paper md:aspect-[686/300] lg:aspect-[1640/718]">
 							<span className="font-display font-semibold text-title-sm">
-								<BrandText>{caseStudy.projectTitle}</BrandText>
+								<BrandText>{cs.projectTitle}</BrandText>
 							</span>
 						</div>
 					)}
@@ -237,11 +255,11 @@ export default async function ExpertiseSubpage({
 					<div className="flex justify-center">
 						<Button
 							tone="dark"
-							href={caseStudy.ctaHref}
+							href={cs.ctaHref}
 							className="w-full max-w-[536px]"
 							{...caseStudyUmami}
 						>
-							{caseStudy.ctaLabel}
+							{cs.ctaLabel}
 						</Button>
 					</div>
 				</div>

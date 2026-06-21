@@ -1,6 +1,7 @@
 import {
 	DocumentsIcon,
 	HomeIcon,
+	ImagesIcon,
 	InfoOutlineIcon,
 	InlineIcon,
 	ThLargeIcon,
@@ -16,9 +17,15 @@ const SINGLETONS = [
 ];
 
 // Non-singleton types with an explicit desk entry below — excluded from the auto-listed types
-// after the divider so they don't appear twice. `expertiseSubpage` (3 sub-pages) and
-// `sectorDetail` (4 sectors) are multi-instance, each with its own curated list.
-const EXPLICIT = [...SINGLETONS, "expertiseSubpage", "sectorDetail"];
+// after the divider so they don't appear twice. `expertiseSubpage` (3 sub-pages),
+// `sectorDetail` (4 sectors) and `realisation` (open collection) are multi-instance, each with
+// its own curated list.
+const EXPLICIT = [
+	...SINGLETONS,
+	"expertiseSubpage",
+	"sectorDetail",
+	"realisation",
+];
 
 export const structure: StructureResolver = (S) =>
 	S.list()
@@ -75,6 +82,14 @@ export const structure: StructureResolver = (S) =>
 					S.documentTypeList("sectorDetail")
 						.title("Univers — secteurs")
 						.defaultOrdering([{ field: "title", direction: "asc" }]),
+				),
+			S.listItem()
+				.title("Réalisations")
+				.icon(ImagesIcon)
+				.child(
+					S.documentTypeList("realisation")
+						.title("Réalisations")
+						.defaultOrdering([{ field: "order", direction: "desc" }]),
 				),
 			S.listItem()
 				.title("Pied de page")

@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import {
-	homeRealisationCards,
-	homeRealisationImages,
-	homeRealisationSectors,
-	REALISATIONS_HREF,
-} from "@/content/homeRealisations";
+import { UNIVERS } from "@/content/realisations";
 import {
 	Button,
 	HeroSlideshow,
@@ -16,6 +11,11 @@ import {
 import { Parallax } from "@/lib/motion/Parallax";
 import { PinnedCaseStudies } from "@/lib/motion/PinnedCaseStudies";
 import { getHomePageProps } from "@/lib/sanity/homePage";
+import { getLatestRealisations } from "@/lib/sanity/realisation";
+
+/** Deep-link to the portfolio filtered on a given univers (demock — FR-023). */
+const universHref = (label: string) =>
+	`/realisations?univers=${encodeURIComponent(label)}`;
 
 // The home is page-specific content (Principle VIII): this RSC is the connector — it
 // fetches via `getHomePageProps()` (mapping isolated in `@/lib/sanity/homePage.ts`)
@@ -40,8 +40,18 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-	const { hero, intro, expertises, universSectors, realisations, vision } =
-		await getHomePageProps();
+	const [
+		{ hero, intro, expertises, universSectors, realisations, vision },
+		latest,
+	] = await Promise.all([getHomePageProps(), getLatestRealisations(5)]);
+	// Demock (FR-023) : 3 cartes = 3 plus récentes publiées ; visuels décoratifs = covers suivantes.
+	const featuredCards = latest.slice(0, 3).map((r) => ({
+		image: r.cover?.src ?? "",
+		title: r.title,
+		meta: r.meta,
+	}));
+	const featureImage = latest[3]?.cover ?? latest[0]?.cover;
+	const wideImage = latest[4]?.cover ?? latest[1]?.cover;
 
 	return (
 		// Header tone over the hero (maquette 51:2221: dark-left / light-right): the
@@ -170,15 +180,19 @@ export default async function HomePage() {
 							/>
 							<div
 								data-parallax="6"
-								className="relative aspect-[674/700] w-full overflow-hidden"
+								className="relative aspect-[674/700] w-full overflow-hidden bg-cream"
 							>
-								<Image
-									src={homeRealisationImages.feature.src}
-									alt={homeRealisationImages.feature.alt}
-									fill
-									sizes="(min-width: 1024px) 36vw, 90vw"
-									className="object-cover"
-								/>
+								{featureImage && (
+									<Image
+										src={featureImage.src}
+										alt={featureImage.alt}
+										fill
+										sizes="(min-width: 1024px) 36vw, 90vw"
+										placeholder={featureImage.blurDataURL ? "blur" : "empty"}
+										blurDataURL={featureImage.blurDataURL}
+										className="object-cover"
+									/>
+								)}
 							</div>
 						</div>
 
@@ -186,23 +200,27 @@ export default async function HomePage() {
 						<div className="mt-10 grid gap-8 lg:mt-14 lg:grid-cols-[1fr_536px] lg:items-center lg:gap-16">
 							<div
 								data-parallax="6"
-								className="relative aspect-[1027/625] w-full overflow-hidden"
+								className="relative aspect-[1027/625] w-full overflow-hidden bg-cream"
 							>
-								<Image
-									src={homeRealisationImages.wide.src}
-									alt={homeRealisationImages.wide.alt}
-									fill
-									sizes="(min-width: 1024px) 53vw, 90vw"
-									className="object-cover"
-								/>
+								{wideImage && (
+									<Image
+										src={wideImage.src}
+										alt={wideImage.alt}
+										fill
+										sizes="(min-width: 1024px) 53vw, 90vw"
+										placeholder={wideImage.blurDataURL ? "blur" : "empty"}
+										blurDataURL={wideImage.blurDataURL}
+										className="object-cover"
+									/>
+								)}
 							</div>
-							{/* categories — all to the catalogue for now (FR-005) */}
+							{/* categories — each deep-links to the portfolio filtered on its univers (FR-023) */}
 							<div className="flex flex-col [&>a:first-child]:mt-0 [&>a]:-mt-[3px]">
-								{homeRealisationSectors.map((sector) => (
+								{UNIVERS.map((sector) => (
 									<SectorButton
 										key={sector}
 										label={sector}
-										href={REALISATIONS_HREF}
+										href={universHref(sector)}
 									/>
 								))}
 							</div>
@@ -213,10 +231,7 @@ export default async function HomePage() {
 					    each pins and reveals title → rule → details → CTA on scroll, with the
 					    "voir nos réalisations" link integrated per panel. */}
 					<div className="mt-16 lg:mt-24">
-						<PinnedCaseStudies
-							cards={homeRealisationCards}
-							cta={realisations.cta}
-						/>
+						<PinnedCaseStudies cards={featuredCards} cta={realisations.cta} />
 					</div>
 				</section>
 			</Parallax>

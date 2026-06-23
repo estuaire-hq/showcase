@@ -5,6 +5,7 @@ export { Arrow } from "./components/Arrow";
 export { BrandLogo } from "./components/BrandLogo";
 export { Breadcrumb, type BreadcrumbItem } from "./components/Breadcrumb";
 export { Button, type ButtonTone, buttonStyles } from "./components/Button";
+export { Carousel, type CarouselImage } from "./components/Carousel";
 export { CarouselArrow } from "./components/CarouselArrow";
 export { CaseStudyCard } from "./components/CaseStudyCard";
 export {
@@ -25,6 +26,7 @@ export { NavPanel } from "./components/NavPanel";
 export { PageHero, type PageHeroImage } from "./components/PageHero";
 export { Pill, type PillEmphasis } from "./components/Pill";
 export { Pullquote } from "./components/Pullquote";
+export { RealisationGridCard } from "./components/RealisationGridCard";
 export { ScrollTopButton } from "./components/ScrollTopButton";
 export { SectionTitle } from "./components/SectionTitle";
 export { SectorButton } from "./components/SectorButton";

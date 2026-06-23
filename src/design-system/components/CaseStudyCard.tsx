@@ -29,19 +29,23 @@ export function CaseStudyCard({
 	const card = (
 		<article
 			className={cn(
-				"group relative isolate aspect-[1920/718] overflow-hidden",
+				"group relative isolate aspect-[1920/718] overflow-hidden bg-ink",
 				className,
 			)}
 		>
 			{/* Survol = LAYER_BLUR 15px on the image (kit), NOT a zoom. The base
-			    scale-105 bleeds the image past the clip so the blur never reveals edges. */}
-			<Image
-				src={image}
-				alt={alt}
-				fill
-				sizes="(min-width: 1280px) 1200px, 100vw"
-				className="scale-105 object-cover transition-[filter] duration-500 ease-out group-hover:blur-[15px]"
-			/>
+			    scale-105 bleeds the image past the clip so the blur never reveals edges.
+			    Guarded: a missing cover (dangling asset) degrades to the ink veil + title
+			    rather than a broken `<Image src="">`. */}
+			{image && (
+				<Image
+					src={image}
+					alt={alt}
+					fill
+					sizes="(min-width: 1280px) 1200px, 100vw"
+					className="scale-105 object-cover transition-[filter] duration-500 ease-out group-hover:blur-[15px]"
+				/>
+			)}
 			<div className="absolute inset-0 bg-ink/25" />
 			<div className="absolute inset-x-[6.8%] bottom-[9.7%] text-paper">
 				<h3 className="font-display text-title font-semibold leading-none">

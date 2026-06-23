@@ -69,6 +69,7 @@ export function SplitSection({
 				)}
 			/>
 			<p
+				data-reveal-fade
 				className={cn(
 					"max-w-[40ch] whitespace-pre-line",
 					isVision

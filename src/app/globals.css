@@ -75,6 +75,37 @@
 
 	--text-caption: 1rem; /* 16px */
 	--text-caption--line-height: 1.5rem; /* 24px */
+
+	/*
+	 * Motion tokens — the Estuaire animation grammar (see the `estuaire-motion`
+	 * skill + the Motion DA ADR). @theme is the source of truth; `tokens.ts`
+	 * mirrors the numeric values for GSAP/JS (CSS reads the vars directly).
+	 *
+	 *  - `--ease-expo` is the signature ease (CSS cubic-bezier ≈ GSAP `expo.out`),
+	 *    exposed in the `--ease-*` namespace so `ease-expo` is a Tailwind utility.
+	 *  - The hover "text-roll" tier: a per-letter roll that reveals an accent copy
+	 *    on hover (RollText). Driven by GSAP (reads the numbers from tokens.ts).
+	 */
+	--ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+	--duration-roll: 600ms; /* hover text-roll IN, per letter */
+	--delay-roll: 80ms; /* hover text-roll IN, base delay before the first letter */
+	--stagger-roll: 30ms; /* hover text-roll, per-letter stagger (IN; the OUT is its exact reverse) */
+	--duration-reveal: 900ms; /* content scroll-reveal fade-in (mirror; GSAP reads tokens.ts) */
+
+	/*
+	 * Hover "line" — a thin 1px underline that draws in left→right on hover/focus and
+	 * retracts toward the right on leave (CSS scaleX + transform-origin switch). Used on
+	 * secondary links (footer legal, « voir nos réalisations »). Pure CSS (no GSAP).
+	 */
+	--duration-line: 400ms;
+
+	/*
+	 * Page transition "curtain" — a full-screen paper panel rises from the bottom to cover,
+	 * then drops back down to reveal the next page (GSAP transform; PageTransition). One leg
+	 * (cover / uncover); mirror — GSAP reads tokens.ts.
+	 */
+	--duration-curtain: 800ms;
 }
 
 @layer base {

@@ -144,7 +144,10 @@ export default async function HomePage() {
 										/>
 									</div>
 								)}
-								<p className="max-w-[44ch] whitespace-pre-line text-body text-paper leading-relaxed lg:mr-[6%] lg:mb-[14%] lg:ml-[14%]">
+								<p
+									data-reveal-fade
+									className="max-w-[44ch] whitespace-pre-line text-body text-paper leading-relaxed lg:mr-[6%] lg:mb-[14%] lg:ml-[14%]"
+								>
 									{intro.text}
 								</p>
 							</div>

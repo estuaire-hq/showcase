@@ -3,10 +3,12 @@ import Image from "next/image";
 import {
 	BrandText,
 	FeatureBlock,
+	motion,
 	PageHero,
 	Pullquote,
 	SectionTitle,
 } from "@/design-system";
+import { Parallax } from "@/lib/motion/Parallax";
 import { getExpertisesPageProps } from "@/lib/sanity/expertisesPage";
 import type { ResolvedImage } from "@/lib/sanity/mapImage";
 import { cn } from "@/lib/utils";
@@ -44,14 +46,23 @@ function Figure({
 	image,
 	className,
 	sizes = "(min-width: 1024px) 45vw, 90vw",
+	parallax,
+	parallaxMode,
 }: {
 	image: ResolvedImage | undefined;
 	className?: string;
 	sizes?: string;
+	/** When set, the image becomes a scroll-parallax layer (needs a `<Parallax>` ancestor). */
+	parallax?: number;
+	parallaxMode?: "drift" | "settle" | "rise";
 }) {
 	if (!image) return null;
 	return (
-		<div className={cn("overflow-hidden", className)}>
+		<div
+			data-parallax={parallax}
+			data-parallax-mode={parallaxMode}
+			className={cn("overflow-hidden", className)}
+		>
 			<Image
 				src={image.src}
 				alt={image.alt}
@@ -123,18 +134,21 @@ export default async function ExpertisesPage() {
 						    maquette cluster is portrait on mobile/tablet (349×507 / 336×507) and
 						    landscape on desktop (751×689), so box + member geometry are per-bp. */}
 						<ClusterCell>
-							<div className="relative aspect-[349/507] w-full md:aspect-[336/507] lg:aspect-[751/689]">
+							<Parallax className="relative aspect-[349/507] w-full md:aspect-[336/507] lg:aspect-[751/689]">
 								<Figure
 									image={intro.imagePrimary}
 									className="absolute top-0 left-[25.8%] aspect-[259/331] w-[74.2%] md:left-[15.2%] md:aspect-[285/331] md:w-[84.8%] lg:left-[31.3%] lg:aspect-[516/600] lg:w-[68.7%]"
 									sizes="(min-width: 1024px) 26vw, 60vw"
 								/>
+								{/* Front (overlapping) image rises a bit faster on scroll → depth (Pierre). */}
 								<Figure
 									image={intro.imageSecondary}
+									parallax={motion.clusterParallax}
+									parallaxMode="rise"
 									className="absolute top-[55.4%] left-0 aspect-[219/226] w-[62.8%] md:w-[65.2%] lg:top-[43.5%] lg:aspect-[338/389] lg:w-[45%]"
 									sizes="(min-width: 1024px) 17vw, 40vw"
 								/>
-							</div>
+							</Parallax>
 						</ClusterCell>
 					</div>
 				</div>

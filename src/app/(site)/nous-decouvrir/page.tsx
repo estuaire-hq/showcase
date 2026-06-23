@@ -3,10 +3,12 @@ import Image from "next/image";
 import {
 	BrandText,
 	Button,
+	motion,
 	PageHero,
 	Pullquote,
 	SectionTitle,
 } from "@/design-system";
+import { Parallax } from "@/lib/motion/Parallax";
 import { getAboutPageProps } from "@/lib/sanity/aboutPage";
 import type { ResolvedImage } from "@/lib/sanity/mapImage";
 import { cn } from "@/lib/utils";
@@ -49,14 +51,23 @@ function Figure({
 	image,
 	className,
 	sizes = "(min-width: 1024px) 45vw, 90vw",
+	parallax,
+	parallaxMode,
 }: {
 	image: ResolvedImage | undefined;
 	className?: string;
 	sizes?: string;
+	/** When set, the image becomes a scroll-parallax layer (needs a `<Parallax>` ancestor). */
+	parallax?: number;
+	parallaxMode?: "drift" | "settle" | "rise";
 }) {
 	if (!image) return null;
 	return (
-		<div className={cn("overflow-hidden", className)}>
+		<div
+			data-parallax={parallax}
+			data-parallax-mode={parallaxMode}
+			className={cn("overflow-hidden", className)}
+		>
 			<Image
 				src={image.src}
 				alt={image.alt}
@@ -145,18 +156,21 @@ export default async function AboutPage() {
 					<div className="flex flex-col gap-12 md:grid md:grid-cols-2 md:items-start md:gap-x-[5%]">
 						{/* Images cluster (bbox 751×689): primary right-top, secondary left-lower */}
 						<ClusterCell className="order-2 md:order-1">
-							<div className="relative aspect-[751/689] w-full">
+							<Parallax className="relative aspect-[751/689] w-full">
 								<Figure
 									image={intro.imagePrimary}
 									className="absolute top-0 left-[31.3%] aspect-[516/600] w-[68.7%]"
 									sizes="(min-width: 1024px) 26vw, 60vw"
 								/>
+								{/* Front (overlapping) image rises a bit faster on scroll → depth (Pierre). */}
 								<Figure
 									image={intro.imageSecondary}
+									parallax={motion.clusterParallax}
+									parallaxMode="rise"
 									className="absolute top-[43.5%] left-0 aspect-[338/389] w-[45%]"
 									sizes="(min-width: 1024px) 17vw, 40vw"
 								/>
-							</div>
+							</Parallax>
 						</ClusterCell>
 						{/* Statement + body */}
 						<div className="order-1 flex flex-col gap-8 md:order-2">
@@ -230,18 +244,21 @@ export default async function AboutPage() {
 							</p>
 						</div>
 						<ClusterCell>
-							<div className="relative aspect-[751/724] w-full">
+							<Parallax className="relative aspect-[751/724] w-full">
 								<Figure
 									image={atelier.images[0]}
 									className="absolute top-0 left-[36.8%] aspect-[475/631] w-[63.2%]"
 									sizes="(min-width: 1024px) 25vw, 60vw"
 								/>
+								{/* Front (overlapping) image rises a bit faster on scroll → depth (Pierre). */}
 								<Figure
 									image={atelier.images[1]}
+									parallax={motion.clusterParallax}
+									parallaxMode="rise"
 									className="absolute top-[43.8%] left-0 aspect-[398/407] w-[53%]"
 									sizes="(min-width: 1024px) 21vw, 45vw"
 								/>
-							</div>
+							</Parallax>
 						</ClusterCell>
 					</div>
 
@@ -490,17 +507,21 @@ function StepImages({
 	const l = layouts[index] ?? layouts[0];
 	if (!l) return null; // unreachable (0 is always defined) — satisfies the type
 	return (
-		<div className={cn("relative w-full", l.box)}>
+		<Parallax className={cn("relative w-full", l.box)}>
 			<Figure
 				image={images[0]}
 				className={l.a}
 				sizes="(min-width: 1024px) 30vw, 70vw"
 			/>
+			{/* 01/ Analyse: the front (overlapping) image rises a bit faster on scroll →
+			    depth (Pierre). Only step 01 for now; flip the condition to extend. */}
 			<Figure
 				image={images[1]}
+				parallax={index === 0 ? motion.clusterParallax : undefined}
+				parallaxMode="rise"
 				className={l.b}
 				sizes="(min-width: 1024px) 22vw, 50vw"
 			/>
-		</div>
+		</Parallax>
 	);
 }

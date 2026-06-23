@@ -1,7 +1,9 @@
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { FooterReveal } from "@/lib/motion/FooterReveal";
+import { PageTransition } from "@/lib/motion/PageTransition";
 import { RouteScrollRefresh } from "@/lib/motion/RouteScrollRefresh";
+import { ScrollReveal } from "@/lib/motion/ScrollReveal";
 import { ScrollTopMount } from "@/lib/motion/ScrollTopMount";
 import { SmoothScroll } from "@/lib/motion/SmoothScroll";
 
@@ -25,6 +27,8 @@ export default function SiteLayout({
 			<RouteScrollRefresh />
 			<Navbar />
 			<FooterReveal footer={<Footer />}>{children}</FooterReveal>
+			<ScrollReveal />
+			<PageTransition />
 			<ScrollTopMount />
 		</SmoothScroll>
 	);

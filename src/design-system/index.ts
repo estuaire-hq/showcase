@@ -18,6 +18,7 @@ export { FeatureBlock } from "./components/FeatureBlock";
 export { FileInput } from "./components/FileInput";
 export { Filter } from "./components/Filter";
 export { FooterLink } from "./components/FooterLink";
+export { HeroIntro } from "./components/HeroIntro";
 export { type HeroSlide, HeroSlideshow } from "./components/HeroSlideshow";
 export {
 	type LegalBlock,

@@ -47,10 +47,16 @@ const STATE_CLASS: Record<NavState, string> = {
  * `lg`. Bar height is tuned down to 112 (lg) / 80 from the maquette's 160/120 (too
  * tall), and the logo a touch (see BrandLogo). Renders `fixed`, overlaying the page top.
  *
- * Tone: at `top`, `logoTone`/`linksTone` apply per slot and the CTA is `bleu`; when
- * `pinned`/`hidden` the bar is opaque and content is forced `onLight` (ink) with the
- * CTA `noir` (the CTA colour DOES change with state — Figma nodes 51:2221 vs 51:2585,
- * which the original contract under-specified).
+ * Tone: at `top`, `logoTone`/`linksTone` apply per slot and the CTA tone is `ctaToneTop`
+ * (default `bleu`); when `pinned`/`hidden` the bar is opaque and content is forced
+ * `onLight` (ink) with the CTA `noir` (the CTA colour DOES change with state — Figma nodes
+ * 51:2221 vs 51:2585, which the original contract under-specified). The toggle and the CTA
+ * are their OWN slots, not a sub-aspect of the links: the toggle carries independent
+ * mobile/tablet tones (`toggleToneMobile`/`toggleToneTablet`, each defaulting to `linksTone`)
+ * because it replaces the links below `lg` and can sit over a different part of the header
+ * visual (« Nous découvrir »: links ink on desktop, toggle white on tablet); the CTA's rest
+ * colour is page-declared (`ctaToneTop`) because it doesn't track `linksTone` (Home: links
+ * ink + CTA bleu; « Nous découvrir »: links ink + CTA noir).
  *
  * `overlay`: the bar is floating over a full-bleed dark section (the pinned case
  * studies). It then stays transparent (no solid background, no shadow) even while
@@ -67,6 +73,8 @@ export function SiteHeader({
 	logoTone = "onLight",
 	linksTone = "onLight",
 	toggleToneMobile,
+	toggleToneTablet,
+	ctaToneTop = "bleu",
 	activeHref,
 	isMenuOpen,
 	onMenuToggle,
@@ -85,6 +93,13 @@ export function SiteHeader({
 	linksTone?: NavTone;
 	/** At-rest toggle tone below `md` (mobile) when it differs from `linksTone`. Defaults to `linksTone`. */
 	toggleToneMobile?: NavTone;
+	/** At-rest toggle tone at `md` (tablet) when it differs from `linksTone` — the toggle
+	 *  replaces the links below `lg` and may sit over a different zone than the desktop links
+	 *  (« Nous découvrir »: links ink, tablet toggle white). Defaults to `linksTone`. */
+	toggleToneTablet?: NavTone;
+	/** CTA "contact" rest colour at `top` (it doesn't track `linksTone`). Defaults to `bleu`
+	 *  (Home); « Nous découvrir » declares `noir`. Forced `bleu` over `overlay`, `noir` when pinned. */
+	ctaToneTop?: "bleu" | "noir";
 	activeHref?: string;
 	isMenuOpen: boolean;
 	onMenuToggle: () => void;
@@ -106,12 +121,18 @@ export function SiteHeader({
 		: atTop
 			? linksTone
 			: "onLight";
-	const ctaTone = overlay || atTop ? "bleu" : "noir";
+	// Overlay forces bleu; pinned/hidden force noir; at rest the page-declared `ctaToneTop`
+	// applies (defaults bleu) — the CTA doesn't track `linksTone` (Home vs « Nous découvrir »).
+	const ctaTone = overlay ? "bleu" : atTop ? ctaToneTop : "noir";
 
+	// The toggle's mobile and tablet tones are independent of each other AND of the desktop
+	// links (each defaults to `linksTone` for back-compat). Key is `${mobileTone}-${tabletTone}`.
 	const toggleClass = overlay
 		? "text-paper"
 		: atTop
-			? TOGGLE_TOP_CLASS[`${toggleToneMobile ?? linksTone}-${linksTone}`]
+			? TOGGLE_TOP_CLASS[
+					`${toggleToneMobile ?? linksTone}-${toggleToneTablet ?? linksTone}`
+				]
 			: "text-ink";
 
 	const headerRef = useRef<HTMLElement>(null);

@@ -120,9 +120,17 @@ export default async function AboutPage() {
 	return (
 		<main
 			data-nav-logo-tone="onDark"
-			data-nav-links-tone="onDark"
+			data-nav-links-tone="onLight"
 			data-nav-toggle-tone="onDark"
+			data-nav-toggle-tone-tablet="onDark"
+			data-nav-cta-tone="noir"
 		>
+			{/* Hero per-slot navbar tones (maquette 51:2699 desktop / 78:4374 tablet /
+			    78:4626 mobile): logo white over the visual; desktop links INK (over the
+			    light right of the hero); CTA "contact" a black pill (not the default bleu);
+			    the toggle stays white at BOTH mobile and tablet — hence the explicit tablet
+			    override, since it would otherwise inherit the (now ink) links tone. */}
+
 			{/* 1 — Hero (static) */}
 			<PageHero
 				eyebrow={hero.eyebrow}

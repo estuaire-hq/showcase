@@ -46,7 +46,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          lfs: true # seed-assets/ images are stored in git-lfs (see .gitattributes / ADR 0010)
+          # Don't smudge ALL LFS objects on checkout: the seed only reads seed-assets/.
+          # The other LFS-tracked tree, .design/figma-cache/assets/ (~150 MB, dev-only,
+          # never read by the seed), would otherwise burn LFS *bandwidth* on every run
+          # (the binding quota — 1 GB/mo on the GitHub free tier). We pull seed-assets/
+          # explicitly below. (.gitattributes / ADR 0010.)
+          lfs: false
+      - name: Fetch seed assets from LFS (seed-assets/ only)
+        run: git lfs pull --include="seed-assets/**"
       - uses: actions/setup-node@v4
         with:
           node-version: 22

@@ -1,9 +1,9 @@
-# 0019 — Envoi des emails du formulaire de contact : OVH Email Pro (SMTP), réception M365
+# 0023 — Envoi des emails du formulaire de contact : OVH Email Pro (SMTP), réception M365
 
 **Statut** : accepté · **Date** : 2026-06-23 · **Feature** : [[013-contact-page]]
 
-> ⚠️ Numéro d'ADR susceptible de collision avec un worktree parallèle — vérifier et
-> renuméroter au merge (skill `estuaire-branch-sync`).
+> Renuméroté 0019 → 0023 au merge de `main` (collision avec l'ADR 0019 « Sanity MCP »
+> d'un worktree parallèle ; skill `estuaire-branch-sync`).
 
 ## Contexte
 
@@ -63,5 +63,5 @@ Architecture **hybride**, découplant envoi et réception :
   met les adresses réelles des boîtes partagées (à valider en test réel d'envoi).
 - **À faire côté ops (hors code)** : créer les 4 boîtes partagées Exchange ; activer **DKIM**
   pour `estuaire.fr` (records OVH à publier chez Cloudflare) ; DMARC optionnel (`p=none`).
-- **Constitution** : amendement PATCH (1.7.2 → 1.7.3) de la table de stack — « Formulaire
+- **Constitution** : amendement PATCH (1.8.0 → 1.8.1) de la table de stack — « Formulaire
   contact : SMTP M365 » → **OVH Email Pro (envoi) + réception M365**.

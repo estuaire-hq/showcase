@@ -225,9 +225,39 @@
   Templates requiring updates:
     - .specify/templates/*.md                   ✅ compatible (no constitution-specific references)
 
-  Sync Impact Report (1.7.2 → 1.7.3)
+  Sync Impact Report (1.7.2 → 1.8.0)
   ====================================
-  Version change: 1.7.2 → 1.7.3
+  Version change: 1.7.2 → 1.8.0
+  Modified principles:
+    - IX. Modèle Sanity : source de vérité, types dérivés, seeds typés — étendu d'une FRONTIÈRE
+      socle statique vs contenu dynamique : le seed typé + validé + CI ne vaut que pour le SOCLE
+      (singletons + images de maquette, seed-assets/) ; le CONTENU DYNAMIQUE / collections
+      (réalisations) vit DIRECTEMENT dans Sanity (assets → CDN, jamais git/LFS ni seed-assets/), est
+      éditeur-first (Studio), et n'est PAS seedé depuis git. Étend le Principe II / ADR 0004.
+  Modified sections:
+    - Variables d'environnement — réalité de l'écriture prod mise à jour : il existe désormais un
+      chemin d'écriture programmatique (MCP Sanity officiel, mcp.sanity.io, OAuth) ; le projet DEV
+      s'écrit librement, le projet PROD seulement sur AUTORISATION HUMAINE EXPLICITE ET PAR ACTION.
+      La CI reste le seul chemin pour le socle reproductible ; le write token prod reste CI-only.
+      Amende « pas de chemin local pour écrire prod » d'ADR 0006 (chemin gardé par autorisation,
+      plus par impossibilité). Ancre les projectIds concrets (dev wje1fhkq / prod vbuzs69z) +
+      le piège du dataset « production » commun aux deux projets (seul le projectId discrimine).
+  Rationale for MINOR bump: expansion d'un principe existant (IX) + nouvelle règle de gouvernance
+    sur l'écriture du projet prod. Aucun principe supprimé ni redéfini → pas MAJOR ; davantage
+    qu'une correction factuelle d'une section → pas PATCH.
+  Templates requiring updates:
+    - .specify/templates/plan-template.md       ✅ compatible (Constitution Check générique)
+    - .specify/templates/spec-template.md        ✅ compatible (aucun champ lié à un principe)
+    - .specify/templates/tasks-template.md       ✅ compatible (aucune catégorie à changer)
+  Companion changes (operational, not constitutional):
+    - docs/vault/decisions/0019-dynamic-content-in-sanity-and-mcp-write-access.md ajouté.
+    - .mcp.json (MCP Sanity officiel, scope projet) ; CLAUDE.md « Sanity Write Access (MCP) » + « Do NOT ».
+    - .github/workflows/seed-sanity.yml : checkout LFS restreint à seed-assets/ (bande passante).
+    - Mémoire agent locale : règle sanity-write-strategy (dev libre / prod sur autorisation).
+
+  Sync Impact Report (1.8.0 → 1.8.1)
+  ====================================
+  Version change: 1.8.0 → 1.8.1
   Modified sections:
     - Technical Stack & Constraints / « Stack applicative » + « Infrastructure » : l'envoi du
       formulaire de contact passe de « SMTP Microsoft 365 du client » à « SMTP OVH Email Pro »
@@ -236,7 +266,7 @@
     l'infra (les MX d'estuaire.fr sont chez OVH + un service Email Pro ; M365 retire le SMTP AUTH
     Basic). Architecture hybride envoi(OVH)/réception(M365). Aucun principe ajouté/supprimé/redéfini.
   Companion changes (operational, not constitutional):
-    - docs/vault/decisions/0019-contact-email-sending-ovh-emailpro.md records the decision.
+    - docs/vault/decisions/0023-contact-email-sending-ovh-emailpro.md records the decision.
     - specs/013-contact-page/ (spec, plan, research §2, data-model, contracts, tasks).
     - .env.example : SMTP_* + CONTACT_TO documented (server-only).
   Templates requiring updates:
@@ -430,6 +460,13 @@ DOIT être **typé** contre le type généré et **validé** contre le schéma a
   (`createIfNotExists` par défaut ; réinitialisation opt-in explicite via `--reset`).
 - Les valeurs de maquette NE DOIVENT vivre qu'à **un seul endroit** (pas de duplication
   seed ↔ valeurs par défaut du front).
+- **Frontière socle statique / contenu dynamique.** Le pré-remplissage typé + validé + CI ne vaut
+  que pour le **contenu socle statique** (singletons + leurs images de maquette, bornés, dans
+  `seed-assets/`). Le **contenu dynamique / collections** (réalisations…) vit **directement dans
+  Sanity** — il est **éditeur-first** (créé dans le Studio par le client), ses assets vont au **CDN
+  Sanity, JAMAIS dans git/LFS ni `seed-assets/`** — et n'est **PAS** seedé depuis git. Étend le
+  Principe II et [[decisions/0004-content-images-in-sanity]] à la dimension *stockage du dynamique*
+  (cf. [[decisions/0019-dynamic-content-in-sanity-and-mcp-write-access]]).
 
 **Justification** : quand un agent (ou un développeur) crée le contenu initial depuis
 les maquettes, la seule protection contre la dérive schéma↔seed↔front est que les trois
@@ -482,7 +519,7 @@ isolation présentationnelle (cf. Principe VIII et [[decisions/0003-design-syste
 | CMS | Sanity Cloud | v5, plan gratuit, Studio embarqué |
 | Styles | Tailwind CSS | v4 |
 | Animations | GSAP | GSAP + `@gsap/react` + Lenis (scroll fluide) |
-| Formulaire contact | Nodemailer | SMTP **OVH Email Pro** (`pro1.mail.ovh.net`) ; réception sur boîtes partagées M365 (cf. ADR 0019) |
+| Formulaire contact | Nodemailer | SMTP **OVH Email Pro** (`pro1.mail.ovh.net`) ; réception sur boîtes partagées M365 (cf. ADR 0023) |
 | Analytics | Umami | Auto-hébergé sur le même VPS (séparé) |
 
 ### Infrastructure
@@ -513,7 +550,20 @@ Le VPS ne stocke ni contenu ni assets de contenu.
   `.env.development`, le projet *prod* dans l'UI Coolify. Conséquence : un seed lancé
   en local ne peuple QUE le projet dev ; la production se seede via la CI, avec le
   projectId et un write token **du projet prod** (cf. Principe IX,
-  [[decisions/0006-schema-derived-types-and-typed-seeds]]).
+  [[decisions/0006-schema-derived-types-and-typed-seeds]]). Concrètement :
+  **dev = `wje1fhkq`** (*showcase-dev*), **prod = `vbuzs69z`** (*showcase*). ⚠️ Les **deux**
+  projets ont un dataset nommé `production` : c'est le **`projectId`** qui distingue dev de prod,
+  **jamais** le nom du dataset.
+- **Écriture du contenu Sanity** : le projet **dev** (`wje1fhkq`) s'écrit **librement** (seed local,
+  MCP) ; le projet **prod** (`vbuzs69z`) ne s'écrit que sur **autorisation humaine explicite et par
+  action**. Il existe
+  désormais un chemin d'écriture programmatique — le **MCP Sanity officiel** (`mcp.sanity.io`,
+  OAuth) — ouvert par défaut sur dev ; viser prod exige un go explicite, action par action. La
+  **CI reste le seul chemin** pour seeder/réinitialiser le **socle reproductible**, et le **write
+  token prod reste CI-only** (le MCP s'authentifie en OAuth, pas avec ce token). Ceci amende la
+  formulation « pas de chemin local pour écrire prod » d'[[decisions/0006-schema-derived-types-and-typed-seeds]] :
+  un chemin existe, gardé par **autorisation explicite** plutôt que par impossibilité (cf.
+  [[decisions/0019-dynamic-content-in-sanity-and-mcp-write-access]]).
 - Toutes les variables sont préfixées par domaine :
   `NEXT_PUBLIC_SANITY_*`, `SMTP_*`, `UMAMI_*`, etc.
 - Pas de `.env` par sous-projet ou par service.
@@ -610,4 +660,4 @@ Elle prévaut sur toute autre convention implicite.
   complète cette constitution avec les instructions opérationnelles pour
   l'agent de développement.
 
-**Version**: 1.7.3 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-06-23
+**Version**: 1.8.1 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-06-23

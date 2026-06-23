@@ -3,10 +3,12 @@ import Image from "next/image";
 import {
 	BrandText,
 	FeatureBlock,
+	motion,
 	PageHero,
 	Pullquote,
 	SectionTitle,
 } from "@/design-system";
+import { Parallax } from "@/lib/motion/Parallax";
 import { getExpertisesPageProps } from "@/lib/sanity/expertisesPage";
 import type { ResolvedImage } from "@/lib/sanity/mapImage";
 import { cn } from "@/lib/utils";
@@ -44,14 +46,23 @@ function Figure({
 	image,
 	className,
 	sizes = "(min-width: 1024px) 45vw, 90vw",
+	parallax,
+	parallaxMode,
 }: {
 	image: ResolvedImage | undefined;
 	className?: string;
 	sizes?: string;
+	/** When set, the image becomes a scroll-parallax layer (needs a `<Parallax>` ancestor). */
+	parallax?: number;
+	parallaxMode?: "drift" | "settle" | "rise";
 }) {
 	if (!image) return null;
 	return (
-		<div className={cn("overflow-hidden", className)}>
+		<div
+			data-parallax={parallax}
+			data-parallax-mode={parallaxMode}
+			className={cn("overflow-hidden", className)}
+		>
 			<Image
 				src={image.src}
 				alt={image.alt}
@@ -123,18 +134,21 @@ export default async function ExpertisesPage() {
 						    maquette cluster is portrait on mobile/tablet (349×507 / 336×507) and
 						    landscape on desktop (751×689), so box + member geometry are per-bp. */}
 						<ClusterCell>
-							<div className="relative aspect-[349/507] w-full md:aspect-[336/507] lg:aspect-[751/689]">
+							<Parallax className="relative aspect-[349/507] w-full md:aspect-[336/507] lg:aspect-[751/689]">
 								<Figure
 									image={intro.imagePrimary}
 									className="absolute top-0 left-[25.8%] aspect-[259/331] w-[74.2%] md:left-[15.2%] md:aspect-[285/331] md:w-[84.8%] lg:left-[31.3%] lg:aspect-[516/600] lg:w-[68.7%]"
 									sizes="(min-width: 1024px) 26vw, 60vw"
 								/>
+								{/* Front (overlapping) image rises a bit faster on scroll → depth (Pierre). */}
 								<Figure
 									image={intro.imageSecondary}
+									parallax={motion.clusterParallax}
+									parallaxMode="rise"
 									className="absolute top-[55.4%] left-0 aspect-[219/226] w-[62.8%] md:w-[65.2%] lg:top-[43.5%] lg:aspect-[338/389] lg:w-[45%]"
 									sizes="(min-width: 1024px) 17vw, 40vw"
 								/>
-							</div>
+							</Parallax>
 						</ClusterCell>
 					</div>
 				</div>
@@ -170,7 +184,12 @@ export default async function ExpertisesPage() {
 			{/* 4 — Grand visuel + phrase en incrustation */}
 			<section className="bg-paper py-5 md:py-10 lg:py-16">
 				<div className="mx-auto w-full max-w-[1920px] px-5 md:px-10 lg:px-[3.2%]">
-					<div className="relative isolate aspect-[350/268] w-full overflow-hidden md:aspect-[688/519] lg:aspect-[1798/958]">
+					{/* Mobile: the fixed aspect-[350/268] box was too short for the (longer,
+					    CMS-driven) incrustation phrase, which is overlaid `absolute` and was
+					    clipped top+bottom. Make the box CONTENT-DRIVEN on mobile (flex + min-h +
+					    py, the quote in normal flow so it grows the box); keep the exact maquette
+					    aspect from md upward, where the wide box always clears the quote. ADR 0022. */}
+					<div className="relative isolate flex min-h-[18rem] w-full items-center justify-center overflow-hidden py-14 md:aspect-[688/519] md:min-h-0 md:py-0 lg:aspect-[1798/958]">
 						{statement.image && (
 							<Image
 								src={statement.image.src}
@@ -183,7 +202,7 @@ export default async function ExpertisesPage() {
 							/>
 						)}
 						<div className="absolute inset-0 bg-ink/25" />
-						<div className="absolute inset-0 z-10 flex items-center justify-center px-6 lg:px-[4.4%]">
+						<div className="relative z-10 flex w-full items-center justify-center px-6 lg:px-[4.4%]">
 							<Pullquote
 								size="title"
 								align="center"

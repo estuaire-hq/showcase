@@ -7,17 +7,20 @@ import { BrandText } from "@/design-system/typography/BrandText";
 // (fonts + globals). Kept self-contained: no /public asset, so the gate stays
 // watertight (the matcher can block everything but build assets).
 export const metadata: Metadata = {
-	title: "Site en construction",
+	title: "Estuaire — bientôt en ligne",
 	robots: { index: false, follow: false },
 };
 
 export default function ComingSoonPage() {
 	return (
 		<main className="flex min-h-svh flex-col items-center justify-center gap-4 bg-cream px-6 text-center">
-			<h1 className="font-display text-estuaire text-subtitle leading-none sm:text-title">
-				<BrandText>Estuaire</BrandText>
+			<h1 className="font-display text-estuaire text-subtitle-sm leading-tight sm:text-subtitle">
+				<BrandText>Mosaique Production devient Estuaire.</BrandText>
 			</h1>
-			<p className="font-sans text-body text-ink/60">Site en construction…</p>
+			<p className="max-w-xl font-sans text-body-sm text-ink/60 sm:text-body">
+				Encore un peu de patience : notre nouveau site prend forme et sera
+				bientôt en ligne.
+			</p>
 		</main>
 	);
 }

@@ -208,6 +208,33 @@ Reuse what is already installed before reaching for a new package.
 - **Documented** in `.env.example` with comments for every expected variable
 - Never create additional `.env` files (no `.env.production`, no `.env.local`, no per-service `.env`)
 
+## Sanity Write Access — MCP (dev free, prod gated)
+
+Programmatic content writes go through the **official remote Sanity MCP** (`https://mcp.sanity.io`,
+OAuth, hosted by Sanity) — registered in `.mcp.json` at **project scope** (so every worktree/session
+gets it; each user OAuths with their own account). ~40 tools: document CRUD, GROQ, asset upload,
+schema, releases. It has **no quota of its own** — only Sanity API rate limits (25 req/s mutate &
+asset upload) and plan quotas apply (Free: 100 GB assets + 100 GB bandwidth/mo, ≈100× git LFS).
+See **ADR 0019**.
+
+- **Dev project** = `wje1fhkq` (**showcase-dev**) → write freely (create / update / upload assets),
+  no approval needed.
+- **PROD project** = `vbuzs69z` (**showcase**) → ONLY on the owner's **explicit, per-action
+  authorization**. Default every MCP call to the *dev* project; switch to prod solely when told to,
+  for that one action. Never push to prod without a clear go.
+- ⚠️ **Both projects have a dataset literally named `production`** — the dataset name does NOT tell
+  dev from prod; **only the `projectId` does**. Always decide dev/prod on the projectId
+  (`wje1fhkq` = dev, `vbuzs69z` = prod), never on the dataset name (else you'd write prod thinking
+  it's dev).
+- This MCP path is for **dynamic / collection content** (réalisations…). The **static socle**
+  (singletons + their maquette assets) stays on the typed-seed + CI path (ADR 0006); the prod
+  **write token stays CI-only** (the MCP uses OAuth, not that token), so CI remains the only path
+  that seeds/resets the reproducible socle.
+- **Dynamic editorial content is editor-first**: the client authors réalisations in Studio (images
+  → Sanity assets, never git/`seed-assets`); the agent may populate via the MCP (dev freely, prod
+  on authorization). **Dynamic/collection assets MUST NOT go into git LFS** (unbounded growth bloats
+  git history forever — ADR 0019).
+
 ## Key Patterns
 
 ### Fetching Sanity Content
@@ -299,6 +326,10 @@ The schema is the single source of truth; types are **generated, never hand-writ
 - Modify Coolify/Docker config without mentioning it
 - Create additional `.env` files (dev goes in `.env.development`, prod in Coolify UI)
 - Read `.env.development` or any `.env*` file (except `.env.example`) — strictly forbidden, secrets are protected by git-crypt and permissions.deny
+- Write to the **PROD** Sanity project without the owner's **explicit, per-action** authorization
+  (dev is free) — see ADR 0019 / "Sanity Write Access" above
+- Put **dynamic / collection** content (réalisation images, etc.) in git LFS or `seed-assets/` —
+  it goes to Sanity assets (ADR 0019); only the bounded static socle lives in `seed-assets/`
 
 ## Design System
 
@@ -328,8 +359,19 @@ fonts, radii, or re-implement a button / pill / card. Importing = consuming; edi
 - Before building a page/section: load the **`estuaire-pixel-perfect`** skill — build from the full
   lossless node (never infer), exact intrinsic geometry, `@/design-system` + `@theme` tokens,
   responsive per breakpoint, content images → Sanity, verify against the cached Figma render.
-- Before animating: load the **`estuaire-motion`** skill — text static; visuals + section
-  transitions carry the motion; line-mask title reveals; honor `prefers-reduced-motion`.
+- Before animating: load the **`estuaire-motion`** skill — text static (the anchor); visuals +
+  section transitions carry the motion; content reveals on entry; honor `prefers-reduced-motion`.
+  The site-wide **motion DA** (a consistent reveal/transition grammar, no ad-hoc animations) is
+  **ADR 0021** (its hover layer — `RollText`/`LineText` — was reverted; nav/footer links use
+  their pre-#22 hover: ghost-pill nav + underlined footer). Reusable primitives: **scroll/page shells
+  in `@/lib/motion`** (`ScrollReveal`
+  + `data-reveal-fade` = content fade-in on scroll, `PageTransition` = paper "curtain" between pages,
+  `Parallax` + `data-parallax` = cluster depth). Motion tokens: `@theme` + `tokens.ts` (`--ease-expo`,
+  `reveal`, `curtain`, `clusterParallax`). Two load-bearing gotchas (post-mortem 0015):
+  **(1) GSAP owns the `transform`** — never set an animated transform via React `style` on a
+  GSAP-animated element (they stack); use `gsap.set`/`fromTo` for the initial state. **(2) GSAP-only
+  motion values are read from `tokens.ts`** — Tailwind v4 tree-shakes unused `@theme` vars (they may
+  be absent from `:root`); `@theme` stays the declared source of truth, restart dev after a `@theme` change.
 - **At the END of every maquette-based feature, before any pixel-perfect sign-off: load the
   **`estuaire-pixel-review`** skill** (MANDATORY). It is the verify counterpart of the build
   skill: capture the dev page per breakpoint, then **align the two images section by section**

@@ -139,6 +139,82 @@ export type Geopoint = {
   alt?: number;
 };
 
+export type Realisation = {
+  _id: string;
+  _type: "realisation";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  slug?: Slug;
+  client?: string;
+  status?: "published" | "upcoming" | "draft";
+  order?: number;
+  publishedAt?: string;
+  univers?:
+    | "Banque & assurance"
+    | "Culture"
+    | "H\xF4tellerie & restauration"
+    | "Joaillerie"
+    | "Mode"
+    | "Optique"
+    | "Parfums"
+    | "R\xE9sidentiel"
+    | "Soin & cosm\xE9tique"
+    | "Spiritueux"
+    | "Sport & lifestyle"
+    | "Technologie & communication";
+  expertises?: Array<string>;
+  location?: string;
+  year?: string;
+  area?: string;
+  context?: string;
+  enjeu?: string;
+  interventions?: Array<string>;
+  challenges?: Array<{
+    title?: string;
+    body?: string;
+    _type: "challenge";
+    _key: string;
+  }>;
+  photoCredit?: string;
+  skills?: Array<string>;
+  layout?: "fournie" | "legere";
+  cover?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  gallery?: Array<{
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+    _key: string;
+  }>;
+  seoMetaTitle?: string;
+  seoMetaDescription?: string;
+  seoOgImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+};
+
+export type Slug = {
+  _type: "slug";
+  current?: string;
+  source?: string;
+};
+
 export type SectorDetail = {
   _id: string;
   _type: "sectorDetail";
@@ -220,12 +296,6 @@ export type SectorDetail = {
     alt?: string;
     _type: "image";
   };
-};
-
-export type Slug = {
-  _type: "slug";
-  current?: string;
-  source?: string;
 };
 
 export type SectorsPage = {
@@ -745,8 +815,9 @@ export type AllSanitySchemaTypes =
   | SanityImageHotspot
   | ContactPage
   | Geopoint
-  | SectorDetail
+  | Realisation
   | Slug
+  | SectorDetail
   | SectorsPage
   | ExpertiseSubpage
   | ExpertisesPage
@@ -1054,6 +1125,44 @@ export type ABOUT_PAGE_QUERY_RESULT =
       seoMetaTitle: null;
       seoMetaDescription: null;
       seoOgImage: null;
+    }
+  | {
+      heroEyebrow: null;
+      heroTitleOutline: null;
+      heroTitleFill: null;
+      heroImage: null;
+      introStatement: null;
+      introText: null;
+      introImagePrimary: null;
+      introImageSecondary: null;
+      introHighlight: null;
+      visionTitleOutline: null;
+      visionTitleFill: null;
+      visionText: null;
+      visionImages: null;
+      atelierTitleOutline: null;
+      atelierTitleFill: null;
+      atelierText: null;
+      atelierPillarsLead: null;
+      atelierPillars: null;
+      atelierCapabilities: null;
+      atelierImages: null;
+      atelierHighlight: null;
+      processTitleOutline: null;
+      processTitleFill: null;
+      processIntro: null;
+      processIntroImage: null;
+      processSteps: null;
+      statementImage: null;
+      statementText: null;
+      ctaLabel: null;
+      ctaHref: null;
+      seoMetaTitle: string | null;
+      seoMetaDescription: string | null;
+      seoOgImage: {
+        asset: SanityImageAssetReference | null;
+        alt: string | null;
+      } | null;
     }
   | {
       heroEyebrow: null;
@@ -1372,6 +1481,28 @@ export type EXPERTISES_PAGE_QUERY_RESULT =
       heroTitleFill: null;
       heroImage: null;
       introStatement: null;
+      introText: null;
+      introImagePrimary: null;
+      introImageSecondary: null;
+      levelsTitleOutline: null;
+      levelsTitleFill: null;
+      levelsImage: null;
+      levels: null;
+      statementImage: null;
+      statementText: null;
+      seoMetaTitle: string | null;
+      seoMetaDescription: string | null;
+      seoOgImage: {
+        asset: SanityImageAssetReference | null;
+        alt: string | null;
+      } | null;
+    }
+  | {
+      heroEyebrow: null;
+      heroTitleOutline: null;
+      heroTitleFill: null;
+      heroImage: null;
+      introStatement: null;
       introText: string | null;
       introImagePrimary: {
         asset: SanityImageAssetReference | null;
@@ -1653,6 +1784,23 @@ export type SECTORS_PAGE_QUERY_RESULT =
       heroTitleFill: null;
       heroImage: null;
       introStatement: null;
+      introText: null;
+      introImage: null;
+      sectors: null;
+      keyFigures: null;
+      seoMetaTitle: string | null;
+      seoMetaDescription: string | null;
+      seoOgImage: {
+        asset: SanityImageAssetReference | null;
+        alt: string | null;
+      } | null;
+    }
+  | {
+      heroEyebrow: null;
+      heroTitleOutline: null;
+      heroTitleFill: null;
+      heroImage: null;
+      introStatement: null;
       introText: string | null;
       introImage: null;
       sectors: null;
@@ -1843,6 +1991,143 @@ export type SECTOR_DETAIL_QUERY_RESULT = {
   seoOgImage: {
     asset: SanityImageAssetReference | null;
     alt: string | null;
+  } | null;
+} | null;
+
+// Source: src/lib/sanity/queries.ts
+// Variable: REALISATIONS_LIST_QUERY
+// Query: *[_type == "realisation" && status in ["published","upcoming"]] | order(order desc, publishedAt desc){    "slug": slug.current,    title,    client,    status,    univers,    expertises,    location,    year,    area,    cover{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }  }
+export type REALISATIONS_LIST_QUERY_RESULT = Array<{
+  slug: string | null;
+  title: string | null;
+  client: string | null;
+  status: "draft" | "published" | "upcoming" | null;
+  univers:
+    | "Banque & assurance"
+    | "Culture"
+    | "H\xF4tellerie & restauration"
+    | "Joaillerie"
+    | "Mode"
+    | "Optique"
+    | "Parfums"
+    | "R\xE9sidentiel"
+    | "Soin & cosm\xE9tique"
+    | "Spiritueux"
+    | "Sport & lifestyle"
+    | "Technologie & communication"
+    | null;
+  expertises: Array<string> | null;
+  location: string | null;
+  year: string | null;
+  area: string | null;
+  cover: {
+    asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+    alt: string | null;
+    lqip: string | null;
+  } | null;
+}>;
+
+// Source: src/lib/sanity/queries.ts
+// Variable: REALISATION_QUERY
+// Query: *[_type == "realisation" && slug.current == $slug && status == "published"][0]{    "slug": slug.current,    title,    client,    univers,    expertises,    layout,    location,    year,    area,    context,    enjeu,    interventions,    challenges[]{ title, body },    skills,    photoCredit,    cover{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    gallery[]{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    seoMetaTitle,    seoMetaDescription,    seoOgImage{ asset, alt }  }
+export type REALISATION_QUERY_RESULT = {
+  slug: string | null;
+  title: string | null;
+  client: string | null;
+  univers:
+    | "Banque & assurance"
+    | "Culture"
+    | "H\xF4tellerie & restauration"
+    | "Joaillerie"
+    | "Mode"
+    | "Optique"
+    | "Parfums"
+    | "R\xE9sidentiel"
+    | "Soin & cosm\xE9tique"
+    | "Spiritueux"
+    | "Sport & lifestyle"
+    | "Technologie & communication"
+    | null;
+  expertises: Array<string> | null;
+  layout: "fournie" | "legere" | null;
+  location: string | null;
+  year: string | null;
+  area: string | null;
+  context: string | null;
+  enjeu: string | null;
+  interventions: Array<string> | null;
+  challenges: Array<{
+    title: string | null;
+    body: string | null;
+  }> | null;
+  skills: Array<string> | null;
+  photoCredit: string | null;
+  cover: {
+    asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+    alt: string | null;
+    lqip: string | null;
+  } | null;
+  gallery: Array<{
+    asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+    alt: string | null;
+    lqip: string | null;
+  }> | null;
+  seoMetaTitle: string | null;
+  seoMetaDescription: string | null;
+  seoOgImage: {
+    asset: SanityImageAssetReference | null;
+    alt: string | null;
+  } | null;
+} | null;
+
+// Source: src/lib/sanity/queries.ts
+// Variable: REALISATION_SLUGS_QUERY
+// Query: *[_type == "realisation" && status == "published"] | order(order desc, publishedAt desc){    "slug": slug.current,    title  }
+export type REALISATION_SLUGS_QUERY_RESULT = Array<{
+  slug: string | null;
+  title: string | null;
+}>;
+
+// Source: src/lib/sanity/queries.ts
+// Variable: LATEST_REALISATIONS_QUERY
+// Query: *[_type == "realisation" && status == "published"] | order(order desc, publishedAt desc)[0...6]{    "slug": slug.current,    title,    client,    location,    year,    area,    cover{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }  }
+export type LATEST_REALISATIONS_QUERY_RESULT = Array<{
+  slug: string | null;
+  title: string | null;
+  client: string | null;
+  location: string | null;
+  year: string | null;
+  area: string | null;
+  cover: {
+    asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+    alt: string | null;
+    lqip: string | null;
+  } | null;
+}>;
+
+// Source: src/lib/sanity/queries.ts
+// Variable: EXPERTISE_LATEST_REALISATION_QUERY
+// Query: *[_type == "realisation" && status == "published" && $expertise in expertises]    | order(order desc, publishedAt desc)[0]{    "slug": slug.current,    title,    location,    year,    area,    cover{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }  }
+export type EXPERTISE_LATEST_REALISATION_QUERY_RESULT = {
+  slug: string | null;
+  title: string | null;
+  location: string | null;
+  year: string | null;
+  area: string | null;
+  cover: {
+    asset: SanityImageAssetReference | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+    alt: string | null;
+    lqip: string | null;
   } | null;
 } | null;
 
@@ -2039,6 +2324,11 @@ declare module "@sanity/client" {
     '\n  *[_type == "expertiseSubpage" && defined(slug.current)]{ "slug": slug.current }\n': EXPERTISE_SUBPAGE_SLUGS_QUERY_RESULT;
     '\n  *[_id == "sectorsPage"][0]{\n    heroEyebrow,\n    heroTitleOutline,\n    heroTitleFill,\n    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introStatement,\n    introText,\n    introImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    sectors[]{\n      label,\n      promise,\n      href,\n      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n    },\n    keyFigures[]{ value, support },\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': SECTORS_PAGE_QUERY_RESULT;
     '\n  *[_type == "sectorDetail" && slug.current == $slug][0]{\n    title,\n    "slug": slug.current,\n    heroEyebrow,\n    heroTitleOutline,\n    heroTitleFill,\n    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introStatement,\n    introText,\n    introImageMain{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introImagePortrait{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introImageSquare{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    enjeuxTitleOutline,\n    enjeuxTitleFill,\n    enjeux,\n    contraintesTitleOutline,\n    contraintesTitleFill,\n    contraintes[]{ label, emphasis },\n    argument,\n    citations[]{\n      quote,\n      attribution,\n      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n    },\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': SECTOR_DETAIL_QUERY_RESULT;
+    '\n  *[_type == "realisation" && status in ["published","upcoming"]] | order(order desc, publishedAt desc){\n    "slug": slug.current,\n    title,\n    client,\n    status,\n    univers,\n    expertises,\n    location,\n    year,\n    area,\n    cover{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n  }\n': REALISATIONS_LIST_QUERY_RESULT;
+    '\n  *[_type == "realisation" && slug.current == $slug && status == "published"][0]{\n    "slug": slug.current,\n    title,\n    client,\n    univers,\n    expertises,\n    layout,\n    location,\n    year,\n    area,\n    context,\n    enjeu,\n    interventions,\n    challenges[]{ title, body },\n    skills,\n    photoCredit,\n    cover{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    gallery[]{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': REALISATION_QUERY_RESULT;
+    '\n  *[_type == "realisation" && status == "published"] | order(order desc, publishedAt desc){\n    "slug": slug.current,\n    title\n  }\n': REALISATION_SLUGS_QUERY_RESULT;
+    '\n  *[_type == "realisation" && status == "published"] | order(order desc, publishedAt desc)[0...6]{\n    "slug": slug.current,\n    title,\n    client,\n    location,\n    year,\n    area,\n    cover{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n  }\n': LATEST_REALISATIONS_QUERY_RESULT;
+    '\n  *[_type == "realisation" && status == "published" && $expertise in expertises]\n    | order(order desc, publishedAt desc)[0]{\n    "slug": slug.current,\n    title,\n    location,\n    year,\n    area,\n    cover{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n  }\n': EXPERTISE_LATEST_REALISATION_QUERY_RESULT;
     '\n  *[_id == "footer"][0]{\n    ctaTitleOutline,\n    ctaTitleFill,\n    ctaButtonLabel,\n    ctaButtonHref,\n    ctaImages[]{\n      asset,\n      hotspot,\n      crop,\n      alt,\n      "lqip": asset->metadata.lqip\n    },\n    tagline,\n    address,\n    contactHref,\n    linkedInUrl,\n    plaquetteLabel,\n    "plaquetteUrl": plaquetteFile.asset->url,\n    navLinks[]{ label, href },\n    legalLinks[]{ label, href }\n  }\n': FOOTER_QUERY_RESULT;
     '\n  *[_id == "contactPage"][0]{\n    heroTitleOutline,\n    heroTitleFill,\n    formImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    formTitleOutline,\n    formTitleFill,\n    requestTypes[]{ label, recipient },\n    findTitleOutline,\n    findTitleFill,\n    address,\n    contactTitleOutline,\n    contactTitleFill,\n    email,\n    mapLocation,\n    mapZoom,\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': CONTACT_PAGE_QUERY_RESULT;
   }

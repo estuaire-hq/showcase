@@ -96,11 +96,33 @@ export function HeroSlideshow({
 			if (prefersReducedMotion()) return;
 			// Clamp: a misconfigured `interval` (0 / negative) would busy-loop setInterval.
 			const period = Math.max(1000, interval);
-			const id = setInterval(
-				() => setActive((i) => (i + 1) % slides.length),
-				period,
-			);
-			return () => clearInterval(id);
+			let id: ReturnType<typeof setInterval> | undefined;
+			const stop = () => {
+				if (id) clearInterval(id);
+				id = undefined;
+			};
+			const start = () => {
+				stop();
+				id = setInterval(
+					() => setActive((i) => (i + 1) % slides.length),
+					period,
+				);
+			};
+			// Autoplay ONLY while the tab is visible. A backgrounded tab suspends the
+			// GSAP ticker (rAF) but NOT `setInterval`, so advancing slides while hidden
+			// would stack frozen reconstruction tweens on the same glyph nodes and
+			// corrupt the title (it returns half-built). Pausing here is also the
+			// correct behaviour — don't cycle slides nobody is watching. (Post-mortem 0014.)
+			const onVisibility = () => {
+				if (document.visibilityState === "visible") start();
+				else stop();
+			};
+			if (document.visibilityState === "visible") start();
+			document.addEventListener("visibilitychange", onVisibility);
+			return () => {
+				stop();
+				document.removeEventListener("visibilitychange", onVisibility);
+			};
 		},
 		{ dependencies: [slides.length, interval] },
 	);
@@ -146,6 +168,29 @@ export function HeroSlideshow({
 				});
 		},
 		{ dependencies: [active], scope: titleRef },
+	);
+
+	// Idempotency safety: guarantee the title is fully built whenever the tab
+	// becomes visible. A reconstruction that was mid-reveal when the tab went to the
+	// background is frozen (rAF suspended); on return we kill any in-flight tween and
+	// snap the current glyphs to their resting state, so the title is never left
+	// half-shown. Pairs with the visibility-gated autoplay above. (Post-mortem 0014.)
+	useGSAP(
+		() => {
+			const root = titleRef.current;
+			if (!root) return;
+			if (prefersReducedMotion()) return;
+			const onVisibility = () => {
+				if (document.visibilityState !== "visible") return;
+				const chars = root.querySelectorAll<HTMLElement>("[data-char]");
+				gsap.killTweensOf(chars);
+				gsap.set(chars, { autoAlpha: 1, yPercent: 0 });
+			};
+			document.addEventListener("visibilitychange", onVisibility);
+			return () =>
+				document.removeEventListener("visibilitychange", onVisibility);
+		},
+		{ scope: titleRef },
 	);
 
 	// Image transition: a creative-but-subtle UPWARD clip wipe — the incoming image
@@ -210,7 +255,14 @@ export function HeroSlideshow({
 
 			{/* Text column */}
 			<div className="z-10 flex flex-col justify-start px-5 pt-28 pb-8 md:absolute md:inset-0 md:w-[64.2%] md:justify-center md:px-10 md:pt-0 md:pb-0 lg:w-[52%] lg:justify-end lg:px-[7%] lg:pb-[15%]">
-				<h1 className="font-display font-semibold text-display-sm leading-none lg:text-display">
+				{/* The desktop label/title live in a `lg:w-[52%]` dark zone that shrinks with the
+				    viewport, but the type was FIXED at 100px/75px across all desktop widths, so
+				    below ~1600 the title outgrew the zone and broke mid-word (« prenn|ent »),
+				    colliding with the image seam. Size them FLUIDLY in `vw` (the zone is a % of
+				    the viewport, so a vw size keeps the design's exact fill ratio): the clamp
+				    equals the `--text-display`/`--text-title` token values at the 1920 design
+				    width and meets the `-sm` tokens at the lg boundary. ADR 0022. */}
+				<h1 className="font-display font-semibold text-display-sm leading-none lg:text-[clamp(3.4375rem,5.21vw,6.25rem)]">
 					<BrandText>{label}</BrandText>
 				</h1>
 				{/* Reconstructing rotating title (only changed glyphs re-animate). No
@@ -219,7 +271,7 @@ export function HeroSlideshow({
 				    whole headline every interval. */}
 				<div
 					ref={titleRef}
-					className="mt-3 font-display font-semibold text-title-sm leading-[1.1] tracking-normal md:mt-5 lg:text-title lg:leading-none"
+					className="mt-3 font-display font-semibold text-title-sm leading-[1.1] tracking-normal md:mt-5 lg:text-[clamp(2.5rem,3.9vw,4.6875rem)] lg:leading-none"
 				>
 					{lines.map((line, li) => (
 						<span

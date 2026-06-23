@@ -39,27 +39,39 @@ function resolveActiveHref(pathname: string): string | undefined {
 	return match?.href;
 }
 
-type HeaderTones = { logo: NavTone; links: NavTone; toggleMobile?: NavTone };
+type CtaTone = "bleu" | "noir";
+type HeaderTones = {
+	logo: NavTone;
+	links: NavTone;
+	toggleMobile?: NavTone;
+	toggleTablet?: NavTone;
+	cta?: CtaTone;
+};
 const DEFAULT_TONES: HeaderTones = { logo: "onLight", links: "onLight" };
 
 /**
  * Read the per-slot tone the current page's header region declares (contract
- * `section-tone.md`): `data-nav-logo-tone` / `data-nav-links-tone` (+ optional
- * `data-nav-toggle-tone` for a mobile-only toggle override). Safe default `onLight`
- * (dark content on a light surface) for any page that declares nothing.
+ * `section-tone.md`): `data-nav-logo-tone` / `data-nav-links-tone`, plus optional
+ * per-slot overrides — `data-nav-toggle-tone` (mobile toggle) /
+ * `data-nav-toggle-tone-tablet` (tablet toggle), each defaulting to the links tone,
+ * and `data-nav-cta-tone` (`bleu`|`noir`) for the CTA's rest colour. Safe default
+ * `onLight` (dark content on a light surface) for any page that declares nothing.
  */
 function readHeaderTones(): HeaderTones {
 	const el = document.querySelector(
-		"[data-nav-logo-tone], [data-nav-links-tone], [data-nav-toggle-tone]",
+		"[data-nav-logo-tone], [data-nav-links-tone], [data-nav-toggle-tone], [data-nav-toggle-tone-tablet], [data-nav-cta-tone]",
 	);
 	const read = (name: string): NavTone | undefined => {
 		const v = el?.getAttribute(name);
 		return v === "onDark" || v === "onLight" ? v : undefined;
 	};
+	const cta = el?.getAttribute("data-nav-cta-tone");
 	return {
 		logo: read("data-nav-logo-tone") ?? "onLight",
 		links: read("data-nav-links-tone") ?? "onLight",
 		toggleMobile: read("data-nav-toggle-tone"),
+		toggleTablet: read("data-nav-toggle-tone-tablet"),
+		cta: cta === "bleu" || cta === "noir" ? cta : undefined,
 	};
 }
 
@@ -130,6 +142,8 @@ export function Navbar() {
 				logoTone={tones.logo}
 				linksTone={tones.links}
 				toggleToneMobile={tones.toggleMobile}
+				toggleToneTablet={tones.toggleTablet}
+				ctaToneTop={tones.cta}
 				isMenuOpen={isOpen}
 				onMenuToggle={() => setIsOpen((open) => !open)}
 				onCtaClick={trackContact}

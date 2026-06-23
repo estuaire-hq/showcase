@@ -24,6 +24,7 @@ export function SectionTitle({
 }) {
 	return (
 		<h2
+			data-reveal-fade
 			className={cn(
 				"font-display font-semibold text-title-sm leading-[1.1] lg:text-title lg:leading-[1.05]",
 				className,

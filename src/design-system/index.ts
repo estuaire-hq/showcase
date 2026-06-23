@@ -27,8 +27,8 @@ export {
 	type LegalSection,
 	type LegalSubsection,
 } from "./components/LegalPage";
-export { LineText } from "./components/LineText";
 export { LinkedInButton } from "./components/LinkedInButton";
+export { LogomarkLoader } from "./components/LogomarkLoader";
 export { MenuToggle } from "./components/MenuToggle";
 export { NavButton } from "./components/NavButton";
 export { NavPanel } from "./components/NavPanel";
@@ -36,7 +36,6 @@ export { PageHero, type PageHeroImage } from "./components/PageHero";
 export { Pill, type PillEmphasis } from "./components/Pill";
 export { Pullquote } from "./components/Pullquote";
 export { RealisationGridCard } from "./components/RealisationGridCard";
-export { RollText } from "./components/RollText";
 export { ScrollTopButton } from "./components/ScrollTopButton";
 export { SectionTitle } from "./components/SectionTitle";
 export { SectorButton } from "./components/SectorButton";

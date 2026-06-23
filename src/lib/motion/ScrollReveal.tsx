@@ -17,8 +17,7 @@ import { prefersReducedMotion } from "./usePrefersReducedMotion";
  * of visible-then-hidden content — on first load and on navigation alike. Honors
  * `prefers-reduced-motion`: no transform, content shown at rest.
  *
- * Lives in `@/lib/motion` with the other scroll-driven shells (Parallax, FooterReveal) —
- * scroll/page motion here, element hover (RollText/LineText) in the design system.
+ * Lives in `@/lib/motion` with the other scroll-driven shells (Parallax, FooterReveal).
  */
 export function ScrollReveal() {
 	const pathname = usePathname();

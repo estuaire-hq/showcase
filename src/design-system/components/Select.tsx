@@ -18,6 +18,9 @@ export function Select({
 	onChange,
 	placeholder = "Type de demande",
 	name,
+	id,
+	invalid,
+	describedBy,
 	className,
 }: {
 	options: string[];
@@ -26,6 +29,12 @@ export function Select({
 	onChange?: (value: string) => void;
 	placeholder?: string;
 	name?: string;
+	/** Associates a `<label htmlFor>` / `<Field>` with the trigger. */
+	id?: string;
+	/** Switches the border to the danger token + sets `aria-invalid`. */
+	invalid?: boolean;
+	/** `aria-describedby` (e.g. the Field's error message id). */
+	describedBy?: string;
 	className?: string;
 }) {
 	const [open, setOpen] = useState(false);
@@ -58,12 +67,15 @@ export function Select({
 			className={cn("font-sans text-body text-ink", className)}
 		>
 			{name && <input type="hidden" name={name} value={selected} />}
-			<div className="border border-ink">
+			<div className={cn("border", invalid ? "border-danger" : "border-ink")}>
 				<button
 					type="button"
+					id={id}
 					aria-haspopup="listbox"
 					aria-expanded={open}
 					aria-controls={listId}
+					aria-invalid={invalid || undefined}
+					aria-describedby={describedBy}
 					onClick={() => setOpen((o) => !o)}
 					onKeyDown={(e) => {
 						if (e.key === "Escape") setOpen(false);

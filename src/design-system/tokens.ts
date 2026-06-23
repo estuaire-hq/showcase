@@ -13,6 +13,8 @@ export const color = {
 	paper: "#ffffff",
 	/** Disabled / empty affordance (e.g. carousel arrow "vide") */
 	disabled: "#dddddd",
+	/** Form validation error affordance (not a brand identity colour) */
+	danger: "#b42318",
 } as const;
 
 export const font = {

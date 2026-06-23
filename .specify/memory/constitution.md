@@ -224,6 +224,23 @@
     - ADR 0010 companion list, ADRs 0001/0006 pointers, post-mortems 0001/0004 references updated.
   Templates requiring updates:
     - .specify/templates/*.md                   ✅ compatible (no constitution-specific references)
+
+  Sync Impact Report (1.7.2 → 1.7.3)
+  ====================================
+  Version change: 1.7.2 → 1.7.3
+  Modified sections:
+    - Technical Stack & Constraints / « Stack applicative » + « Infrastructure » : l'envoi du
+      formulaire de contact passe de « SMTP Microsoft 365 du client » à « SMTP OVH Email Pro »
+      (pro1.mail.ovh.net) ; la RÉCEPTION reste sur des boîtes partagées Microsoft 365.
+  Rationale for PATCH bump: correction factuelle d'une section existante après inventaire de
+    l'infra (les MX d'estuaire.fr sont chez OVH + un service Email Pro ; M365 retire le SMTP AUTH
+    Basic). Architecture hybride envoi(OVH)/réception(M365). Aucun principe ajouté/supprimé/redéfini.
+  Companion changes (operational, not constitutional):
+    - docs/vault/decisions/0019-contact-email-sending-ovh-emailpro.md records the decision.
+    - specs/013-contact-page/ (spec, plan, research §2, data-model, contracts, tasks).
+    - .env.example : SMTP_* + CONTACT_TO documented (server-only).
+  Templates requiring updates:
+    - .specify/templates/*.md                   ✅ compatible (no constitution-specific references)
 -->
 
 # Estuaire Constitution
@@ -465,7 +482,7 @@ isolation présentationnelle (cf. Principe VIII et [[decisions/0003-design-syste
 | CMS | Sanity Cloud | v5, plan gratuit, Studio embarqué |
 | Styles | Tailwind CSS | v4 |
 | Animations | GSAP | GSAP + `@gsap/react` + Lenis (scroll fluide) |
-| Formulaire contact | Nodemailer | SMTP Microsoft 365 du client |
+| Formulaire contact | Nodemailer | SMTP **OVH Email Pro** (`pro1.mail.ovh.net`) ; réception sur boîtes partagées M365 (cf. ADR 0019) |
 | Analytics | Umami | Auto-hébergé sur le même VPS (séparé) |
 
 ### Infrastructure
@@ -476,7 +493,8 @@ isolation présentationnelle (cf. Principe VIII et [[decisions/0003-design-syste
 | CDN / DNS / WAF | Cloudflare | Plan gratuit |
 | SSL | Let's Encrypt | Géré par Coolify |
 | Contenu & assets | Sanity Cloud | Hébergé chez Sanity, pas sur le VPS |
-| Email | SMTP M365 | Relais via le tenant Microsoft 365 du client |
+| Email (envoi) | SMTP OVH Email Pro | Relais authentifié `pro1.mail.ovh.net` (compte `@estuaire.fr`) |
+| Email (réception) | Microsoft 365 | Boîtes partagées Exchange du tenant client (destinataires du formulaire) |
 
 ### Revalidation
 
@@ -592,4 +610,4 @@ Elle prévaut sur toute autre convention implicite.
   complète cette constitution avec les instructions opérationnelles pour
   l'agent de développement.
 
-**Version**: 1.7.2 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-06-12
+**Version**: 1.7.3 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-06-23

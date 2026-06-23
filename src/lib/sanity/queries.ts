@@ -219,4 +219,26 @@ export const FOOTER_QUERY = defineQuery(/* groq */ `
   }
 `);
 
+export const CONTACT_PAGE_QUERY = defineQuery(/* groq */ `
+  *[_id == "contactPage"][0]{
+    heroTitleOutline,
+    heroTitleFill,
+    formImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },
+    formTitleOutline,
+    formTitleFill,
+    requestTypes[]{ label, recipient },
+    findTitleOutline,
+    findTitleFill,
+    address,
+    contactTitleOutline,
+    contactTitleFill,
+    email,
+    mapLocation,
+    mapZoom,
+    seoMetaTitle,
+    seoMetaDescription,
+    seoOgImage{ asset, alt }
+  }
+`);
+
 export { defineQuery };

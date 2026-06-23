@@ -40,6 +40,7 @@ const twMergeConfig = {
 						"cream",
 						"paper",
 						"disabled",
+						"danger",
 					],
 				},
 			],

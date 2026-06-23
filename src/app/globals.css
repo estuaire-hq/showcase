@@ -20,6 +20,8 @@
 	--color-paper: #ffffff;
 	/* Disabled / empty affordance (e.g. carousel arrow "vide") */
 	--color-disabled: #dddddd;
+	/* Form validation error affordance (not a brand identity colour) */
+	--color-danger: #b42318;
 
 	/*
 	 * Brand type scale — extracted from the Figma KIT type specimen

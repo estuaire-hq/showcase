@@ -62,3 +62,38 @@ export const strokeWidth = { rule: 3, control: 1 } as const;
  * below are for JS use (matchMedia in motion); CSS uses the Tailwind prefixes.
  */
 export const breakpoint = { mobile: 390, tablet: 768, desktop: 1024 } as const;
+
+/**
+ * Motion tokens — MIRRORS the `--ease-*` / `--*-roll` vars in the `@theme` block of
+ * globals.css (the canonical source). CSS reads those vars directly; GSAP/JS reads the
+ * values here. Keep the two in sync. See the `estuaire-motion` skill for the grammar.
+ *
+ *  - `easeExpo` is the signature ease. In GSAP it is the registered `"expo.out"`; in CSS
+ *    the equivalent is `--ease-expo` (`cubic-bezier(.16,1,.3,1)`) — treated as the same ease.
+ *  - The `roll*` values drive the hover text-roll (RollText): per-letter duration (s),
+ *    a base delay (s) before the first letter, and the per-letter stagger (s).
+ */
+export const motion = {
+	easeExpo: "expo.out",
+	rollDuration: 0.6,
+	rollDelay: 0.08,
+	rollStagger: 0.03,
+	/**
+	 * Content scroll-reveal: each element marked `data-reveal-fade` fades in (opacity only,
+	 * no transform — text stays the anchor) the first time it enters the viewport, then
+	 * stays. Per element & independent (Pierre, 2026-06-23). Tune the fade length here.
+	 */
+	revealDuration: 0.9,
+	/**
+	 * Page transition "curtain" (PageTransition): a full-screen paper panel that rises from
+	 * the bottom to cover, then drops back down to reveal the next page (Pierre, 2026-06-23).
+	 * This is the duration of ONE leg (cover, then uncover) — total ≈ 2× this.
+	 */
+	curtainDuration: 0.8,
+	/**
+	 * Overlapping image clusters: the FRONT (overlapping) image rises faster than the
+	 * static back image on scroll (`data-parallax` amplitude, `rise` mode) → depth
+	 * (Pierre, 2026-06-23). One value tunes all cluster fronts (expertises + nous-découvrir).
+	 */
+	clusterParallax: 30,
+} as const;

@@ -18,7 +18,7 @@
 // STATIC probe sees phantom h-overflow and the panels render as an empty band in a screenshot.
 // Capture/probe such pages under `page.emulateMedia({reducedMotion:'reduce'})` — the panels fall
 // back to normal flow (FR-016), which is the authoritative read of their layout soundness AND
-// verifies the reduced-motion UX. (Post-mortem 0016.)
+// verifies the reduced-motion UX. (Post-mortem 0017.)
 //
 // Returns: { width, ok, pageHeight, htmlOverflowX, defects: [ … ] }
 // Defect types:

@@ -1,4 +1,4 @@
-# 0016 — Angles morts de la revue multi-résolution (overflow clippé, sections pinned, fork mécanique)
+# 0017 — Angles morts de la revue multi-résolution (overflow clippé, sections pinned, fork mécanique)
 
 - **Date** : 2026-06-23
 - **Contexte** : passe de revue pixel multi-résolution sur tout le site + upgrade du skill

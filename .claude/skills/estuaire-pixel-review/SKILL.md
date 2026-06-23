@@ -135,7 +135,7 @@ pin spacer; the panels are transformed/absolute during the pin) and trips the pr
 with phantom offsets. Add a pass with `page.emulateMedia({reducedMotion:'reduce'})` for those pages:
 the panels fall back to normal flow (FR-016), giving the authoritative read of their content/soundness
 AND verifying the reduced-motion UX in one shot. Treat the no-reduced-motion white band / phantom
-overflow on such a page as a **capture artifact, not a defect** (post-mortem 0016).
+overflow on such a page as a **capture artifact, not a defect** (post-mortem 0017).
 
 ### 2. Regime A — pixel-match (cells with a Figma frame)
 Build the section map (reference Y-ranges from `figma.ts read <node> --depth=2`; dev Y-ranges from
@@ -163,7 +163,7 @@ No diff. Pass = correctness. Two parts:
   ancestor — full-bleed/`scale-1xx` cover images, carousels). The `offenders` locate it. A second,
   outside-the-page oracle for the same thing: a **fullPage screenshot wider than the viewport** =
   real horizontal overflow. (Both missed `univers@1024`'s 174px title overrun on the first pass —
-  post-mortem 0016.)
+  post-mortem 0017.)
 - **`img-distortion`** — an `<img>` rendered at an aspect ≠ its natural aspect with `object-fit`
   ∉ {cover, contain, scale-down}, i.e. visibly squashed/stretched. Fix the box ratio or the fit.
 - **`tiny-text`** — visible text below the 11px legibility floor. Bump the responsive size.

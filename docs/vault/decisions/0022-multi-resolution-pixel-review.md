@@ -75,7 +75,7 @@ renvoie par largeur un rapport de défauts **objectifs et déterministes** :
   ⚠️ Le socle pose `overflow-x: clip` sur `<html>`, donc `scrollWidth` ne voit pas l'overflow clippé :
   la sonde mesure les **bords réels** (`getBoundingClientRect().right`) en ignorant les crops contenus
   par un ancêtre `overflow` (images plein cadre, carousels). Oracle complémentaire : une **capture
-  full-page plus large que le viewport**. Voir [[../post-mortems/0016-multi-resolution-review-blind-spots]] ;
+  full-page plus large que le viewport**. Voir [[../post-mortems/0017-multi-resolution-review-blind-spots]] ;
 - `img-distortion` — `<img>` au ratio rendu ≠ ratio naturel avec `object-fit` ∉ {cover, contain} ;
 - `tiny-text` — texte visible sous le plancher de lisibilité (11px) ;
 - `text-clip` — feuille dont le **texte propre** est coupé par `overflow:hidden` (les crops

@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { LogomarkLoader } from "@/design-system/components/LogomarkLoader";
 import { motion } from "@/design-system/tokens";
 import { gsap, useGSAP } from "@/lib/motion/gsap";
 import { prefersReducedMotion } from "./usePrefersReducedMotion";
@@ -13,6 +14,12 @@ import { prefersReducedMotion } from "./usePrefersReducedMotion";
  * route is pushed while hidden, then the panel KEEPS RISING off the top to reveal it — one
  * continuous upward sweep (Pierre, 2026-06-23). The cover also hides the content swap +
  * scroll reset.
+ *
+ * The covered panel centers the animated `LogomarkLoader` (the Estuaire mark writing
+ * itself) as a loading indicator. The reveal is held back by a floor (`curtainLogoHold`,
+ * measured from cover start) so the mark writes itself in full once before uncovering; on a
+ * slow route the reveal naturally waits for the route to commit instead. The loader is
+ * mounted only while covering (fresh write each time, no idle GSAP loop at rest).
  *
  * How it works:
  *  - A capture-phase document click listener intercepts same-origin link clicks (skips
@@ -32,7 +39,11 @@ export function PageTransition() {
 	const panelRef = useRef<HTMLDivElement>(null);
 	const navigating = useRef(false);
 	const pendingPath = useRef<string | null>(null);
+	const coverStartAt = useRef<number | null>(null);
 	const [mounted, setMounted] = useState(false);
+	// Mount the loader only while the curtain covers — fresh write each time, no
+	// idle GSAP loop at rest. A ref guards the click logic; this drives the loader.
+	const [covering, setCovering] = useState(false);
 
 	useEffect(() => setMounted(true), []);
 
@@ -81,6 +92,8 @@ export function PageTransition() {
 				return;
 			}
 			panel.style.pointerEvents = "auto";
+			coverStartAt.current = performance.now();
+			setCovering(true); // mount the centered logomark loader; it writes from empty
 			// GSAP owns the transform (never set it via React style, or the two stack).
 			// `opacity: 1` lifts the at-rest invisibility; the panel rises from below.
 			gsap.fromTo(
@@ -107,18 +120,31 @@ export function PageTransition() {
 			if (!navigating.current) return;
 			const panel = panelRef.current;
 			if (!panel) return;
+			// Hold the cover so the logomark writes itself in full once: keep it up until
+			// at least `curtainLogoHold` has elapsed SINCE the cover started. The route is
+			// already committed here (this runs on the pathname change), so on a fast nav
+			// the floor dominates; on a slow one the commit dominates and the loop keeps
+			// running until ready. Never less than one paint frame (0.06s).
+			const elapsed =
+				coverStartAt.current != null
+					? performance.now() - coverStartAt.current
+					: 0;
+			const holdRemaining =
+				Math.max(0, motion.curtainLogoHold * 1000 - elapsed) / 1000;
 			// Reveal by continuing UPWARD off the top (not back down) — one upward sweep:
 			// rises from the bottom to cover, then keeps going up to uncover (Pierre, 2026-06-23).
 			gsap.to(panel, {
 				yPercent: -100,
 				duration: motion.curtainDuration,
 				ease: "expo.inOut",
-				delay: 0.06, // let the new page paint a frame before uncovering
+				delay: Math.max(0.06, holdRemaining),
 				onComplete: () => {
 					navigating.current = false;
 					pendingPath.current = null;
+					coverStartAt.current = null;
 					panel.style.pointerEvents = "none";
 					gsap.set(panel, { opacity: 0 }); // back to invisible at rest
+					setCovering(false); // unmount the loader (no idle GSAP loop at rest)
 				},
 			});
 		},
@@ -131,8 +157,10 @@ export function PageTransition() {
 			ref={panelRef}
 			aria-hidden="true"
 			data-page-curtain
-			className="pointer-events-none fixed inset-0 z-[100] bg-paper opacity-0"
-		/>,
+			className="pointer-events-none fixed inset-0 z-[100] flex items-center justify-center bg-paper opacity-0"
+		>
+			{covering && <LogomarkLoader size={96} delay={motion.curtainLogoDelay} />}
+		</div>,
 		document.body,
 	);
 }

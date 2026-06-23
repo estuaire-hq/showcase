@@ -29,6 +29,7 @@ export {
 } from "./components/LegalPage";
 export { LineText } from "./components/LineText";
 export { LinkedInButton } from "./components/LinkedInButton";
+export { LogomarkLoader } from "./components/LogomarkLoader";
 export { MenuToggle } from "./components/MenuToggle";
 export { NavButton } from "./components/NavButton";
 export { NavPanel } from "./components/NavPanel";

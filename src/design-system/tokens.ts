@@ -91,6 +91,20 @@ export const motion = {
 	 */
 	curtainDuration: 0.8,
 	/**
+	 * Curtain loader intro delay (PageTransition): a mini beat after the cover starts
+	 * before the logomark begins tracing, so the curtain establishes first and the trace
+	 * reads as intentional (Pierre, 2026-06-23). One-time (the loop keeps `repeatDelay`).
+	 */
+	curtainLogoDelay: 0.15,
+	/**
+	 * Curtain loader hold (PageTransition): the MINIMUM time the logomark loader stays
+	 * visible, measured from when the cover starts, so the mark writes itself in full
+	 * once (intro delay 0.15s + trace 1.0s ⇒ complete at ~1.15s) before the curtain
+	 * reveals the next page. On a slow route the reveal naturally waits for the route to
+	 * commit instead, so this is a floor, not a fixed delay (Pierre, 2026-06-23).
+	 */
+	curtainLogoHold: 1.35,
+	/**
 	 * Overlapping image clusters: the FRONT (overlapping) image rises faster than the
 	 * static back image on scroll (`data-parallax` amplitude, `rise` mode) → depth
 	 * (Pierre, 2026-06-23). One value tunes all cluster fronts (expertises + nous-découvrir).

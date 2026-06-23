@@ -94,6 +94,20 @@
 	 * (cover / uncover); mirror — GSAP reads tokens.ts.
 	 */
 	--duration-curtain: 800ms;
+
+	/*
+	 * Curtain loader intro delay — a mini beat after the cover starts before the logomark
+	 * begins tracing (LogomarkLoader inside PageTransition). Mirror — GSAP reads tokens.ts.
+	 */
+	--duration-curtain-delay: 150ms;
+
+	/*
+	 * Curtain loader hold — the MINIMUM time the logomark loader stays on screen
+	 * (measured from when the cover starts) so the mark writes itself in full once
+	 * (intro delay 0.15s + trace 1.0s ⇒ complete at ~1.15s) before the curtain reveals
+	 * the next page (LogomarkLoader inside PageTransition). Mirror — GSAP reads tokens.ts.
+	 */
+	--duration-curtain-hold: 1350ms;
 }
 
 @layer base {

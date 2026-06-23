@@ -28,6 +28,7 @@ export {
 	type LegalSubsection,
 } from "./components/LegalPage";
 export { LinkedInButton } from "./components/LinkedInButton";
+export { LogomarkLoader } from "./components/LogomarkLoader";
 export { MenuToggle } from "./components/MenuToggle";
 export { NavButton } from "./components/NavButton";
 export { NavPanel } from "./components/NavPanel";

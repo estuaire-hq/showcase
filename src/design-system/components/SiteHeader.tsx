@@ -193,7 +193,7 @@ export function SiteHeader({
 
 			{/* Desktop list (lg and up) — links + CTA, gap 15 (node 51:2221). */}
 			<nav aria-label="Navigation principale" className="hidden lg:block">
-				<ul className="flex items-center gap-8">
+				<ul className="flex items-center gap-[15px]">
 					{items.map((item) => (
 						<li key={item.href}>
 							<NavButton

@@ -83,11 +83,11 @@ function arcPts(
 function buildPts(segs: CLSeg[]): Pt[] {
 	const pts: Pt[] = [];
 	for (const s of segs) {
-		if (s.t === "M" || s.t === "L") {
-			pts.push([s.x, s.y]);
-		} else {
+		if (s.t === "A") {
 			// Skip the arc's first point — it duplicates the previous segment's end.
 			for (const p of arcPts(s.cx, s.cy, s.r, s.a0, s.a1).slice(1)) pts.push(p);
+		} else {
+			pts.push([s.x, s.y]);
 		}
 	}
 	return pts;

@@ -20,7 +20,11 @@ import { Arrow } from "./Arrow";
 const button = tv({
 	// Label centred across the full width; arrow pinned ~28px from the right edge
 	// and vertically centred (kit geometry: arrow-right-1 at x=button.width-44, y centre).
-	base: "relative inline-flex h-[61px] shrink-0 items-center justify-center rounded-full px-14 font-display text-body font-semibold leading-none transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-estuaire focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+	// `min-h-[61px]` keeps the kit's 61px pill for a single-line label but lets the pill
+	// GROW when a long label wraps (e.g. the footer « téléchargez notre plaquette » CTA on
+	// narrow widths) instead of overflowing its fixed height; `py-3` + `text-center` +
+	// `leading-tight` give the wrapped lines breathing room (multi-resolution review, ADR 0022).
+	base: "relative inline-flex min-h-[61px] shrink-0 items-center justify-center rounded-full px-14 py-3 text-center font-display text-body font-semibold leading-tight transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-estuaire focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
 	variants: {
 		tone: {
 			light: "bg-paper text-ink hover:bg-estuaire hover:text-paper",

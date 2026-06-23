@@ -154,8 +154,11 @@ export default async function AboutPage() {
 			<section className="bg-paper">
 				<div className={cn(CONTAINER, "py-16 md:py-20 lg:py-24")}>
 					<div className="flex flex-col gap-12 md:grid md:grid-cols-2 md:items-start md:gap-x-[5%]">
-						{/* Images cluster (bbox 751×689): primary right-top, secondary left-lower */}
-						<ClusterCell className="order-2 md:order-1">
+						{/* Images cluster (bbox 751×689): primary right-top, secondary left-lower.
+						    Tablet (md) mirrors the maquette tablet frame (78:4374) — text LEFT,
+						    images RIGHT — so the side-swap is deferred to lg (desktop keeps
+						    images-left). ADR 0022. */}
+						<ClusterCell className="order-2 lg:order-1">
 							<Parallax className="relative aspect-[751/689] w-full">
 								<Figure
 									image={intro.imagePrimary}
@@ -173,7 +176,7 @@ export default async function AboutPage() {
 							</Parallax>
 						</ClusterCell>
 						{/* Statement + body */}
-						<div className="order-1 flex flex-col gap-8 md:order-2">
+						<div className="order-1 flex flex-col gap-8 lg:order-2">
 							<p className="font-display text-subtitle-sm leading-[1.18] text-ink lg:text-subtitle lg:leading-[1.3]">
 								<BrandText>{intro.statement}</BrandText>
 							</p>

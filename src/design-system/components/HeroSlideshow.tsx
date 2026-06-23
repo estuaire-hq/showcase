@@ -311,10 +311,19 @@ export function HeroSlideshow({
 
 			{/* Text column */}
 			<div className="z-10 flex flex-col justify-start px-5 pt-28 pb-8 md:absolute md:inset-0 md:w-[64.2%] md:justify-center md:px-10 md:pt-0 md:pb-0 lg:w-[52%] lg:justify-end lg:px-[7%] lg:pb-[15%]">
+				{/* The desktop label/title live in a `lg:w-[52%]` dark zone that shrinks with the
+				    viewport, but the type was FIXED at 100px/75px across all desktop widths, so
+				    below ~1600 the title outgrew the zone and broke mid-word (« prenn|ent »),
+				    colliding with the image seam. Size them FLUIDLY in `vw` (the zone is a % of
+				    the viewport, so a vw size keeps the design's exact fill ratio): the clamp
+				    equals the `--text-display`/`--text-title` token values at the 1920 design
+				    width and meets the `-sm` tokens at the lg boundary. ADR 0022.
+				    `data-hero-h1` is the FLIP target the site-entry intro lands « Estuaire » on. */}
 				<h1
 					data-hero-h1
-					className="font-display font-semibold text-display-sm leading-none lg:text-display"
+					className="font-display font-semibold text-display-sm leading-none lg:text-[clamp(3.4375rem,5.21vw,6.25rem)]"
 				>
+
 					<BrandText>{label}</BrandText>
 				</h1>
 				{/* Reconstructing rotating title (only changed glyphs re-animate). No
@@ -323,7 +332,7 @@ export function HeroSlideshow({
 				    whole headline every interval. */}
 				<div
 					ref={titleRef}
-					className="mt-3 font-display font-semibold text-title-sm leading-[1.1] tracking-normal md:mt-5 lg:text-title lg:leading-none"
+					className="mt-3 font-display font-semibold text-title-sm leading-[1.1] tracking-normal md:mt-5 lg:text-[clamp(2.5rem,3.9vw,4.6875rem)] lg:leading-none"
 				>
 					{lines.map((line, li) => (
 						<span

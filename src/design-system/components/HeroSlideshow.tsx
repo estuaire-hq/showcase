@@ -96,11 +96,33 @@ export function HeroSlideshow({
 			if (prefersReducedMotion()) return;
 			// Clamp: a misconfigured `interval` (0 / negative) would busy-loop setInterval.
 			const period = Math.max(1000, interval);
-			const id = setInterval(
-				() => setActive((i) => (i + 1) % slides.length),
-				period,
-			);
-			return () => clearInterval(id);
+			let id: ReturnType<typeof setInterval> | undefined;
+			const stop = () => {
+				if (id) clearInterval(id);
+				id = undefined;
+			};
+			const start = () => {
+				stop();
+				id = setInterval(
+					() => setActive((i) => (i + 1) % slides.length),
+					period,
+				);
+			};
+			// Autoplay ONLY while the tab is visible. A backgrounded tab suspends the
+			// GSAP ticker (rAF) but NOT `setInterval`, so advancing slides while hidden
+			// would stack frozen reconstruction tweens on the same glyph nodes and
+			// corrupt the title (it returns half-built). Pausing here is also the
+			// correct behaviour — don't cycle slides nobody is watching. (Post-mortem 0014.)
+			const onVisibility = () => {
+				if (document.visibilityState === "visible") start();
+				else stop();
+			};
+			if (document.visibilityState === "visible") start();
+			document.addEventListener("visibilitychange", onVisibility);
+			return () => {
+				stop();
+				document.removeEventListener("visibilitychange", onVisibility);
+			};
 		},
 		{ dependencies: [slides.length, interval] },
 	);
@@ -146,6 +168,29 @@ export function HeroSlideshow({
 				});
 		},
 		{ dependencies: [active], scope: titleRef },
+	);
+
+	// Idempotency safety: guarantee the title is fully built whenever the tab
+	// becomes visible. A reconstruction that was mid-reveal when the tab went to the
+	// background is frozen (rAF suspended); on return we kill any in-flight tween and
+	// snap the current glyphs to their resting state, so the title is never left
+	// half-shown. Pairs with the visibility-gated autoplay above. (Post-mortem 0014.)
+	useGSAP(
+		() => {
+			const root = titleRef.current;
+			if (!root) return;
+			if (prefersReducedMotion()) return;
+			const onVisibility = () => {
+				if (document.visibilityState !== "visible") return;
+				const chars = root.querySelectorAll<HTMLElement>("[data-char]");
+				gsap.killTweensOf(chars);
+				gsap.set(chars, { autoAlpha: 1, yPercent: 0 });
+			};
+			document.addEventListener("visibilitychange", onVisibility);
+			return () =>
+				document.removeEventListener("visibilitychange", onVisibility);
+		},
+		{ scope: titleRef },
 	);
 
 	// Image transition: a creative-but-subtle UPWARD clip wipe — the incoming image

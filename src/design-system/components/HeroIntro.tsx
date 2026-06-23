@@ -217,12 +217,13 @@ export function HeroIntro({
 							className="text-paper"
 						/>
 					</div>
-					{/* Same render as the hero <h1> (BrandText + identical type classes → same
-					    0.05em tracking) so the FLIP lands on it seamlessly. */}
+					{/* Same render as the hero <h1> (BrandText + identical type classes, incl. the
+					    fluid `lg:` clamp from ADR 0022 → same size + 0.05em tracking at every width)
+					    so the FLIP lands on it seamlessly. */}
 					<div
 						ref={wordRef}
 						data-intro-word
-						className="font-display font-semibold text-display-sm leading-none lg:text-display"
+						className="font-display font-semibold text-display-sm leading-none lg:text-[clamp(3.4375rem,5.21vw,6.25rem)]"
 					>
 						<BrandText>{label}</BrandText>
 					</div>

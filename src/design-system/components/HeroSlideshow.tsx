@@ -323,7 +323,6 @@ export function HeroSlideshow({
 					data-hero-h1
 					className="font-display font-semibold text-display-sm leading-none lg:text-[clamp(3.4375rem,5.21vw,6.25rem)]"
 				>
-
 					<BrandText>{label}</BrandText>
 				</h1>
 				{/* Reconstructing rotating title (only changed glyphs re-animate). No

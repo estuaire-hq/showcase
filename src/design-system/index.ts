@@ -19,6 +19,14 @@ export { FileInput } from "./components/FileInput";
 export { Filter } from "./components/Filter";
 export { FooterLink } from "./components/FooterLink";
 export { type HeroSlide, HeroSlideshow } from "./components/HeroSlideshow";
+export {
+	type LegalBlock,
+	type LegalInline,
+	LegalPage,
+	type LegalPageProps,
+	type LegalSection,
+	type LegalSubsection,
+} from "./components/LegalPage";
 export { LinkedInButton } from "./components/LinkedInButton";
 export { MenuToggle } from "./components/MenuToggle";
 export { NavButton } from "./components/NavButton";

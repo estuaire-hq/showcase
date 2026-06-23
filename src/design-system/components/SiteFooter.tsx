@@ -143,9 +143,10 @@ export function SiteFooter({
 					</div>
 				</div>
 
-				{/* Bottom: rule + legal links (stacked on mobile/tablet, 4 cols on lg) */}
+				{/* Bottom: rule + legal links (stacked on mobile/tablet, centred row on lg —
+				    a flex row that stays balanced for any number of links, not just 4). */}
 				<div className="mt-12 border-paper/30 border-t pt-9 lg:mt-[61px] lg:pt-[37px]">
-					<div className="flex flex-col gap-3 lg:grid lg:grid-cols-4 lg:gap-x-8">
+					<div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:justify-center lg:gap-x-12 lg:gap-y-3">
 						{legalLinks.map((l) => (
 							<FooterLink
 								key={l.label}

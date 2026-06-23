@@ -31,9 +31,7 @@ export const footerContent = {
 		{ label: "réalisations", href: "/realisations" },
 	],
 	legalLinks: [
-		{ label: "Conditions générales d'utilisation", href: "/cgu" },
 		{ label: "Mentions légales", href: "/mentions-legales" },
 		{ label: "Politique de confidentialité", href: "/confidentialite" },
-		{ label: "Politique en matière de cookies", href: "/cookies" },
 	],
 };

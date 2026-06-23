@@ -64,20 +64,15 @@ export const strokeWidth = { rule: 3, control: 1 } as const;
 export const breakpoint = { mobile: 390, tablet: 768, desktop: 1024 } as const;
 
 /**
- * Motion tokens — MIRRORS the `--ease-*` / `--*-roll` vars in the `@theme` block of
+ * Motion tokens — MIRRORS the `--ease-*` vars in the `@theme` block of
  * globals.css (the canonical source). CSS reads those vars directly; GSAP/JS reads the
  * values here. Keep the two in sync. See the `estuaire-motion` skill for the grammar.
  *
  *  - `easeExpo` is the signature ease. In GSAP it is the registered `"expo.out"`; in CSS
  *    the equivalent is `--ease-expo` (`cubic-bezier(.16,1,.3,1)`) — treated as the same ease.
- *  - The `roll*` values drive the hover text-roll (RollText): per-letter duration (s),
- *    a base delay (s) before the first letter, and the per-letter stagger (s).
  */
 export const motion = {
 	easeExpo: "expo.out",
-	rollDuration: 0.6,
-	rollDelay: 0.08,
-	rollStagger: 0.03,
 	/**
 	 * Content scroll-reveal: each element marked `data-reveal-fade` fades in (opacity only,
 	 * no transform — text stays the anchor) the first time it enters the viewport, then

@@ -1,22 +1,29 @@
 import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { LineText } from "./LineText";
-import { RollText } from "./RollText";
+import { tv } from "@/lib/utils";
 
 /**
- * Footer link.
- *  - `nav` (kit « Menu footer ») — the main footer menu. Uses the signature hover
- *    text-roll (RollText, `onDark`: paper → cream on the dark footer surface).
- *  - `legal` (kit « mini menu footer ») — mentions légales / CGV… Uses the "line" hover
- *    (LineText): a thin 1px underline drawing in left→right, receding to the right on leave.
- *
- * Estuaire on ink fails contrast (≈1.4:1), so the dark footer never shifts to estuaire —
- * the roll accent is `cream` (see RollText `onDark`).
+ * Footer link. `nav` (kit « Menu footer » — Montserrat Alternates, ~24px) for
+ * the main footer menu; `legal` (kit « mini menu footer » — Montserrat 16px)
+ * for legal links. Paper at rest, estuaire on hover.
  */
+const footerLink = tv({
+	// Dark footer surface: keep the text white and underline on hover/focus —
+	// estuaire (#003787) on ink (#0e1215) fails contrast (≈1.4:1), so no colour shift.
+	base: "inline-block w-fit text-paper underline-offset-4 decoration-2 hover:underline focus-visible:underline focus-visible:outline-none",
+	variants: {
+		variant: {
+			// nav: Montserrat Alternates SemiBold ~25px (text-body) · legal: Montserrat 16px
+			nav: "font-display text-body font-semibold",
+			legal: "font-sans text-caption",
+		},
+	},
+	defaultVariants: { variant: "nav" },
+});
+
 export function FooterLink({
 	label,
 	href,
-	variant = "nav",
+	variant,
 	className,
 }: {
 	label: string;
@@ -24,32 +31,9 @@ export function FooterLink({
 	variant?: "nav" | "legal";
 	className?: string;
 }) {
-	if (variant === "legal") {
-		return (
-			<Link
-				href={href}
-				className={cn(
-					"group/line inline-block w-fit font-sans text-caption text-paper focus-visible:outline-none",
-					className,
-				)}
-			>
-				<LineText text={label} />
-			</Link>
-		);
-	}
 	return (
-		<Link
-			href={href}
-			className={cn(
-				"block w-fit rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-paper",
-				className,
-			)}
-		>
-			<RollText
-				text={label}
-				tone="onDark"
-				className="font-display text-body font-semibold"
-			/>
+		<Link href={href} className={footerLink({ variant, class: className })}>
+			{label}
 		</Link>
 	);
 }

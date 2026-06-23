@@ -128,7 +128,13 @@ export default async function UniversPage() {
 									i < 2 && "md:border-ink md:border-b-[2px] lg:border-b-[3px]",
 								)}
 							>
-								<p className="font-display font-semibold text-title-sm text-ink leading-[1.13] lg:text-title lg:leading-[1.13]">
+								{/* In the 2-col grid the half-column is too narrow for a long figure
+								    value (e.g. « Atelier multimatériaux ») at the fixed 75px `text-title`
+								    across the 1024–1440 desktop band → it overran the centre divider /
+								    clipped at the edge. Scale the desktop value FLUIDLY between the
+								    `text-title-sm` (2.5rem) and `text-title` (4.6875rem) token values so
+								    it fits every width (75px preserved at the 1920 anchor). ADR 0022. */}
+								<p className="font-display font-semibold text-[clamp(2.2rem,10vw,2.5rem)] text-ink leading-[1.13] tracking-[0.05em] lg:text-[clamp(2.5rem,4.4vw,4.6875rem)] lg:leading-[1.13]">
 									<BrandText>{fig.value}</BrandText>
 								</p>
 								<p className="max-w-[34ch] font-sans font-semibold text-lead-sm text-ink leading-snug lg:text-lead">

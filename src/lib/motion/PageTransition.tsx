@@ -1,5 +1,6 @@
 "use client";
 
+import { useLenis } from "lenis/react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -37,6 +38,7 @@ import { prefersReducedMotion } from "./usePrefersReducedMotion";
 export function PageTransition() {
 	const router = useRouter();
 	const pathname = usePathname();
+	const lenis = useLenis();
 	const panelRef = useRef<HTMLDivElement>(null);
 	const navigating = useRef(false);
 	const pendingPath = useRef<string | null>(null);
@@ -124,6 +126,12 @@ export function PageTransition() {
 			if (!navigating.current) return;
 			const panel = panelRef.current;
 			if (!panel) return;
+			// Reset scroll to the TOP of the freshly-committed route while it is still
+			// covered. Next resets native scroll on push, but Lenis (smooth scroll) keeps its
+			// own offset and re-applies it on the next rAF — so without this the new page was
+			// revealed mid-scroll (« la page s'ouvre en plein milieu », client review 2026-06).
+			lenis?.scrollTo(0, { immediate: true });
+			window.scrollTo(0, 0);
 			// Hold the cover so the logomark writes itself in full once: keep it up until
 			// at least `curtainLogoHold` has elapsed SINCE the cover started. The route is
 			// already committed here (this runs on the pathname change), so on a fast nav

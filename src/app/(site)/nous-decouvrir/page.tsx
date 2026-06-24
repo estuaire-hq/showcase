@@ -17,8 +17,10 @@ import { cn } from "@/lib/utils";
 // connector — it fetches via `getAboutPageProps()` (mapping isolated in
 // `@/lib/sanity/aboutPage.ts`) and composes the design-system components.
 //
-// MOTION: intentionally none for now — motion must be placed deliberately, not applied
-// to every image (ADR 0012 §7). The page is fully static.
+// MOTION: deliberate, restrained reveals only (ADR 0012 §7, estuaire-motion). Section titles
+// reveal on entry via `SectionTitle` (`data-reveal-fade`); the long « mode opératoire » steps
+// each fade in on scroll so the section appears progressively (client review 2026-06, G2). No
+// text parallax; opacity-only; reduced-motion shows everything instantly.
 //
 // IMAGE CLUSTERS: each "tall + overlapping" pair is built as a `relative` box whose
 // aspect ratio is the maquette cluster bounding-box, with BOTH images `absolute`-placed
@@ -221,7 +223,10 @@ export default async function AboutPage() {
 									className="text-ink"
 								/>
 								<div className="h-px w-full bg-ink lg:h-[3px]" />
-								<p className="max-w-[60ch] whitespace-pre-line text-body-sm text-ink leading-relaxed">
+								{/* Fill the column (maquette: the body fills the ~805px right block in
+								    small type) — the previous 60ch cap left it narrow with a lopsided
+								    void, which read as off-proportion (client review 2026-06, G1). */}
+								<p className="whitespace-pre-line text-body-sm text-ink leading-relaxed">
 									{vision.text}
 								</p>
 							</div>
@@ -368,6 +373,10 @@ export default async function AboutPage() {
 								<div
 									// biome-ignore lint/suspicious/noArrayIndexKey: positional step list; `number` may be empty under partial seed
 									key={i}
+									// Each step fades in on scroll entry so the long « mode opératoire » section
+									// appears progressively instead of all at once (client review 2026-06, G2:
+									// « doit apparaître progressivement »). Opacity-only, once, reduced-motion safe.
+									data-reveal-fade
 									className="flex flex-col gap-8 md:grid md:grid-cols-2 md:items-center md:gap-x-[6%]"
 								>
 									{/* Text block */}

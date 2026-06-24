@@ -1,8 +1,6 @@
 import Image from "next/image";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { BrandText } from "../typography/BrandText";
-import { Arrow } from "./Arrow";
 
 export type CaseStudyPanelData = {
 	image: string;
@@ -12,92 +10,84 @@ export type CaseStudyPanelData = {
 };
 
 /**
- * Full-viewport case-study panel (home « CAS STUDY », deviated from the maquette band
- * to a 100svh pinned panel — see PinnedCaseStudies). Full-bleed image under an ink
- * veil; title + a 3px rule + meta (tick-separated) low-left; a subtle "voir nos
- * réalisations" link low-right. Presentational only: the `data-cs-*` hooks let
- * PinnedCaseStudies drive the scrubbed reveal (image parallax, then title, then the
- * rule tracing right→left, then the details one by one, then the CTA). Static &
- * readable without JS (reduced motion / no-JS — FR-016): everything is visible at rest.
+ * Case-study BAND (home « CAS STUDY ») — a full-bleed cinematic strip whose height
+ * follows the maquette aspect ratio per breakpoint (mobile/tablet ≈ 1.1:1, desktop
+ * 2.67:1 — 1920×718). Full-bleed image under a 25% ink veil; title + a 3px rule +
+ * tick-separated meta, low-left. Presentational only: the `data-cs-*` hooks let the
+ * `CaseStudies` shell drive the scroll reveal (image parallax, then title, the rule
+ * tracing in, then the meta one by one). The shared "voir nos réalisations" pill lives
+ * once below all bands (in `CaseStudies`), per the maquette — not per band. The whole
+ * band is wrapped in a link to its réalisation (by `CaseStudies`); on hover the image
+ * zooms slightly (the cas-study motion signature) — `motion-safe` only, and on the
+ * `<Image>` itself, NOT the GSAP-driven parallax layer (post-mortem 0015). Static &
+ * readable without JS (reduced motion / no-JS): everything is visible at rest.
  */
 export function CaseStudyPanel({
 	image,
 	title,
 	meta,
-	cta,
 	className,
 }: CaseStudyPanelData & {
-	cta: { label: string; href: string };
 	className?: string;
 }) {
 	return (
 		<article
 			data-cs-panel
 			className={cn(
-				"relative h-svh w-full overflow-hidden bg-ink text-paper",
+				"group relative aspect-[78/71] w-full overflow-hidden bg-ink text-paper lg:aspect-[960/359]",
 				className,
 			)}
 		>
-			{/* Oversized so the background parallax never reveals an edge (no black band).
-			    Guarded: a missing image degrades to the ink panel (the article is `bg-ink`)
-			    rather than a broken `<Image src="">`. */}
-			<div data-cs-image className="absolute inset-0 scale-125">
+			{/* Parallax layer — taller than the band (−inset-y-[8%] → 116% height) so the
+			    scrubbed yPercent drift never exposes an edge (no black band). GSAP owns
+			    this element's transform (CaseStudies animates yPercent), so it carries no
+			    CSS transform of its own (post-mortem 0015). A missing image degrades to the
+			    ink panel (`bg-ink`) rather than a broken `<Image src="">`. */}
+			<div data-cs-image className="absolute inset-x-0 -inset-y-[8%]">
 				{image && (
 					<Image
 						src={image}
 						alt={title}
 						fill
 						sizes="100vw"
-						className="object-cover"
+						className="object-cover transition-transform duration-700 ease-out motion-safe:group-hover:scale-105"
 					/>
 				)}
 			</div>
-			<div className="absolute inset-0 bg-ink/35" />
+			<div className="absolute inset-0 bg-ink/25" />
 
-			{/* Title + rule + meta, low-left — with the CTA. On mobile/tablet the CTA
-			    flows below the meta (it would otherwise overlap the full-width title +
-			    wrapped meta, both anchored to bottom-[10%]); from lg it breaks out to the
-			    low-right corner of this block (≡ the maquette right-[6.8%] bottom-[10%]). */}
-			<div className="absolute inset-x-5 bottom-[10%] md:inset-x-10 lg:inset-x-[6.8%]">
+			{/* Title + rule + meta, low-left (maquette insets: 4.1% mobile / 11.2% tablet /
+			    6.8% desktop; the block sits ~8% from the bottom). */}
+			<div className="absolute inset-x-4 bottom-[8%] md:inset-x-[11.2%] lg:inset-x-[6.8%]">
 				<h3
 					data-cs-title
-					className="max-w-[20ch] font-display font-semibold text-title-sm leading-none lg:text-title"
+					className="max-w-[18ch] font-display font-semibold text-title-sm leading-[1.1] lg:text-title"
 				>
 					<BrandText>{title}</BrandText>
 				</h3>
 				<div
 					data-cs-rule
-					className="mt-5 h-[3px] w-full origin-right bg-paper"
+					className="mt-4 h-[3px] w-full origin-right bg-paper"
 				/>
 				{meta.length > 0 && (
-					<p className="mt-4 flex flex-wrap items-center gap-x-8 font-display font-semibold text-body">
+					<p className="mt-3 flex flex-wrap items-center gap-x-6 font-display font-semibold text-body-sm lg:gap-x-8 lg:text-body">
 						{meta.map((m, i) => (
 							<span
 								key={m}
 								data-cs-detail
-								className="flex items-center gap-x-8"
+								className="flex items-center gap-x-6 lg:gap-x-8"
 							>
 								{i > 0 && (
-									<span aria-hidden className="h-[26px] w-px bg-paper/70" />
+									<span
+										aria-hidden
+										className="h-5 w-px bg-paper/70 lg:h-[26px]"
+									/>
 								)}
 								{m}
 							</span>
 						))}
 					</p>
 				)}
-
-				{/* Subtle CTA (a worked-up link, not the big pill). */}
-				<Link
-					data-cs-cta
-					href={cta.href}
-					className="group mt-8 inline-flex items-center gap-3 font-display font-semibold text-body lg:absolute lg:right-0 lg:bottom-0 lg:mt-0"
-				>
-					<span className="relative">
-						{cta.label}
-						<span className="absolute -bottom-1 left-0 h-px w-full origin-right scale-x-0 bg-paper transition-transform duration-300 ease-out group-hover:origin-left group-hover:scale-x-100" />
-					</span>
-					<Arrow className="size-5 transition-transform duration-300 ease-out group-hover:translate-x-1" />
-				</Link>
 			</div>
 		</article>
 	);

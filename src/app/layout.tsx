@@ -15,7 +15,9 @@ const montserrat = Montserrat({
 
 const montserratAlternates = Montserrat_Alternates({
 	subsets: ["latin"],
-	weight: ["400", "500", "600"],
+	// 700 powers the bold footer brand wordmark (logo_footer) so the « stuaire » run
+	// renders as true bold rather than faux-bold (client review 2026-06: footer logotype).
+	weight: ["400", "500", "600", "700"],
 	style: ["normal", "italic"],
 	variable: "--font-montserrat-alternates",
 	display: "swap",

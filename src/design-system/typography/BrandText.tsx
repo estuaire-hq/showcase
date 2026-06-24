@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 // Estuaire brand typographic rule: UPPERCASE letters render in Montserrat,
 // everything else (lowercase, digits, punctuation, spaces) in Montserrat
 // Alternates. Applied per character so it works for any content, including text
@@ -40,5 +42,19 @@ export function BrandText({ children }: { children: string }) {
 				</span>
 			))}
 		</span>
+	);
+}
+
+/**
+ * Apply the brand casse rule to a label ONLY when it's a plain string. Display-type
+ * primitives (Button, Pill) accept arbitrary `ReactNode`; wrapping a string in
+ * `BrandText` makes every capital render in Montserrat (the brand rule) while
+ * leaving non-string children (icons, composed nodes) untouched.
+ */
+export function brandCase(children: ReactNode): ReactNode {
+	return typeof children === "string" ? (
+		<BrandText>{children}</BrandText>
+	) : (
+		children
 	);
 }

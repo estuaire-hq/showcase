@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { tv } from "@/lib/utils";
+import { brandCase } from "../typography/BrandText";
 
 /**
  * Pill — a non-interactive label chip for the « contraintes terrain » cloud (maquette:
@@ -37,6 +38,8 @@ export function Pill({
 	className?: string;
 }) {
 	return (
-		<span className={pill({ emphasis, class: className })}>{children}</span>
+		<span className={pill({ emphasis, class: className })}>
+			{brandCase(children)}
+		</span>
 	);
 }

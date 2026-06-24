@@ -33,7 +33,8 @@ export function CaseStudyCard({
 				className,
 			)}
 		>
-			{/* Survol = LAYER_BLUR 15px on the image (kit), NOT a zoom. The base
+			{/* Survol = LAYER_BLUR on the image (kit 15px), NOT a zoom. Softened to 8px at
+			    the client's request (revue 2026-06: hover blur trop fort). The base
 			    scale-105 bleeds the image past the clip so the blur never reveals edges.
 			    Guarded: a missing cover (dangling asset) degrades to the ink veil + title
 			    rather than a broken `<Image src="">`. */}
@@ -43,7 +44,7 @@ export function CaseStudyCard({
 					alt={alt}
 					fill
 					sizes="(min-width: 1280px) 1200px, 100vw"
-					className="scale-105 object-cover transition-[filter] duration-500 ease-out group-hover:blur-[15px]"
+					className="scale-105 object-cover transition-[filter] duration-500 ease-out group-hover:blur-[8px]"
 				/>
 			)}
 			<div className="absolute inset-0 bg-ink/25" />

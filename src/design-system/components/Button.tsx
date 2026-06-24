@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import type { VariantProps } from "tailwind-variants";
 import { tv } from "@/lib/utils";
+import { brandCase } from "../typography/BrandText";
 import { Arrow } from "./Arrow";
 
 /**
@@ -59,7 +60,7 @@ export function Button(props: ButtonAsButton | ButtonAsLink) {
 	const cls = button({ tone, block, class: className });
 	const content = (
 		<>
-			<span>{children}</span>
+			<span>{brandCase(children)}</span>
 			{arrow && (
 				<Arrow className="-translate-y-1/2 absolute top-1/2 right-7 size-5" />
 			)}

@@ -78,7 +78,7 @@ export function FeatureBlock({
 					sizes="100vw"
 					placeholder={blurDataURL ? "blur" : "empty"}
 					blurDataURL={blurDataURL}
-					className="scale-105 object-cover transition-[filter] duration-500 ease-out group-hover:blur-[15px]"
+					className="scale-105 object-cover transition-[filter] duration-500 ease-out group-hover:blur-[8px]"
 				/>
 			)}
 			{/* Kit Rectangle 397 veil = ink @ 0.253 (constant) */}

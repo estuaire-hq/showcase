@@ -20,7 +20,7 @@ exempté du gate Coming-Soon (matcher exclut `api/*`).
 | `message` | string | ✓ | 10–5000 car. |
 | `attachment` | File | – | ≤ 10 Mo ; MIME/ext autorisés (pdf, png, jpg, jpeg, webp, doc, docx, xls, xlsx, ppt, pptx) |
 | `website` | string | – | **honeypot** — doit être vide |
-| `_ts` | string (number) | ✓ | horodatage de rendu (ms) ; delta < 2500 ms ⇒ rejet |
+| `_ts` | string (number) | – | horodatage de rendu (ms), posé au montage du form ; delta < 1500 ms ⇒ rejet silencieux. Optionnel (défense en profondeur ; le honeypot est la défense principale) — absent/0 ⇒ pas de rejet. |
 
 ## Réponses
 
@@ -36,7 +36,7 @@ exempté du gate Coming-Soon (matcher exclut `api/*`).
 ## Comportement serveur (route.ts)
 
 1. `request.formData()` → extraire les champs.
-2. **Anti-spam** : si `website` non vide OU `now - _ts < 2500ms` → répondre `200 { ok:true }`
+2. **Anti-spam** : si `website` non vide OU `now - _ts < 1500ms` (et `_ts > 0`) → répondre `200 { ok:true }`
    sans envoyer (rejet silencieux).
 3. **Validation** : `contactSchema.safeParse(...)` (zod partagé) ; champs invalides → `400`.
 4. **Pièce jointe** : si présente, vérifier taille + MIME/ext ; non conforme → `422`.

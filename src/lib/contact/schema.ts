@@ -4,8 +4,8 @@ import { z } from "zod";
 // FR-002/006) and the server route (re-validate, never trust the client). One schema =
 // client/server alignment (DRY). zod is a runtime dependency (see package.json).
 
-/** Email regex used here AND for routing recipient validation (version-agnostic). */
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+/** Email regex — also imported by lib/sanity/contactPage.ts for routing-recipient validation. */
+export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const contactSchema = z.object({
 	name: z

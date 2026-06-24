@@ -1,4 +1,5 @@
 import { contactPageContent } from "@/content/contactPage";
+import { EMAIL_RE } from "@/lib/contact/schema";
 import type { CONTACT_PAGE_QUERY_RESULT } from "@/sanity.types";
 import { sanityFetch } from "./live";
 import { mapImage } from "./mapImage";
@@ -15,8 +16,6 @@ const DEFAULTS = contactPageContent;
 export type RequestTypeRouting = { label: string; recipient: string };
 
 type RawRequestTypes = NonNullable<CONTACT_PAGE_QUERY_RESULT>["requestTypes"];
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
  * Resolve the request-type routing from Sanity, falling back to the maquette list.

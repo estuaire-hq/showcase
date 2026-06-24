@@ -87,6 +87,8 @@ export async function sendContactEmail({
 		fields.message,
 	].join("\n");
 
+	// Email body — inline styles are required (clients strip <head>/external CSS and
+	// don't see @theme tokens); #0e1215 mirrors --color-ink. Not subject to Principle X.
 	const html = `
 		<div style="font-family:Arial,sans-serif;font-size:14px;color:#0e1215">
 			${rows

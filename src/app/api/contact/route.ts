@@ -14,8 +14,9 @@ import { getContactRequestTypes } from "@/lib/sanity/contactPage";
 
 export const runtime = "nodejs";
 
-/** Minimum time a human takes to fill the form — faster ⇒ treated as a bot. */
-const MIN_FILL_MS = 2500;
+/** Minimum plausible fill time — faster ⇒ treated as a bot. Kept conservative (the
+ *  honeypot is the primary defense) to avoid black-holing a genuinely fast human. */
+const MIN_FILL_MS = 1500;
 
 const str = (v: FormDataEntryValue | null): string =>
 	typeof v === "string" ? v : "";
@@ -35,6 +36,10 @@ export async function POST(request: NextRequest) {
 	const tooFast =
 		Number.isFinite(ts) && ts > 0 && Date.now() - ts < MIN_FILL_MS;
 	if (honeypot || tooFast) {
+		// Logged (no PII) so a false-positive — a real fast human silently dropped — is observable.
+		console.info(
+			`[contact] anti-spam drop (honeypot=${!!honeypot}, tooFast=${tooFast})`,
+		);
 		return Response.json({ ok: true }, { status: 200 });
 	}
 

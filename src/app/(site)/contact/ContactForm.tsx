@@ -15,7 +15,7 @@ import {
 	fieldErrors,
 	validateAttachment,
 } from "@/lib/contact/schema";
-import { cn, trackEvent } from "@/lib/utils";
+import { cn, trackEvent, umamiAttrs } from "@/lib/utils";
 
 type Status = "idle" | "submitting" | "success" | "error";
 type Errors = Record<string, string>;
@@ -243,7 +243,11 @@ export function ContactForm({
 				<p role="alert" className="font-sans text-body-sm text-danger">
 					Une erreur est survenue lors de l'envoi. Réessayez, ou écrivez-nous
 					directement à{" "}
-					<a className="underline" href={`mailto:${directEmail}`}>
+					<a
+						className="underline"
+						href={`mailto:${directEmail}`}
+						{...umamiAttrs("contact_email_click")}
+					>
 						{directEmail}
 					</a>
 					.

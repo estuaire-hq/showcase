@@ -9,11 +9,12 @@ import { BrandLogo } from "./BrandLogo";
 import { ContactButton } from "./ContactButton";
 import { MenuToggle } from "./MenuToggle";
 import { NavButton } from "./NavButton";
+import { NavDropdown } from "./NavDropdown";
 
 /** Shared id linking the toggle's `aria-controls` to the `NavPanel` (rendered by the wrapper). */
 export const NAV_PANEL_ID = "site-nav-panel";
 
-type NavLink = { label: string; href: string };
+type NavLink = { label: string; href: string; children?: NavLink[] };
 
 // Per-breakpoint toggle tone at rest: base (mobile) vs `md:` (tablet). The home hero
 // is dark full-width on mobile (white toggle) but light on the right on tablet (ink
@@ -189,22 +190,43 @@ export function SiteHeader({
 					TONE_TEXT_CLASS[resolvedLogoTone],
 				)}
 			>
-				{logo ?? <BrandLogo />}
+				{logo ?? (
+					<>
+						{/* Mobile: symbol only — the full « Estuaire » wordmark would double with the
+						    hero wordmark right below it (client review 2026-06, F6). md+ keeps the full
+						    lockup (maquette). */}
+						<BrandLogo symbolOnly className="md:hidden" />
+						<BrandLogo className="hidden md:block" />
+					</>
+				)}
 			</Link>
 
 			{/* Desktop list (lg and up) — links + CTA, gap 15 (node 51:2221). */}
 			<nav aria-label="Navigation principale" className="hidden lg:block">
 				<ul className="flex items-center gap-[15px]">
-					{items.map((item) => (
-						<li key={item.href}>
-							<NavButton
-								label={item.label}
-								href={item.href}
-								tone={resolvedLinksTone}
-								active={activeHref === item.href}
-							/>
-						</li>
-					))}
+					{items.map((item) =>
+						item.children && item.children.length > 0 ? (
+							<li key={item.href}>
+								<NavDropdown
+									label={item.label}
+									href={item.href}
+									items={item.children}
+									tone={resolvedLinksTone}
+									active={activeHref === item.href}
+									activeHref={activeHref}
+								/>
+							</li>
+						) : (
+							<li key={item.href}>
+								<NavButton
+									label={item.label}
+									href={item.href}
+									tone={resolvedLinksTone}
+									active={activeHref === item.href}
+								/>
+							</li>
+						),
+					)}
 					<li>
 						<ContactButton
 							label={cta.label}

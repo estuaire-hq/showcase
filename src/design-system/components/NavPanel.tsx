@@ -37,7 +37,11 @@ export function NavPanel({
 	id: string;
 	isOpen: boolean;
 	onClose: () => void;
-	items: { label: string; href: string }[];
+	items: {
+		label: string;
+		href: string;
+		children?: { label: string; href: string }[];
+	}[];
 	cta: { label: string; href: string };
 	brandHref: string;
 	logo?: React.ReactNode;
@@ -74,20 +78,44 @@ export function NavPanel({
 				</button>
 			</div>
 
-			{/* Entries — stacked, centred, gap 20 (pitch 60). White ghost pills (onDark). */}
+			{/* Entries — stacked, centred, gap 20 (pitch 60). White ghost pills (onDark).
+			    Entries with sub-pages (expertises / univers) list their children just below,
+			    indented and smaller (client request, revue 2026-06, B2/B3). */}
 			<nav
 				aria-label="Navigation principale"
 				className="flex flex-col items-center gap-5"
 			>
 				{items.map((item) => (
-					<NavButton
-						key={item.href}
-						label={item.label}
-						href={item.href}
-						tone="onDark"
-						active={activeHref === item.href}
-						onClick={() => onSelect?.(item.href)}
-					/>
+					<div key={item.href} className="flex flex-col items-center gap-2">
+						<NavButton
+							label={item.label}
+							href={item.href}
+							tone="onDark"
+							active={activeHref === item.href}
+							onClick={() => onSelect?.(item.href)}
+						/>
+						{item.children && item.children.length > 0 && (
+							<ul className="flex flex-col items-center gap-1.5">
+								{item.children.map((child) => (
+									<li key={child.href}>
+										<Link
+											href={child.href}
+											onClick={() => onSelect?.(child.href)}
+											aria-current={
+												activeHref === child.href ? "page" : undefined
+											}
+											className={cn(
+												"font-display text-caption lowercase leading-none text-paper/70 transition-colors hover:text-paper focus-visible:text-paper focus-visible:outline-none",
+												activeHref === child.href && "font-semibold text-paper",
+											)}
+										>
+											{child.label}
+										</Link>
+									</li>
+								))}
+							</ul>
+						)}
+					</div>
 				))}
 				<ContactButton
 					label={cta.label}

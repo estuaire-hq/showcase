@@ -12,11 +12,23 @@ import { cn } from "@/lib/utils";
  * Decorative here (`aria-hidden`): the wrapping brand <Link> in `SiteHeader`
  * carries the accessible name ("Estuaire — accueil").
  */
-export function BrandLogo({ className }: { className?: string }) {
+export function BrandLogo({
+	className,
+	symbolOnly = false,
+}: {
+	className?: string;
+	/**
+	 * Render only the logomark symbol (the knot), cropping the « estuaire » wordmark via the
+	 * viewBox (the lettering lives at x≈85–281; the symbol at x≈0–68, so a 75-wide box shows
+	 * the symbol alone). Used in the mobile navbar to avoid the « Estuaire » wordmark doubling
+	 * with the hero wordmark just below it (client review 2026-06, F6).
+	 */
+	symbolOnly?: boolean;
+}) {
 	return (
 		<svg
 			className={cn("h-11 w-auto lg:h-[60px]", className)}
-			viewBox="0 0 281 75"
+			viewBox={symbolOnly ? "0 0 75 75" : "0 0 281 75"}
 			fill="currentColor"
 			xmlns="http://www.w3.org/2000/svg"
 			aria-hidden="true"

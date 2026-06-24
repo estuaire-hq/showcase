@@ -287,14 +287,10 @@ export default function KitPage() {
 
 				{/* Sector list */}
 				<Section title="Liste secteurs (BTN secteur)" hint="survol = estuaire">
-					<div className="max-w-md">
+					<div className="max-w-md border-ink border-b-[3px]">
 						{["Banque & assurance", "Mode & luxe", "Optique", "Parfumerie"].map(
-							(s, i) => (
-								<SectorButton
-									key={s}
-									label={s}
-									className={i > 0 ? "border-t-0" : undefined}
-								/>
+							(s) => (
+								<SectorButton key={s} label={s} />
 							),
 						)}
 					</div>

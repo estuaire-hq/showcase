@@ -224,8 +224,10 @@ export default async function HomePage() {
 									/>
 								)}
 							</div>
-							{/* categories — each deep-links to the portfolio filtered on its univers (FR-023) */}
-							<div className="flex flex-col [&>a:first-child]:mt-0 [&>a]:-mt-[3px]">
+							{/* categories — each deep-links to the portfolio filtered on its univers (FR-023).
+							    Each row carries its TOP rule; the container draws the final bottom rule so
+							    every separator stays an exact 3px (no overlap doubling). */}
+							<div className="flex flex-col border-ink border-b-[3px]">
 								{UNIVERS.map((sector) => (
 									<SectorButton
 										key={sector}

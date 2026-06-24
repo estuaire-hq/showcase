@@ -16,10 +16,16 @@ import { OutlineText } from "../typography/OutlineText";
 export function SectionTitle({
 	outline,
 	fill,
+	rule = false,
 	className,
 }: {
-	outline: string;
+	/** Optional contour line above the fill. Omit for a single solid word (e.g. the case
+	 *  study « contexte » / « enjeu », which the maquette draws WITHOUT an article prefix —
+	 *  client review 2026-06, K1). */
+	outline?: string;
 	fill: string;
+	/** Draw a 3px underline rule below the title (case study sections — client review K2). */
+	rule?: boolean;
 	className?: string;
 }) {
 	return (
@@ -30,12 +36,20 @@ export function SectionTitle({
 				className,
 			)}
 		>
-			<OutlineText tier="title" className="block whitespace-pre-line">
-				{outline}
-			</OutlineText>
+			{outline && (
+				<OutlineText tier="title" className="block whitespace-pre-line">
+					{outline}
+				</OutlineText>
+			)}
 			<span className="block whitespace-pre-line">
 				<BrandText>{fill}</BrandText>
 			</span>
+			{rule && (
+				<span
+					aria-hidden
+					className="mt-5 block border-current border-t-[3px] lg:mt-7"
+				/>
+			)}
 		</h2>
 	);
 }

@@ -58,27 +58,33 @@ export function Testimonial({
 				{/* Kit « BG opaque » veil = ink @ 0.25 — guarantees quote contrast (FR-016). */}
 				<div aria-hidden className="absolute inset-0 bg-ink/25" />
 
-				<blockquote className="relative z-10 mx-auto flex max-w-[85.4%] flex-col items-center gap-8 px-6 text-center text-paper lg:max-w-[1640px]">
-					{/* Decorative quote marks (maquette « quotes » Tracé 8982). The arbitrary
-					    text-[64px]/[120px] are an ornament glyph size, NOT brand type — the
-					    justified arbitrary-value exception to Principle X (not the type scale). */}
+				<blockquote className="relative z-10 mx-auto flex w-full max-w-[1640px] flex-col items-center px-4 text-center text-paper lg:px-8">
+					{/* Decorative quote marks (maquette « quotes » Tracé 8982 ≈ 172×124px): large,
+					    disproportionate, pinned to the content corners (client review 2026-06, H2 —
+					    « les guillemets doivent être plus grosses/disproportionnées »). The arbitrary
+					    glyph size is an ornament, NOT brand type — the justified arbitrary-value
+					    exception to Principle X (not the type scale). */}
 					<span
 						aria-hidden
-						className="-top-2 lg:-top-8 -left-1 pointer-events-none absolute font-display text-[64px] leading-none lg:left-0 lg:text-[120px]"
+						className="-top-4 lg:-top-6 pointer-events-none absolute left-0 font-display font-semibold text-[96px] leading-none lg:text-[180px]"
 					>
 						“
 					</span>
-					<p className="whitespace-pre-line font-display font-semibold text-subtitle-sm leading-tight lg:text-subtitle lg:leading-[1.1]">
-						<BrandText>{quote}</BrandText>
-					</p>
-					{attribution && (
-						<figcaption className="font-sans text-body-sm lg:text-body">
-							{attribution}
-						</figcaption>
-					)}
+					{/* Text inset well within the marks' span so it never runs edge-to-edge (client
+					    H2: « trop bord à bord »). */}
+					<div className="mx-auto flex max-w-[1180px] flex-col items-center gap-8 py-14 lg:py-20">
+						<p className="whitespace-pre-line font-display font-semibold text-subtitle-sm leading-tight lg:text-subtitle lg:leading-[1.1]">
+							<BrandText>{quote}</BrandText>
+						</p>
+						{attribution && (
+							<figcaption className="font-sans text-body-sm lg:text-body">
+								{attribution}
+							</figcaption>
+						)}
+					</div>
 					<span
 						aria-hidden
-						className="-bottom-8 lg:-bottom-16 -right-1 pointer-events-none absolute rotate-180 font-display text-[64px] leading-none lg:right-0 lg:text-[120px]"
+						className="-bottom-6 lg:-bottom-10 pointer-events-none absolute right-0 rotate-180 font-display font-semibold text-[96px] leading-none lg:text-[180px]"
 					>
 						“
 					</span>

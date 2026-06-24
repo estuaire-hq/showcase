@@ -39,10 +39,8 @@ export function ScrollTopMount() {
 		else window.scrollTo({ top: 0, behavior: "smooth" });
 	};
 
-	// No wrapper: positioning + the scroll-in fade go straight onto the button so the
-	// element carrying `mix-blend-difference` is itself the `fixed` (page-level) box —
-	// a `fixed` wrapper would trap the blend in its own empty context (see
-	// ScrollTopButton). The button's own `transition` already covers `opacity`.
+	// Positioning + the scroll-in opacity fade go straight onto the (solid) button; its
+	// own `transition` already covers `opacity`.
 	return (
 		<ScrollTopButton
 			onClick={toTop}

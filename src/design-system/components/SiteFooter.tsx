@@ -1,3 +1,4 @@
+import { BrandText } from "../typography/BrandText";
 import { OutlineText } from "../typography/OutlineText";
 import { Button } from "./Button";
 import { ContactButton } from "./ContactButton";
@@ -97,10 +98,13 @@ export function SiteFooter({
 					</div>
 				</div>
 
-				{/* 2 — Brand lockup (placeholder for the logo_footer vector) */}
+				{/* 2 — Brand lockup (kit logo_footer = the « Estuaire » wordmark, no logomark).
+				    BrandText applies the brand casse rule (« E » Montserrat, « stuaire »
+				    Montserrat Alternates) — the plain `font-sans` placeholder rendered the whole
+				    word in Montserrat, which read as the wrong logotype (client review 2026-06). */}
 				<div className="mt-16 lg:mt-24">
-					<p className="font-sans font-bold text-6xl leading-[0.95] lg:text-8xl">
-						{wordmark}
+					<p className="font-display font-bold text-6xl leading-[0.95] lg:text-8xl">
+						<BrandText>{wordmark}</BrandText>
 					</p>
 					<p className="mt-2 font-display text-paper/90 text-xl lg:mt-3 lg:text-3xl">
 						{tagline}

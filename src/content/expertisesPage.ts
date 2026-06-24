@@ -21,7 +21,7 @@ export const expertisesPageContent = {
 	// — Hero (012/ SLIDER) —
 	heroEyebrow: "Design d'espace, agencement et présentoirs",
 	heroTitleOutline: "Notre expertise :",
-	heroTitleFill: "réaliser vos projets de toutes\nformes et de toutes tailles.",
+	heroTitleFill: "réaliser vos projets de toutes formes et de toutes tailles.",
 
 	// — Intro (02/ INTRO) —
 	introStatement:

@@ -12,6 +12,11 @@ export {
 	CaseStudyPanel,
 	type CaseStudyPanelData,
 } from "./components/CaseStudyPanel";
+export {
+	type ClientEntry,
+	type ClientLogo,
+	ClientsCarousel,
+} from "./components/ClientsCarousel";
 export { ContactButton } from "./components/ContactButton";
 export { EngagementsGrid } from "./components/EngagementsGrid";
 export { FeatureBlock } from "./components/FeatureBlock";

@@ -153,6 +153,13 @@ export default async function RealisationsPage(props: {
 					</div>
 				</div>
 			</section>
+
+			{/* 4 — Ils nous font confiance (06/ CLIENTS, maquette 51:4064) — DÉSACTIVÉ pour
+			    l'instant (revue 2026-06, I7) : pas encore de logos clients. Le composant
+			    `ClientsCarousel` (@/design-system) est conservé, prêt à réactiver dès qu'un modèle
+			    Sanity de logos clients existe. Pour réactiver : dériver les clients (status != draft,
+			    hors « Particulier ») ou lire les logos Sanity, puis rendre :
+			    <ClientsCarousel clients={clients} />. */}
 		</main>
 	);
 }

@@ -27,6 +27,22 @@ function buildMeta(item: {
 	);
 }
 
+/**
+ * Libellés-repères affichés sur les CARTES quand le lieu/l'année/la superficie ne sont pas
+ * encore renseignés — pour que les infos manquantes restent apparentes (revue client 2026-06,
+ * F5/J1 ; même intention que le placeholder « Lieu · année · superficie » des sous-pages
+ * expertises, validée en I2). Dès qu'une valeur réelle existe, elle remplace les repères.
+ */
+const META_PLACEHOLDER = ["Lieu", "année", "superficie"];
+function cardMeta(item: {
+	location?: string | null;
+	year?: string | null;
+	area?: string | null;
+}): string[] {
+	const meta = buildMeta(item);
+	return meta.length > 0 ? meta : META_PLACEHOLDER;
+}
+
 export type RealisationListItem = {
 	slug: string;
 	title: string;
@@ -55,7 +71,7 @@ export async function getRealisationListProps(): Promise<
 			status: r.status ?? "draft",
 			univers: r.univers ?? null,
 			expertises: (r.expertises ?? []).filter(Boolean),
-			meta: buildMeta(r),
+			meta: cardMeta(r),
 			cover: mapImage(r.cover, 1920, `Estuaire — ${title}`),
 			href: published && r.slug ? `/realisations/${r.slug}` : undefined,
 		};
@@ -150,7 +166,7 @@ export async function getLatestRealisations(
 		return {
 			slug: r.slug ?? "",
 			title,
-			meta: buildMeta(r),
+			meta: cardMeta(r),
 			cover: mapImage(r.cover, 1920, `Estuaire — ${title}`),
 		};
 	});

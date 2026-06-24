@@ -19,6 +19,13 @@ export type NavItem = {
 	label: string;
 	/** Internal route. Absolute path starting with "/". May not exist yet (FR-014). */
 	href: string;
+	/**
+	 * Optional sub-navigation (dropdown on desktop, indented links in the mobile panel).
+	 * Added for the client request to surface expertises / univers sub-pages directly from
+	 * the navbar (revue 2026-06, B2/B3). The parent stays a link to its hub page; the
+	 * children deep-link the sub-pages.
+	 */
+	children?: NavItem[];
 };
 
 export type NavCta = {
@@ -40,8 +47,26 @@ export type NavConfig = {
 export const navigation: NavConfig = {
 	items: [
 		{ label: "nous découvrir", href: "/nous-decouvrir" },
-		{ label: "expertises", href: "/expertises" },
-		{ label: "univers", href: "/univers" },
+		{
+			label: "expertises",
+			href: "/expertises",
+			children: [
+				{ label: "agencement", href: "/expertises/agencement-sur-mesure" },
+				{ label: "mobilier", href: "/expertises/mobiliers-sur-mesure" },
+				{ label: "présentoirs", href: "/expertises/presentoirs-sur-mesure" },
+			],
+		},
+		{
+			label: "univers",
+			href: "/univers",
+			// Slugs are the canonical sector slugs (singular « bureau » — see post-mortem 0018).
+			children: [
+				{ label: "retail", href: "/univers/retail" },
+				{ label: "bureaux", href: "/univers/bureau" },
+				{ label: "scénographie", href: "/univers/scenographie" },
+				{ label: "résidentiel", href: "/univers/residentiel" },
+			],
+		},
 		{ label: "réalisations", href: "/realisations" },
 	],
 	cta: { label: "contact", href: "/contact" },

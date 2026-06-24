@@ -26,8 +26,10 @@ export const sectorsPageContent = {
 	// — Intro (03/ INTRO) —
 	introStatement:
 		"Grâce à notre périmètre d'intervention multisectoriel, nous faisons preuve d'agilité et savons appréhender des univers variés.",
+	// L'« introStatement » ci-dessus sert déjà de phrase phare (titre) ; le paragraphe ne la
+	// répète plus (revue client 2026-06 : « supprimer la phrase en double »).
 	introText:
-		"Chaque projet est unique et présente des enjeux spécifiques.\n\nGrâce à notre périmètre d'intervention multisectoriel, nous faisons preuve d'agilité et savons appréhender des univers variés.\n\nDu retail aux espaces de travail, de la scénographie aux projets résidentiels, nous adaptons nos méthodes avec le même engagement.",
+		"Chaque projet est unique et présente des enjeux spécifiques.\n\nDu retail aux espaces de travail, de la scénographie aux projets résidentiels, nous adaptons nos méthodes avec le même engagement.",
 
 	// — Secteurs (04/ SECTEURS) — ordered list; array order = display order —
 	sectors: [

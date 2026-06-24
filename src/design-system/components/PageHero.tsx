@@ -92,12 +92,12 @@ export function PageHero({
 					aria-hidden
 					className="absolute inset-y-0 left-0 z-0 hidden w-[56.8%] bg-ink lg:block"
 				/>
-				{/* Full screen-height hero. Content TOP-aligns below the fixed navbar (transparent,
-				    112px desktop / 80px mobile) — `items-start` + a top padding that clears the navbar
-				    on short viewports and centres the block on tall ones (`max(7.5rem,14vh)`). Both
-				    the cartouche and the image start at the same Y (maquette: eyebrow + image top at
-				    220). Without this the centred content slid under the navbar on laptops. */}
-				<div className="relative z-10 flex min-h-svh flex-col lg:grid lg:grid-cols-[1029fr_891fr] lg:items-start lg:pb-[8vh] lg:pt-[max(7.5rem,14vh)]">
+				{/* Full screen-height on mobile (stacked); on desktop the panel HUGS its content
+				    (`lg:min-h-0`) — a forced `min-h-svh` here left a tall black void below the title
+				    (client review 2026-06, I5: « trop de vide »); the maquette panel is ~943px, defined
+				    by the cartouche + image + padding, not the viewport. Content TOP-aligns below the
+				    fixed navbar via `items-start` + a top padding that clears it. */}
+				<div className="relative z-10 flex min-h-svh flex-col lg:grid lg:min-h-0 lg:grid-cols-[1029fr_891fr] lg:items-start lg:pb-[8vh] lg:pt-[max(7.5rem,14vh)]">
 					{/* Dark cartouche panel — top (mobile) / left (desktop). The transparent navbar
 					    overlays it, so it carries its own navbar clearance on mobile/tablet
 					    (pt-28 / md:pt-32 > the 80–112px navbar). Inline padding matches the page

@@ -3,15 +3,15 @@ import Image from "next/image";
 import { UNIVERS } from "@/content/realisations";
 import {
 	Button,
-	HeroSlideshow,
 	SectionTitle,
 	SectorButton,
 	SplitSection,
 } from "@/design-system";
+import { CaseStudies } from "@/lib/motion/CaseStudies";
 import { Parallax } from "@/lib/motion/Parallax";
-import { PinnedCaseStudies } from "@/lib/motion/PinnedCaseStudies";
 import { getHomePageProps } from "@/lib/sanity/homePage";
 import { getLatestRealisations } from "@/lib/sanity/realisation";
+import { HomeHero } from "./_components/HomeHero";
 
 /** Deep-link to the portfolio filtered on a given univers (demock — FR-023). */
 const universHref = (label: string) =>
@@ -49,6 +49,7 @@ export default async function HomePage() {
 		image: r.cover?.src ?? "",
 		title: r.title,
 		meta: r.meta,
+		href: `/realisations/${r.slug}`,
 	}));
 	const featureImage = latest[3]?.cover ?? latest[0]?.cover;
 	const wideImage = latest[4]?.cover ?? latest[1]?.cover;
@@ -62,9 +63,10 @@ export default async function HomePage() {
 			data-nav-links-tone="onLight"
 			data-nav-toggle-tone="onDark"
 		>
-			{/* 1 — Hero / slider (no entrance animation — the title reconstructs on slide
-			    change; nothing fires on first paint) */}
-			<HeroSlideshow label={hero.label} slides={hero.slides} />
+			{/* 1 — Hero / slider, wrapped by the client `HomeHero` orchestrator: a fresh home
+			    load plays the black site-entry intro (logomark trace → « Estuaire » →
+			    bascule), then hands off to the slideshow. */}
+			<HomeHero label={hero.label} slides={hero.slides} />
 
 			{/* 2 — Intro de positionnement (depth parallax between the two images) */}
 			<Parallax>
@@ -235,11 +237,12 @@ export default async function HomePage() {
 						</div>
 					</div>
 
-					{/* Full-viewport pinned case studies (deviation from the maquette band):
-					    each pins and reveals title → rule → details → CTA on scroll, with the
-					    "voir nos réalisations" link integrated per panel. */}
-					<div className="mt-16 lg:mt-24">
-						<PinnedCaseStudies cards={featuredCards} cta={realisations.cta} />
+					{/* Full-bleed case-study bands (maquette « CAS STUDY »): each reveals its
+					    title → rule → meta on entry while its image drifts in a light
+					    parallax — natural scroll, no pin. One shared "voir nos réalisations"
+					    pill sits below the bands. */}
+					<div className="mt-16 pb-16 lg:mt-24 lg:pb-24">
+						<CaseStudies cards={featuredCards} cta={realisations.cta} />
 					</div>
 				</section>
 			</Parallax>

@@ -3,14 +3,14 @@
 import { useSyncExternalStore } from "react";
 
 /**
- * Cross-component "nav overlay" signal: a full-bleed dark section (the pinned case
- * studies) asks the sticky navbar to drop its solid background and switch to the
+ * Cross-component "nav overlay" signal: a full-bleed dark section (the case-study
+ * bands) asks the sticky navbar to drop its solid background and switch to the
  * `onDark` tone, so the bar floats transparently and the whole image shows through
- * (otherwise the pinned bar paints a white band over the top of the photo).
+ * (otherwise the sticky bar paints a white band over the top of the photo).
  *
  * Kept as a leaf module-level store (no React Context threading): the producer lives
- * deep in the page (`PinnedCaseStudies`) while the consumer is the `Navbar` in the
- * layout — siblings whose only shared truth is one boolean. This matches the motion
+ * deep in the page (`CaseStudies`) while the consumer is the `Navbar` in the layout —
+ * siblings whose only shared truth is one boolean. This matches the motion
  * architecture (independent ScrollTrigger subscribers), without coupling the DOM.
  */
 

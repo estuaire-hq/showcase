@@ -183,6 +183,7 @@ export function SiteHeader({
 				href={brandHref}
 				aria-label="Estuaire — accueil"
 				aria-current={activeHref === brandHref ? "page" : undefined}
+				data-brand-logo
 				className={cn(
 					"inline-flex items-center rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-estuaire",
 					TONE_TEXT_CLASS[resolvedLogoTone],
@@ -193,7 +194,7 @@ export function SiteHeader({
 
 			{/* Desktop list (lg and up) — links + CTA, gap 15 (node 51:2221). */}
 			<nav aria-label="Navigation principale" className="hidden lg:block">
-				<ul className="flex items-center gap-8">
+				<ul className="flex items-center gap-[15px]">
 					{items.map((item) => (
 						<li key={item.href}>
 							<NavButton

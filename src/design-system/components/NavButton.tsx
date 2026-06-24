@@ -1,29 +1,45 @@
 import Link from "next/link";
 import type { MouseEventHandler } from "react";
-import { cn } from "@/lib/utils";
-import { RollText } from "./RollText";
+import { tv } from "@/lib/utils";
 
 /**
- * Nav link — text-only with the signature hover "text-roll" (estuaire-motion DA).
- * No pill: at rest the label is tone-coloured; on hover each letter rolls up to reveal
- * an accent copy (RollText). The current page (`active`) is shown statically in the
- * accent colour + semibold (a non-colour cue too), with no roll. `tone` adapts to the
- * surrounding surface — `onLight` (ink → estuaire) or `onDark` (paper → cream). Renders
- * a `<Link>` when `href` is set, else a `<button>`.
- *
- * Note: this REPLACES the kit's ghost-pill hover (node 51:2699) per the Motion DA —
- * a unified text-hover grammar across nav + footer (Pierre, 2026-06-20).
+ * Nav "nous découvrir" button (kit « btn nous découvrir » noir/blanc). Small
+ * ghost pill: transparent at rest, fills on hover, outlines when `active` (the
+ * current section). `tone` picks the colour for the surrounding background —
+ * `onLight` (ink text, white hover fill) or `onDark` (paper text, ink hover
+ * fill). Renders a `<button>`, or a Next `<Link>` when `href` is set.
  */
-const ACTIVE_TONE = { onLight: "text-estuaire", onDark: "text-cream" } as const;
-
-const BASE =
-	"inline-flex items-center rounded-sm font-display text-caption lowercase leading-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-estuaire";
+const navButton = tv({
+	// Kit: Montserrat Alternates Regular (400) 16px, textCase LOWER, ~18px h-padding.
+	base: "inline-flex h-10 items-center justify-center rounded-full px-[18px] font-display text-caption lowercase leading-none ring-inset transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-estuaire",
+	variants: {
+		tone: { onLight: "text-ink", onDark: "text-paper" },
+		// Active entry (current page): 1px ring + weight 600 — exact treatment of the
+		// Figma "état actif" node 51:2699 (CSS provided): inactive links are 400.
+		active: { true: "font-semibold ring-1", false: "" },
+	},
+	compoundVariants: [
+		{
+			tone: "onLight",
+			active: false,
+			class: "hover:bg-paper hover:ring-1 hover:ring-paper",
+		},
+		{
+			tone: "onDark",
+			active: false,
+			class: "hover:bg-ink hover:ring-1 hover:ring-ink",
+		},
+		{ tone: "onLight", active: true, class: "ring-ink" },
+		{ tone: "onDark", active: true, class: "ring-paper" },
+	],
+	defaultVariants: { tone: "onLight", active: false },
+});
 
 export function NavButton({
 	label,
 	href,
-	tone = "onLight",
-	active = false,
+	tone,
+	active,
 	className,
 	onClick,
 }: {
@@ -34,16 +50,7 @@ export function NavButton({
 	className?: string;
 	onClick?: MouseEventHandler<HTMLElement>;
 }) {
-	// Active = current page: static accent text (no roll), with semibold as a non-colour
-	// cue. Inactive = the RollText hover; its glyphs carry the rest colour, so the wrapper
-	// stays colourless.
-	const cls = cn(
-		BASE,
-		active && cn(ACTIVE_TONE[tone], "font-semibold"),
-		className,
-	);
-	const content = active ? label : <RollText text={label} tone={tone} />;
-
+	const cls = navButton({ tone, active, class: className });
 	if (href != null) {
 		return (
 			<Link
@@ -52,7 +59,7 @@ export function NavButton({
 				aria-current={active ? "page" : undefined}
 				onClick={onClick}
 			>
-				{content}
+				{label}
 			</Link>
 		);
 	}
@@ -63,7 +70,7 @@ export function NavButton({
 			aria-pressed={active}
 			onClick={onClick}
 		>
-			{content}
+			{label}
 		</button>
 	);
 }

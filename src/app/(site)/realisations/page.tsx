@@ -60,7 +60,12 @@ export default async function RealisationsPage(props: {
 					aria-hidden
 					className="absolute inset-y-0 left-0 hidden w-[56.77%] bg-estuaire lg:block"
 				/>
-				<div className="relative mx-auto flex min-h-[560px] max-w-[1920px] flex-col gap-12 px-5 pt-32 pb-16 md:px-10 lg:min-h-[860px] lg:flex-row lg:items-center lg:px-[7.29%] lg:py-0">
+				{/* Desktop: symmetric py reserves navbar clearance. With min-h-[860px] dominant the
+				    1920 composition is unchanged (centred content sits at the same Y), but at
+				    short/narrow desktop viewports the taller wrapped content can no longer rise
+				    under the fixed navbar — the eyebrow stopped colliding with it (≡ the mobile
+				    pt-32 clearance). ADR 0022. */}
+				<div className="relative mx-auto flex min-h-[560px] max-w-[1920px] flex-col gap-12 px-5 pt-32 pb-16 md:px-10 lg:min-h-[860px] lg:flex-row lg:items-center lg:px-[7.29%] lg:py-[128px]">
 					<div className="flex flex-col gap-8 text-paper lg:w-[52%]">
 						<p className="font-display font-semibold text-lead leading-tight lg:text-subtitle">
 							Agencement & Mobilier

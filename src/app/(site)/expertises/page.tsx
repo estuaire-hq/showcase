@@ -184,7 +184,12 @@ export default async function ExpertisesPage() {
 			{/* 4 — Grand visuel + phrase en incrustation */}
 			<section className="bg-paper py-5 md:py-10 lg:py-16">
 				<div className="mx-auto w-full max-w-[1920px] px-5 md:px-10 lg:px-[3.2%]">
-					<div className="relative isolate aspect-[350/268] w-full overflow-hidden md:aspect-[688/519] lg:aspect-[1798/958]">
+					{/* Mobile: the fixed aspect-[350/268] box was too short for the (longer,
+					    CMS-driven) incrustation phrase, which is overlaid `absolute` and was
+					    clipped top+bottom. Make the box CONTENT-DRIVEN on mobile (flex + min-h +
+					    py, the quote in normal flow so it grows the box); keep the exact maquette
+					    aspect from md upward, where the wide box always clears the quote. ADR 0022. */}
+					<div className="relative isolate flex min-h-[18rem] w-full items-center justify-center overflow-hidden py-14 md:aspect-[688/519] md:min-h-0 md:py-0 lg:aspect-[1798/958]">
 						{statement.image && (
 							<Image
 								src={statement.image.src}
@@ -197,7 +202,7 @@ export default async function ExpertisesPage() {
 							/>
 						)}
 						<div className="absolute inset-0 bg-ink/25" />
-						<div className="absolute inset-0 z-10 flex items-center justify-center px-6 lg:px-[4.4%]">
+						<div className="relative z-10 flex w-full items-center justify-center px-6 lg:px-[4.4%]">
 							<Pullquote
 								size="title"
 								align="center"

@@ -3,7 +3,6 @@ import Image from "next/image";
 import { UNIVERS } from "@/content/realisations";
 import {
 	Button,
-	HeroSlideshow,
 	SectionTitle,
 	SectorButton,
 	SplitSection,
@@ -12,6 +11,7 @@ import { CaseStudies } from "@/lib/motion/CaseStudies";
 import { Parallax } from "@/lib/motion/Parallax";
 import { getHomePageProps } from "@/lib/sanity/homePage";
 import { getLatestRealisations } from "@/lib/sanity/realisation";
+import { HomeHero } from "./_components/HomeHero";
 
 /** Deep-link to the portfolio filtered on a given univers (demock — FR-023). */
 const universHref = (label: string) =>
@@ -63,9 +63,10 @@ export default async function HomePage() {
 			data-nav-links-tone="onLight"
 			data-nav-toggle-tone="onDark"
 		>
-			{/* 1 — Hero / slider (no entrance animation — the title reconstructs on slide
-			    change; nothing fires on first paint) */}
-			<HeroSlideshow label={hero.label} slides={hero.slides} />
+			{/* 1 — Hero / slider, wrapped by the client `HomeHero` orchestrator: a fresh home
+			    load plays the black site-entry intro (logomark trace → « Estuaire » →
+			    bascule), then hands off to the slideshow. */}
+			<HomeHero label={hero.label} slides={hero.slides} />
 
 			{/* 2 — Intro de positionnement (depth parallax between the two images) */}
 			<Parallax>
@@ -176,7 +177,12 @@ export default async function HomePage() {
 				<section className="relative bg-paper">
 					<div className="mx-auto max-w-[1920px] px-5 pt-16 md:px-10 lg:px-[7.3%] lg:pt-24">
 						{/* Top row: title (left, bottom-aligned) + feature image (right) */}
-						<div className="grid items-end gap-8 lg:grid-cols-[1fr_674px] lg:gap-16">
+						{/* The image track was a FIXED 674px; in the 1024–1280 desktop band the title
+						    column (its long word sets the 1fr min-content) + 674px + gap exceeded the
+						    container, so the grid overflowed and pushed the image off-screen.
+						    `minmax(0,674px)` lets the image shrink when space is tight (still 674px
+						    from ~1366 up, incl. the 1920 anchor). ADR 0022. */}
+						<div className="grid items-end gap-8 lg:grid-cols-[1fr_minmax(0,674px)] lg:gap-16">
 							<SectionTitle
 								outline={realisations.titleOutline}
 								fill={realisations.titleFill}

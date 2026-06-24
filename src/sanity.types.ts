@@ -88,6 +88,57 @@ export type SanityImageHotspot = {
   width?: number;
 };
 
+export type ContactPage = {
+  _id: string;
+  _type: "contactPage";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  heroTitleOutline?: string;
+  heroTitleFill?: string;
+  formImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  formTitleOutline?: string;
+  formTitleFill?: string;
+  requestTypes?: Array<{
+    label?: string;
+    recipient?: string;
+    _type: "requestType";
+    _key: string;
+  }>;
+  findTitleOutline?: string;
+  findTitleFill?: string;
+  address?: string;
+  contactTitleOutline?: string;
+  contactTitleFill?: string;
+  email?: string;
+  mapLocation?: Geopoint;
+  mapZoom?: number;
+  seoMetaTitle?: string;
+  seoMetaDescription?: string;
+  seoOgImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+};
+
+export type Geopoint = {
+  _type: "geopoint";
+  lat?: number;
+  lng?: number;
+  alt?: number;
+};
+
 export type Realisation = {
   _id: string;
   _type: "realisation";
@@ -756,19 +807,14 @@ export type SanityImageAsset = {
   source?: SanityAssetSourceData;
 };
 
-export type Geopoint = {
-  _type: "geopoint";
-  lat?: number;
-  lng?: number;
-  alt?: number;
-};
-
 export type AllSanitySchemaTypes =
   | SanityImageAssetReference
   | SanityFileAssetReference
   | Footer
   | SanityImageCrop
   | SanityImageHotspot
+  | ContactPage
+  | Geopoint
   | Realisation
   | Slug
   | SectorDetail
@@ -783,8 +829,7 @@ export type AllSanitySchemaTypes =
   | SanityImageMetadata
   | SanityFileAsset
   | SanityAssetSourceData
-  | SanityImageAsset
-  | Geopoint;
+  | SanityImageAsset;
 
 // Source: src/lib/sanity/queries.ts
 // Variable: HOME_PAGE_QUERY
@@ -1170,6 +1215,44 @@ export type ABOUT_PAGE_QUERY_RESULT =
       } | null;
     }
   | {
+      heroEyebrow: null;
+      heroTitleOutline: string | null;
+      heroTitleFill: string | null;
+      heroImage: null;
+      introStatement: null;
+      introText: null;
+      introImagePrimary: null;
+      introImageSecondary: null;
+      introHighlight: null;
+      visionTitleOutline: null;
+      visionTitleFill: null;
+      visionText: null;
+      visionImages: null;
+      atelierTitleOutline: null;
+      atelierTitleFill: null;
+      atelierText: null;
+      atelierPillarsLead: null;
+      atelierPillars: null;
+      atelierCapabilities: null;
+      atelierImages: null;
+      atelierHighlight: null;
+      processTitleOutline: null;
+      processTitleFill: null;
+      processIntro: null;
+      processIntroImage: null;
+      processSteps: null;
+      statementImage: null;
+      statementText: null;
+      ctaLabel: null;
+      ctaHref: null;
+      seoMetaTitle: string | null;
+      seoMetaDescription: string | null;
+      seoOgImage: {
+        asset: SanityImageAssetReference | null;
+        alt: string | null;
+      } | null;
+    }
+  | {
       heroEyebrow: string | null;
       heroTitleOutline: string | null;
       heroTitleFill: string | null;
@@ -1449,6 +1532,28 @@ export type EXPERTISES_PAGE_QUERY_RESULT =
       } | null;
     }
   | {
+      heroEyebrow: null;
+      heroTitleOutline: string | null;
+      heroTitleFill: string | null;
+      heroImage: null;
+      introStatement: null;
+      introText: null;
+      introImagePrimary: null;
+      introImageSecondary: null;
+      levelsTitleOutline: null;
+      levelsTitleFill: null;
+      levelsImage: null;
+      levels: null;
+      statementImage: null;
+      statementText: null;
+      seoMetaTitle: string | null;
+      seoMetaDescription: string | null;
+      seoOgImage: {
+        asset: SanityImageAssetReference | null;
+        alt: string | null;
+      } | null;
+    }
+  | {
       heroEyebrow: string | null;
       heroTitleOutline: string | null;
       heroTitleFill: string | null;
@@ -1697,6 +1802,23 @@ export type SECTORS_PAGE_QUERY_RESULT =
       heroImage: null;
       introStatement: null;
       introText: string | null;
+      introImage: null;
+      sectors: null;
+      keyFigures: null;
+      seoMetaTitle: string | null;
+      seoMetaDescription: string | null;
+      seoOgImage: {
+        asset: SanityImageAssetReference | null;
+        alt: string | null;
+      } | null;
+    }
+  | {
+      heroEyebrow: null;
+      heroTitleOutline: string | null;
+      heroTitleFill: string | null;
+      heroImage: null;
+      introStatement: null;
+      introText: null;
       introImage: null;
       sectors: null;
       keyFigures: null;
@@ -2029,6 +2151,21 @@ export type FOOTER_QUERY_RESULT =
       legalLinks: null;
     }
   | {
+      ctaTitleOutline: null;
+      ctaTitleFill: null;
+      ctaButtonLabel: null;
+      ctaButtonHref: null;
+      ctaImages: null;
+      tagline: null;
+      address: string | null;
+      contactHref: null;
+      linkedInUrl: null;
+      plaquetteLabel: null;
+      plaquetteUrl: null;
+      navLinks: null;
+      legalLinks: null;
+    }
+  | {
       ctaTitleOutline: string | null;
       ctaTitleFill: string | null;
       ctaButtonLabel: string | null;
@@ -2057,6 +2194,125 @@ export type FOOTER_QUERY_RESULT =
     }
   | null;
 
+// Source: src/lib/sanity/queries.ts
+// Variable: CONTACT_PAGE_QUERY
+// Query: *[_id == "contactPage"][0]{    heroTitleOutline,    heroTitleFill,    formImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },    formTitleOutline,    formTitleFill,    requestTypes[]{ label, recipient },    findTitleOutline,    findTitleFill,    address,    contactTitleOutline,    contactTitleFill,    email,    mapLocation,    mapZoom,    seoMetaTitle,    seoMetaDescription,    seoOgImage{ asset, alt }  }
+export type CONTACT_PAGE_QUERY_RESULT =
+  | {
+      heroTitleOutline: null;
+      heroTitleFill: null;
+      formImage: null;
+      formTitleOutline: null;
+      formTitleFill: null;
+      requestTypes: null;
+      findTitleOutline: null;
+      findTitleFill: null;
+      address: null;
+      contactTitleOutline: null;
+      contactTitleFill: null;
+      email: null;
+      mapLocation: null;
+      mapZoom: null;
+      seoMetaTitle: null;
+      seoMetaDescription: null;
+      seoOgImage: null;
+    }
+  | {
+      heroTitleOutline: null;
+      heroTitleFill: null;
+      formImage: null;
+      formTitleOutline: null;
+      formTitleFill: null;
+      requestTypes: null;
+      findTitleOutline: null;
+      findTitleFill: null;
+      address: null;
+      contactTitleOutline: null;
+      contactTitleFill: null;
+      email: null;
+      mapLocation: null;
+      mapZoom: null;
+      seoMetaTitle: string | null;
+      seoMetaDescription: string | null;
+      seoOgImage: {
+        asset: SanityImageAssetReference | null;
+        alt: string | null;
+      } | null;
+    }
+  | {
+      heroTitleOutline: string | null;
+      heroTitleFill: string | null;
+      formImage: null;
+      formTitleOutline: null;
+      formTitleFill: null;
+      requestTypes: null;
+      findTitleOutline: null;
+      findTitleFill: null;
+      address: null;
+      contactTitleOutline: null;
+      contactTitleFill: null;
+      email: null;
+      mapLocation: null;
+      mapZoom: null;
+      seoMetaTitle: string | null;
+      seoMetaDescription: string | null;
+      seoOgImage: {
+        asset: SanityImageAssetReference | null;
+        alt: string | null;
+      } | null;
+    }
+  | {
+      heroTitleOutline: null;
+      heroTitleFill: null;
+      formImage: null;
+      formTitleOutline: null;
+      formTitleFill: null;
+      requestTypes: null;
+      findTitleOutline: null;
+      findTitleFill: null;
+      address: string | null;
+      contactTitleOutline: null;
+      contactTitleFill: null;
+      email: null;
+      mapLocation: null;
+      mapZoom: null;
+      seoMetaTitle: null;
+      seoMetaDescription: null;
+      seoOgImage: null;
+    }
+  | {
+      heroTitleOutline: string | null;
+      heroTitleFill: string | null;
+      formImage: {
+        asset: SanityImageAssetReference | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        lqip: string | null;
+      } | null;
+      formTitleOutline: string | null;
+      formTitleFill: string | null;
+      requestTypes: Array<{
+        label: string | null;
+        recipient: string | null;
+      }> | null;
+      findTitleOutline: string | null;
+      findTitleFill: string | null;
+      address: string | null;
+      contactTitleOutline: string | null;
+      contactTitleFill: string | null;
+      email: string | null;
+      mapLocation: Geopoint | null;
+      mapZoom: number | null;
+      seoMetaTitle: string | null;
+      seoMetaDescription: string | null;
+      seoOgImage: {
+        asset: SanityImageAssetReference | null;
+        alt: string | null;
+      } | null;
+    }
+  | null;
+
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
@@ -2074,5 +2330,6 @@ declare module "@sanity/client" {
     '\n  *[_type == "realisation" && status == "published"] | order(order desc, publishedAt desc)[0...6]{\n    "slug": slug.current,\n    title,\n    client,\n    location,\n    year,\n    area,\n    cover{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n  }\n': LATEST_REALISATIONS_QUERY_RESULT;
     '\n  *[_type == "realisation" && status == "published" && $expertise in expertises]\n    | order(order desc, publishedAt desc)[0]{\n    "slug": slug.current,\n    title,\n    location,\n    year,\n    area,\n    cover{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n  }\n': EXPERTISE_LATEST_REALISATION_QUERY_RESULT;
     '\n  *[_id == "footer"][0]{\n    ctaTitleOutline,\n    ctaTitleFill,\n    ctaButtonLabel,\n    ctaButtonHref,\n    ctaImages[]{\n      asset,\n      hotspot,\n      crop,\n      alt,\n      "lqip": asset->metadata.lqip\n    },\n    tagline,\n    address,\n    contactHref,\n    linkedInUrl,\n    plaquetteLabel,\n    "plaquetteUrl": plaquetteFile.asset->url,\n    navLinks[]{ label, href },\n    legalLinks[]{ label, href }\n  }\n': FOOTER_QUERY_RESULT;
+    '\n  *[_id == "contactPage"][0]{\n    heroTitleOutline,\n    heroTitleFill,\n    formImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    formTitleOutline,\n    formTitleFill,\n    requestTypes[]{ label, recipient },\n    findTitleOutline,\n    findTitleFill,\n    address,\n    contactTitleOutline,\n    contactTitleFill,\n    email,\n    mapLocation,\n    mapZoom,\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': CONTACT_PAGE_QUERY_RESULT;
   }
 }

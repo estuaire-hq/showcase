@@ -34,10 +34,12 @@ export function Testimonial({
 		<section
 			className={cn("bg-paper px-4 py-0 md:px-8 lg:px-[3.18%]", className)}
 		>
-			{/* Mobile/tablet: min-height + vertical padding so a long quote grows the band
-			    instead of being clipped (the image still fills via inset-0). Desktop: the
-			    wide maquette ratio (the quote always fits). */}
-			<figure className="relative isolate flex min-h-[480px] items-center justify-center overflow-hidden bg-ink py-16 md:min-h-[600px] lg:aspect-[1798/958] lg:min-h-0 lg:py-0">
+			{/* The band grows with the quote (min-height + padding, content-driven) instead of
+			    being clipped. The fixed maquette ratio (1798/958) is re-locked only at 2xl
+			    (≥1536) where the band is wide enough that the ratio's height always clears the
+			    quote; in the 1024–1535 compression band the aspect would be too short, so the
+			    band stays content-driven there (multi-resolution review, ADR 0022). */}
+			<figure className="relative isolate flex min-h-[480px] items-center justify-center overflow-hidden bg-ink py-16 md:min-h-[600px] lg:py-20 2xl:aspect-[1798/958] 2xl:py-0">
 				{image && (
 					<Image
 						src={image.src}

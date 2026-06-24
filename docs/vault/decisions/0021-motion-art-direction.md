@@ -86,3 +86,27 @@ contextuelles) sans le contredire : elle **étend** la couche feedback (hovers r
 **simplifie** le reveal de contenu en un fondu d'opacité homogène, et **ajoute** la transition de page et
 la parallaxe de cluster. La constitution gagnera un principe **« Intentional Motion »** (différé, ligne 63)
 **une fois la DA figée**.
+
+## Addendum (2026-06-23) : retrait de la couche hover (D2 + D3)
+
+Sur décision de Pierre (worktree `restore-link-hover`, via `/dispatch`), les **hovers de liens**
+introduits par #22 ont été **retirés**. Les liens de la **navbar** et du **footer** retrouvent leur
+comportement d'avant #22.
+
+- **D2 (`RollText`, text-roll nav + footer principal)** et **D3 (`LineText`, line-draw footer légal)** :
+  **annulées**. Les primitives `RollText` / `LineText` sont supprimées du design system (zéro autre
+  usage), ainsi que leurs tokens devenus orphelins (`--duration-roll`, `--delay-roll`, `--stagger-roll`,
+  `--duration-line` ; `rollDuration` / `rollDelay` / `rollStagger`). `--ease-expo` est conservé (lu par
+  `ScrollReveal`).
+- **Comportement restauré** : navbar = *ghost-pill* (transparent au repos, se remplit au survol,
+  `transition-colors`) ; footer = soulignement au survol/focus (`hover:underline`). C'est l'état exact
+  du parent de #22, restauré depuis git (non réinventé).
+- **Inchangé** : D1 (deux couches), D4 (`ScrollReveal` / `data-reveal-fade`), D5 (`PageTransition`,
+  rideau), D6 (parallaxe de cluster), D7 (tokens conservés : `--ease-expo`, `reveal`, `curtain`,
+  `clusterParallax`), D8 (frontière hover = DS / scroll-page = `@/lib/motion`, désormais sans primitive
+  hover côté DS).
+
+Le statut de l'ADR reste **« en cours de réglage »** : la grammaire *reveal / transition / parallaxe*
+demeure la DA en vigueur ; seule la **couche feedback hover** est abandonnée (retour au feedback hover
+natif d'avant #22). Le principe constitutionnel « Intentional Motion » (différé) couvrira la DA restante
+une fois figée.

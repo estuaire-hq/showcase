@@ -361,12 +361,13 @@ fonts, radii, or re-implement a button / pill / card. Importing = consuming; edi
   responsive per breakpoint, content images → Sanity, verify against the cached Figma render.
 - Before animating: load the **`estuaire-motion`** skill — text static (the anchor); visuals +
   section transitions carry the motion; content reveals on entry; honor `prefers-reduced-motion`.
-  The site-wide **motion DA** (one consistent hover + reveal grammar, no ad-hoc animations) is
-  **ADR 0021**. Reusable primitives: **hover in the DS** (`RollText` text-roll on nav/footer links,
-  `LineText` line-draw on secondary links); **scroll/page shells in `@/lib/motion`** (`ScrollReveal`
+  The site-wide **motion DA** (a consistent reveal/transition grammar, no ad-hoc animations) is
+  **ADR 0021** (its hover layer — `RollText`/`LineText` — was reverted; nav/footer links use
+  their pre-#22 hover: ghost-pill nav + underlined footer). Reusable primitives: **scroll/page shells
+  in `@/lib/motion`** (`ScrollReveal`
   + `data-reveal-fade` = content fade-in on scroll, `PageTransition` = paper "curtain" between pages,
   `Parallax` + `data-parallax` = cluster depth). Motion tokens: `@theme` + `tokens.ts` (`--ease-expo`,
-  `roll*`, `reveal`, `curtain`, `clusterParallax`). Two load-bearing gotchas (post-mortem 0015):
+  `reveal`, `curtain`, `clusterParallax`). Two load-bearing gotchas (post-mortem 0015):
   **(1) GSAP owns the `transform`** — never set an animated transform via React `style` on a
   GSAP-animated element (they stack); use `gsap.set`/`fromTo` for the initial state. **(2) GSAP-only
   motion values are read from `tokens.ts`** — Tailwind v4 tree-shakes unused `@theme` vars (they may

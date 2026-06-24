@@ -46,12 +46,21 @@ export function HeroSlideshow({
 	label,
 	slides,
 	interval = 6000,
+	entry = "none",
 	className,
 }: {
 	label: string;
 	slides: HeroSlide[];
 	/** ms between slides (default 6000). */
 	interval?: number;
+	/**
+	 * Site-entry handoff with `HeroIntro` (home only). `"none"` = normal (static first
+	 * paint + autoplay). `"hold"` = the intro overlay is up: keep the rotating title + the
+	 * first image hidden (the overlay owns the visuals), no autoplay. `"play"` = intro
+	 * done: the slide-0 title types in letter by letter + the first image unfolds from the
+	 * left (« sort du noir »), then autoplay resumes. Driven by the `HomeHero` orchestrator.
+	 */
+	entry?: "none" | "hold" | "play";
 	className?: string;
 }) {
 	const [active, setActive] = useState(0);
@@ -94,6 +103,9 @@ export function HeroSlideshow({
 		() => {
 			if (slides.length < 2) return;
 			if (prefersReducedMotion()) return;
+			// Don't cycle while the entry intro is still up — it would advance the (hidden)
+			// title under the overlay. Autoplay starts once `entry` is "none" or "play".
+			if (entry === "hold") return;
 			// Clamp: a misconfigured `interval` (0 / negative) would busy-loop setInterval.
 			const period = Math.max(1000, interval);
 			let id: ReturnType<typeof setInterval> | undefined;
@@ -124,7 +136,7 @@ export function HeroSlideshow({
 				document.removeEventListener("visibilitychange", onVisibility);
 			};
 		},
-		{ dependencies: [slides.length, interval] },
+		{ dependencies: [slides.length, interval, entry] },
 	);
 
 	// Reconstruction: on every `active` change, animate only the glyphs that differ
@@ -170,6 +182,35 @@ export function HeroSlideshow({
 		{ dependencies: [active], scope: titleRef },
 	);
 
+	// Entry handoff (home intro): hold → keep the rotating title hidden (the overlay owns
+	// the visuals); play → the phrase « là où… » writes itself letter by letter (typing,
+	// storyboard beat 3 / réf. Graphéine). `entry === "none"` leaves the title untouched
+	// (normal static first paint).
+	useGSAP(
+		() => {
+			const root = titleRef.current;
+			if (!root || prefersReducedMotion()) return;
+			const chars = root.querySelectorAll<HTMLElement>("[data-char]");
+			if (!chars.length) return;
+			if (entry === "hold") {
+				gsap.set(chars, { autoAlpha: 0 });
+			} else if (entry === "play") {
+				gsap.fromTo(
+					chars,
+					{ autoAlpha: 0, yPercent: 10 },
+					{
+						autoAlpha: 1,
+						yPercent: 0,
+						duration: 0.5,
+						ease: "expo.out",
+						stagger: 0.03,
+					},
+				);
+			}
+		},
+		{ dependencies: [entry], scope: titleRef },
+	);
+
 	// Idempotency safety: guarantee the title is fully built whenever the tab
 	// becomes visible. A reconstruction that was mid-reveal when the tab went to the
 	// background is frozen (rAF suspended); on return we kill any in-flight tween and
@@ -193,10 +234,12 @@ export function HeroSlideshow({
 		{ scope: titleRef },
 	);
 
-	// Image transition: a creative-but-subtle UPWARD clip wipe — the incoming image
-	// does NOT start from zero (clip begins partially open, ~bottom 60% already shown),
-	// crossfades in and settles a slight scale. Nothing on first paint / reduced motion
-	// (the active image is just shown).
+	// Image transition (split-screen → motion on the HORIZONTAL axis, brief point 3): the
+	// incoming image UNFOLDS from the LEFT (clip from the left edge) + a slight loupe
+	// (arrives a touch smaller and settles, réf. BETC) + a small slide-in from the left —
+	// as if the text appearing on the left pushed the image open on the right. The first
+	// image under the entry intro emerges the same way (« sort du noir »). Nothing on a
+	// plain first paint / reduced motion (the active image is just shown).
 	useGSAP(
 		() => {
 			const root = imageRef.current;
@@ -208,33 +251,46 @@ export function HeroSlideshow({
 				// no node, so DOM order ≠ slide order when images are mixed (latent desync).
 				const slideIndex = Number(el.dataset.slideIndex);
 				const isActive = slideIndex === active;
-				if (!imgInit.current || reduce) {
+				// Intro hold: every image hidden (the intro overlay owns the visuals).
+				if (entry === "hold") {
+					gsap.set(el, { autoAlpha: 0 });
+					return;
+				}
+				// Reduced motion, or a plain first paint with no intro: show, no animation.
+				if (reduce || (!imgInit.current && entry !== "play")) {
 					gsap.set(el, {
 						autoAlpha: isActive ? 1 : 0,
-						clipPath: "inset(0% 0 0 0)",
+						clipPath: "inset(0 0% 0 0)",
 						scale: 1,
+						xPercent: 0,
 					});
 					return;
 				}
 				if (isActive) {
 					gsap.fromTo(
 						el,
-						{ autoAlpha: 0, clipPath: "inset(60% 0 0 0)", scale: 1.05 },
+						{
+							autoAlpha: 0,
+							clipPath: "inset(0 100% 0 0)", // fully clipped from the left edge
+							scale: 0.94, // loupe: arrives a touch smaller
+							xPercent: -6, // pushed in from the left
+						},
 						{
 							autoAlpha: 1,
-							clipPath: "inset(0% 0 0 0)",
+							clipPath: "inset(0 0% 0 0)", // unfolds to full
 							scale: 1,
+							xPercent: 0,
 							duration: 1.1,
 							ease: "power3.out",
 						},
 					);
 				} else {
-					gsap.to(el, { autoAlpha: 0, duration: 0.7, ease: "power2.out" });
+					gsap.to(el, { autoAlpha: 0, duration: 0.6, ease: "power2.out" });
 				}
 			});
-			imgInit.current = true;
+			if (entry !== "hold") imgInit.current = true;
 		},
-		{ dependencies: [active], scope: imageRef },
+		{ dependencies: [active, entry], scope: imageRef },
 	);
 
 	if (slides.length === 0) return null;
@@ -255,7 +311,18 @@ export function HeroSlideshow({
 
 			{/* Text column */}
 			<div className="z-10 flex flex-col justify-start px-5 pt-28 pb-8 md:absolute md:inset-0 md:w-[64.2%] md:justify-center md:px-10 md:pt-0 md:pb-0 lg:w-[52%] lg:justify-end lg:px-[7%] lg:pb-[15%]">
-				<h1 className="font-display font-semibold text-display-sm leading-none lg:text-display">
+				{/* The desktop label/title live in a `lg:w-[52%]` dark zone that shrinks with the
+				    viewport, but the type was FIXED at 100px/75px across all desktop widths, so
+				    below ~1600 the title outgrew the zone and broke mid-word (« prenn|ent »),
+				    colliding with the image seam. Size them FLUIDLY in `vw` (the zone is a % of
+				    the viewport, so a vw size keeps the design's exact fill ratio): the clamp
+				    equals the `--text-display`/`--text-title` token values at the 1920 design
+				    width and meets the `-sm` tokens at the lg boundary. ADR 0022.
+				    `data-hero-h1` is the FLIP target the site-entry intro lands « Estuaire » on. */}
+				<h1
+					data-hero-h1
+					className="font-display font-semibold text-display-sm leading-none lg:text-[clamp(3.4375rem,5.21vw,6.25rem)]"
+				>
 					<BrandText>{label}</BrandText>
 				</h1>
 				{/* Reconstructing rotating title (only changed glyphs re-animate). No
@@ -264,7 +331,7 @@ export function HeroSlideshow({
 				    whole headline every interval. */}
 				<div
 					ref={titleRef}
-					className="mt-3 font-display font-semibold text-title-sm leading-[1.1] tracking-normal md:mt-5 lg:text-title lg:leading-none"
+					className="mt-3 font-display font-semibold text-title-sm leading-[1.1] tracking-normal md:mt-5 lg:text-[clamp(2.5rem,3.9vw,4.6875rem)] lg:leading-none"
 				>
 					{lines.map((line, li) => (
 						<span

@@ -13,6 +13,8 @@ export const color = {
 	paper: "#ffffff",
 	/** Disabled / empty affordance (e.g. carousel arrow "vide") */
 	disabled: "#dddddd",
+	/** Form validation error affordance (not a brand identity colour) */
+	danger: "#b42318",
 } as const;
 
 export const font = {
@@ -64,20 +66,15 @@ export const strokeWidth = { rule: 3, control: 1 } as const;
 export const breakpoint = { mobile: 390, tablet: 768, desktop: 1024 } as const;
 
 /**
- * Motion tokens — MIRRORS the `--ease-*` / `--*-roll` vars in the `@theme` block of
+ * Motion tokens — MIRRORS the `--ease-*` vars in the `@theme` block of
  * globals.css (the canonical source). CSS reads those vars directly; GSAP/JS reads the
  * values here. Keep the two in sync. See the `estuaire-motion` skill for the grammar.
  *
  *  - `easeExpo` is the signature ease. In GSAP it is the registered `"expo.out"`; in CSS
  *    the equivalent is `--ease-expo` (`cubic-bezier(.16,1,.3,1)`) — treated as the same ease.
- *  - The `roll*` values drive the hover text-roll (RollText): per-letter duration (s),
- *    a base delay (s) before the first letter, and the per-letter stagger (s).
  */
 export const motion = {
 	easeExpo: "expo.out",
-	rollDuration: 0.6,
-	rollDelay: 0.08,
-	rollStagger: 0.03,
 	/**
 	 * Content scroll-reveal: each element marked `data-reveal-fade` fades in (opacity only,
 	 * no transform — text stays the anchor) the first time it enters the viewport, then
@@ -91,9 +88,37 @@ export const motion = {
 	 */
 	curtainDuration: 0.8,
 	/**
+	 * Curtain loader intro delay (PageTransition): a mini beat after the cover starts
+	 * before the logomark begins tracing, so the curtain establishes first and the trace
+	 * reads as intentional (Pierre, 2026-06-23). One-time (the loop keeps `repeatDelay`).
+	 */
+	curtainLogoDelay: 0.15,
+	/**
+	 * Curtain loader hold (PageTransition): the MINIMUM time the logomark loader stays
+	 * visible, measured from when the cover starts, so the mark writes itself in full
+	 * once (intro delay 0.15s + trace 1.0s ⇒ complete at ~1.15s) before the curtain
+	 * reveals the next page. On a slow route the reveal naturally waits for the route to
+	 * commit instead, so this is a floor, not a fixed delay (Pierre, 2026-06-23).
+	 */
+	curtainLogoHold: 1.35,
+	/**
 	 * Overlapping image clusters: the FRONT (overlapping) image rises faster than the
 	 * static back image on scroll (`data-parallax` amplitude, `rise` mode) → depth
 	 * (Pierre, 2026-06-23). One value tunes all cluster fronts (expertises + nous-découvrir).
 	 */
 	clusterParallax: 30,
+	/**
+	 * Hero site-entry intro (HeroIntro, home only — brief header-entry-animation). On a
+	 * fresh home load a black screen traces the logomark (LogomarkLoader), rolls in
+	 * « Estuaire » (roulette), then FLIPs the mark into the navbar + the wordmark into the
+	 * hero H1 while the white panel sweeps in from the right (split-screen forms). Tight
+	 * rhythm — ~2-3 beats. GSAP-only values (read here, NOT from @theme — post-mortem 0015).
+	 */
+	introTraceDur: 1.0, // logomark trace leg (mirrors LogomarkLoader TRACE_DUR)
+	introWordDelay: 0.12, // beat after the trace before « Estuaire » rolls in
+	introWordRollDur: 0.55, // per-letter roll-in duration
+	introWordStagger: 0.045, // per-letter stagger of the roulette
+	introHold: 0.25, // hold the full lockup before the bascule (beat 1→2)
+	introFlipDur: 0.72, // FLIP: mark→navbar & word→H1 (beat 2)
+	introRetractDur: 0.72, // black panel retracts from the right → split (beat 2)
 } as const;

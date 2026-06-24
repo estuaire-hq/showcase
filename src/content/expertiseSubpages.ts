@@ -47,7 +47,7 @@ export const expertiseSubpagesContent: Record<string, ExpertiseSubpageContent> =
 	{
 		"agencement-sur-mesure": {
 			// — Hero (02/ SLIDER) —
-			breadcrumb: "univers / agencement sur-mesure",
+			breadcrumb: "expertises / agencement sur-mesure",
 			heroEyebrow: "Agencement sur-mesure",
 			heroTitleOutline: "Notre vision",
 			heroTitleFill: "du métier d’agenceur.",
@@ -93,7 +93,7 @@ export const expertiseSubpagesContent: Record<string, ExpertiseSubpageContent> =
 
 		"mobiliers-sur-mesure": {
 			// — Hero (02/ SLIDER) — breadcrumb dérivé du gabarit (frame desktop sans fil d'Ariane)
-			breadcrumb: "univers / mobiliers sur-mesure",
+			breadcrumb: "expertises / mobiliers sur-mesure",
 			heroEyebrow: "Mobiliers sur mesure et en série",
 			heroTitleOutline: "Notre savoir-faire",
 			heroTitleFill: "appliqué aux mobiliers.",
@@ -138,7 +138,7 @@ export const expertiseSubpagesContent: Record<string, ExpertiseSubpageContent> =
 
 		"presentoirs-sur-mesure": {
 			// — Hero (02/ SLIDER) — breadcrumb dérivé du gabarit (frame desktop sans fil d'Ariane)
-			breadcrumb: "univers / présentoirs sur-mesure",
+			breadcrumb: "expertises / présentoirs sur-mesure",
 			heroEyebrow: "Présentoirs sur mesure et en série",
 			heroTitleOutline: "Notre exigence",
 			heroTitleFill: "au service des présentoirs.",

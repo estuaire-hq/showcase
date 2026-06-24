@@ -4,6 +4,7 @@
  * Add a new document's seed here after scaffolding + filling it.
  */
 import aboutPage from "./documents/aboutPage.seed";
+import contactPage from "./documents/contactPage.seed";
 import expertiseSubpages from "./documents/expertiseSubpages.seed";
 import expertisesPage from "./documents/expertisesPage.seed";
 import footer from "./documents/footer.seed";
@@ -24,5 +25,6 @@ export const seeds = [
 	sectorDetailBureau,
 	sectorDetailResidentiel,
 	sectorDetailScenographie,
+	contactPage,
 	footer,
 ];

@@ -1,5 +1,6 @@
 import {
 	DocumentsIcon,
+	EnvelopeIcon,
 	HomeIcon,
 	ImagesIcon,
 	InfoOutlineIcon,
@@ -13,6 +14,7 @@ const SINGLETONS = [
 	"aboutPage",
 	"expertisesPage",
 	"sectorsPage",
+	"contactPage",
 	"footer",
 ];
 
@@ -90,6 +92,15 @@ export const structure: StructureResolver = (S) =>
 					S.documentTypeList("realisation")
 						.title("Réalisations")
 						.defaultOrdering([{ field: "order", direction: "desc" }]),
+				),
+			S.listItem()
+				.title("Contact")
+				.icon(EnvelopeIcon)
+				.child(
+					S.document()
+						.schemaType("contactPage")
+						.documentId("contactPage")
+						.title("Contact"),
 				),
 			S.listItem()
 				.title("Pied de page")

@@ -1,5 +1,6 @@
 import type { SchemaTypeDefinition } from "sanity";
 import { aboutPage } from "./documents/aboutPage";
+import { contactPage } from "./documents/contactPage";
 import { expertiseSubpage } from "./documents/expertiseSubpage";
 import { expertisesPage } from "./documents/expertisesPage";
 import { footer } from "./documents/footer";
@@ -16,5 +17,6 @@ export const schemaTypes: SchemaTypeDefinition[] = [
 	sectorsPage,
 	sectorDetail,
 	realisation,
+	contactPage,
 	footer,
 ];

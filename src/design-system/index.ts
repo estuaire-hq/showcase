@@ -15,6 +15,7 @@ export {
 export { ContactButton } from "./components/ContactButton";
 export { EngagementsGrid } from "./components/EngagementsGrid";
 export { FeatureBlock } from "./components/FeatureBlock";
+export { Field } from "./components/Field";
 export { FileInput } from "./components/FileInput";
 export { Filter } from "./components/Filter";
 export { FooterLink } from "./components/FooterLink";
@@ -53,6 +54,8 @@ export {
 	Testimonial,
 	type TestimonialImage,
 } from "./components/Testimonial";
+export { TextArea } from "./components/TextArea";
+export { TextField } from "./components/TextField";
 export type { NavState, NavTone } from "./nav";
 export * from "./tokens";
 export { BrandText } from "./typography/BrandText";

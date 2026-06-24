@@ -18,6 +18,19 @@
  * `\n` is meaningful in titles/text (line breaks of the maquette) — the front renders
  * them with `whitespace-pre-line`. Section titles use the brand outline/fill device.
  */
+
+import type { SectorSlug } from "@/content/sectorDetail";
+
+// Univers links: the display label is editorial (plural/accents, per the maquette) but
+// the href SLUG is checked against the canonical `SectorSlug` union — the single source
+// of truth for the four sector detail pages (`sectorDetail.ts`). A drift (e.g. linking
+// "/univers/bureaux" while the page is "bureau") is then a TYPE error here, never a
+// runtime `notFound()` 404 on the home (post-mortem: the bureaux/bureau mismatch).
+const universLink = (label: string, slug: SectorSlug) => ({
+	label,
+	href: `/univers/${slug}`,
+});
+
 export const homePageContent = {
 	// — Hero (slider 51:2420 + home 51:2221) —
 	heroLabel: "Estuaire",
@@ -44,10 +57,10 @@ export const homePageContent = {
 
 	// — Nos univers / secteurs (liens actifs → /univers/[secteur]) —
 	universSectors: [
-		{ label: "retail", href: "/univers/retail" },
-		{ label: "bureaux", href: "/univers/bureaux" },
-		{ label: "scénographie", href: "/univers/scenographie" },
-		{ label: "résidentiel", href: "/univers/residentiel" },
+		universLink("retail", "retail"),
+		universLink("bureaux", "bureau"),
+		universLink("scénographie", "scenographie"),
+		universLink("résidentiel", "residentiel"),
 	],
 
 	// — Nos réalisations par secteur (cards + 12-sector list come from the `realisation`

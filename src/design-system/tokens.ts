@@ -105,4 +105,18 @@ export const motion = {
 	 * (Pierre, 2026-06-23). One value tunes all cluster fronts (expertises + nous-découvrir).
 	 */
 	clusterParallax: 30,
+	/**
+	 * Hero site-entry intro (HeroIntro, home only — brief header-entry-animation). On a
+	 * fresh home load a black screen traces the logomark (LogomarkLoader), rolls in
+	 * « Estuaire » (roulette), then FLIPs the mark into the navbar + the wordmark into the
+	 * hero H1 while the white panel sweeps in from the right (split-screen forms). Tight
+	 * rhythm — ~2-3 beats. GSAP-only values (read here, NOT from @theme — post-mortem 0015).
+	 */
+	introTraceDur: 1.0, // logomark trace leg (mirrors LogomarkLoader TRACE_DUR)
+	introWordDelay: 0.12, // beat after the trace before « Estuaire » rolls in
+	introWordRollDur: 0.55, // per-letter roll-in duration
+	introWordStagger: 0.045, // per-letter stagger of the roulette
+	introHold: 0.25, // hold the full lockup before the bascule (beat 1→2)
+	introFlipDur: 0.72, // FLIP: mark→navbar & word→H1 (beat 2)
+	introRetractDur: 0.72, // black panel retracts from the right → split (beat 2)
 } as const;

@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import { LogomarkLoader } from "@/design-system/components/LogomarkLoader";
 import { motion } from "@/design-system/tokens";
 import { gsap, useGSAP } from "@/lib/motion/gsap";
+import { navState } from "./navigationState";
 import { prefersReducedMotion } from "./usePrefersReducedMotion";
 
 /**
@@ -85,6 +86,9 @@ export function PageTransition() {
 			e.preventDefault();
 			navigating.current = true;
 			pendingPath.current = url.pathname + url.search + url.hash;
+			// Tell HomeHero this nav is curtain-carried (the curtain already writes the
+			// logomark) so it skips its own black entry intro on arrival — no double.
+			navState.viaCurtain = true;
 
 			const panel = panelRef.current;
 			if (!panel) {
@@ -142,6 +146,7 @@ export function PageTransition() {
 					navigating.current = false;
 					pendingPath.current = null;
 					coverStartAt.current = null;
+					navState.viaCurtain = false; // window over: a later home mount is a real load
 					panel.style.pointerEvents = "none";
 					gsap.set(panel, { opacity: 0 }); // back to invisible at rest
 					setCovering(false); // unmount the loader (no idle GSAP loop at rest)

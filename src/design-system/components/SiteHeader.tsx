@@ -183,6 +183,7 @@ export function SiteHeader({
 				href={brandHref}
 				aria-label="Estuaire — accueil"
 				aria-current={activeHref === brandHref ? "page" : undefined}
+				data-brand-logo
 				className={cn(
 					"inline-flex items-center rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-estuaire",
 					TONE_TEXT_CLASS[resolvedLogoTone],

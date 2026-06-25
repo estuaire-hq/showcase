@@ -11,6 +11,7 @@ import { CaseStudies } from "@/lib/motion/CaseStudies";
 import { Parallax } from "@/lib/motion/Parallax";
 import { getHomePageProps } from "@/lib/sanity/homePage";
 import { getLatestRealisations } from "@/lib/sanity/realisation";
+import { cn } from "@/lib/utils";
 import { HomeHero } from "./_components/HomeHero";
 
 /** Deep-link to the portfolio filtered on a given univers (demock — FR-023). */
@@ -101,22 +102,36 @@ export default async function HomePage() {
 											/>
 										</div>
 									)}
-									{/* Univers / secteurs — active links → /univers/[secteur] (FR-004), 2×2 */}
-									<ul className="grid grid-cols-2 gap-4 lg:max-w-[812px]">
+									{/* Univers / secteurs — active links → /univers/[secteur] (FR-004).
+									    Maquette (home 51:2221 / 77:3149 / 77:3150): 1 column stacked on
+									    mobile + tablet, 2×2 grid on desktop. « scénographie » (longest
+									    label) overflowed because the grid stayed `grid-cols-2` at every
+									    width — stacking to one column below `lg` fixes it. */}
+									<ul className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:max-w-[812px]">
 										{universSectors.map((sector, i) => {
 											const slug =
 												sector.href.split("/").filter(Boolean).pop() ?? "";
+											const active = i === 0;
 											return (
 												<li key={sector.href}>
 													<Button
 														href={sector.href}
-														tone={i === 0 ? "dark" : "light"}
+														tone={active ? "dark" : "light"}
 														arrow={false}
-														className={
-															i === 0
-																? "w-full"
-																: "w-full bg-paper text-ink ring-1 ring-ink ring-inset"
-														}
+														className={cn(
+															// These univers pills are their OWN maquette element, not the CTA
+															// Button (no arrow → drop its wide px-14). Maquette sizes: 44px·20px
+															// (text-lead-sm) on mobile/tablet, 75px·35px (text-lead) at the 1920
+															// desktop frame. The 35px « scénographie » (≈249px) needs a pill ≳297px
+															// to clear its padding — in the 2-col grid that only holds from ~1470px,
+															// so it would overflow the 1024–1279 band. Keep the compact 20px/44px
+															// pill across the whole 2-col range and step up to 75px/35px only at 2xl
+															// (1536), where the column is wide enough. Overrides apply at THIS
+															// call-site only; Button stays the arrow CTA elsewhere.
+															"w-full min-h-11 px-6 py-1 text-lead-sm 2xl:min-h-[75px] 2xl:text-lead",
+															!active &&
+																"bg-paper text-ink ring-1 ring-ink ring-inset",
+														)}
 														data-umami-event="home_sector_click"
 														data-umami-event-sector={slug}
 													>

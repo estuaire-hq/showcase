@@ -7,10 +7,9 @@ import {
 } from "@/lib/contact/schema";
 import { getContactRequestTypes } from "@/lib/sanity/contactPage";
 
-// Contact form endpoint (contracts/contact-api.md). Node runtime (Buffer + Nodemailer);
-// exempt from the coming-soon gate (proxy matcher excludes `api/*`). The recipient is
-// resolved SERVER-SIDE from the CMS by the chosen request-type label — the client never
-// sends the recipient address (anti-tamper).
+// Contact form endpoint (contracts/contact-api.md). Node runtime (Buffer + Nodemailer).
+// The recipient is resolved SERVER-SIDE from the CMS by the chosen request-type label —
+// the client never sends the recipient address (anti-tamper).
 
 export const runtime = "nodejs";
 

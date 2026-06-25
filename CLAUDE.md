@@ -392,42 +392,16 @@ fonts, radii, or re-implement a button / pill / card. Importing = consuming; edi
 - Frontier: *project understanding → repo (vault / specs / DS) · law → constitution · agent
   state & how-to-assist → local memory.* See the constitution's **Memory & Knowledge Architecture**.
 
-## Coming Soon Gate (temporary)
+## Coming Soon Gate (removed at launch)
 
-A pre-launch access gate lets the site ship to prod **before it is finished**: the public
-sees a "Site en construction…" placeholder while the owner/client browse the real site via a
-secret link. Implemented in `src/proxy.ts` (a Next.js **`proxy`** — the v16 successor to
-`middleware`, runs in the Node runtime so the token is read at request time, not inlined at
-build). Driven by ONE server-only env var, **`SITE_PREVIEW_TOKEN`** (not `NEXT_PUBLIC_`). See
-**ADR 0007** (`docs/vault/decisions/0007-coming-soon-preview-gate.md`).
+The pre-launch "Site en construction…" gate has been **removed** now that the site is public:
+`src/proxy.ts`, `src/app/coming-soon/`, and the `noindex` branch of `robots.ts` are deleted, so
+the site is fully open and indexable regardless of any env var. The historical design is kept in
+**ADR 0007** (`docs/vault/decisions/0007-coming-soon-preview-gate.md`) for reference.
 
-- **Token set** → every public route is `rewrite`n to `/coming-soon` (URL preserved, real
-  routes never leak) and `robots.ts` makes the whole site `noindex`. Unlock by visiting the
-  permanent link **`/v/<token>`** once: it drops a long-lived (30 d) `httpOnly` cookie and
-  redirects to a clean `/`; thereafter you browse normal URLs. The link is shareable.
-- **Token absent/empty** → the gate is a **no-op**, the site is fully open and indexable.
-
-**Bypassing it locally**: by default `SITE_PREVIEW_TOKEN` is unset in dev → the gate is
-already a no-op, you reach the real site directly at the dev URL (`http://estuaire.localhost:1355`;
-`PORTLESS=0` → `localhost:3000`). **In worktrees the gate is forced OFF** by the `.config/wt.toml`
-server hook (`SITE_PREVIEW_TOKEN=`), so the named portless URL serves the real site even if
-`.env.development` carries a token — no action needed (post-mortem 0011). If you start the dev
-server **yourself** (outside the hook) and the token *is* set, prefix your command with
-`SITE_PREVIEW_TOKEN=` (do **not** use `portless run --force`, which can drop the route — stop +
-`npm run dev` instead), or visit `http://<branch>.estuaire.localhost:1355/v/<token>` once to unlock.
-(`.env.development` is git-crypt'd and off-limits to the agent — never read it; assume the gate is
-off unless told otherwise.)
-
-**Be aware of the matcher** (`src/proxy.ts` `config.matcher`): it gates page routes but
-exempts `api`, `studio`, `coming-soon`, `_next`, and **any path with a file extension**. That
-last exemption is load-bearing — the Next image optimizer fetches local `public/` images over
-an internal cookie-less request; without it the gate rewrites those to `/coming-soon` (HTML)
-and every optimized local image 400s (post-mortem 0005). Keep new gated routes extension-less.
-
-**Temporary — remove at public launch.** The gate is a launch convenience, not a permanent
-feature. Going public = **remove `SITE_PREVIEW_TOKEN` in Coolify** (no code change, no
-rebuild). Afterwards the proxy/placeholder/robots logic can stay dormant (no-op) or be deleted
-outright (`src/proxy.ts`, `src/app/coming-soon/`, the gate branch of `robots.ts`).
+The `SITE_PREVIEW_TOKEN` Coolify variable is now a dead no-op (nothing reads it) — it can be
+removed at convenience, but leaving it has no effect. `.config/wt.toml` still exports an empty
+`SITE_PREVIEW_TOKEN=` for worktree dev servers; harmless, can be cleaned up later.
 
 ## Lab (temporary)
 

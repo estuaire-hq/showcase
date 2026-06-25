@@ -3,8 +3,7 @@ import { confidentialite } from "@/content/legal/confidentialite";
 import { LegalPage } from "@/design-system";
 
 // Static legal page (content lives in `src/content/legal/`, no Sanity): the RSC is a
-// thin connector that renders the design-system `<LegalPage>`. Route kept extension-less
-// for the coming-soon gate (CLAUDE.md).
+// thin connector that renders the design-system `<LegalPage>`.
 
 export const metadata: Metadata = {
 	title: "Politique de confidentialité",

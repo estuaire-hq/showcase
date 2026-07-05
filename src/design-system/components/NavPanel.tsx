@@ -60,13 +60,21 @@ export function NavPanel({
 			// Mounted always (fade); inert + hidden from AT when closed.
 			inert={!isOpen}
 			aria-hidden={!isOpen}
+			// Lenis runs in `root` mode and hijacks wheel/touch at the document level, which
+			// neutralises the panel's own scroll. `data-lenis-prevent` makes Lenis yield to
+			// native scroll for any gesture inside the overlay so the scroll region below can
+			// scroll. The background stays locked: useScrollLock's `lenis.stop()` still
+			// preventDefaults gestures that land OUTSIDE the panel (checked after this attr).
+			data-lenis-prevent
 			className={cn(
-				"fixed inset-0 z-[60] flex flex-col overflow-y-auto bg-ink/90 lg:hidden",
+				"fixed inset-0 z-[60] flex flex-col bg-ink/90 lg:hidden",
 				!reducedMotion && "transition-opacity duration-300 ease-out",
 				isOpen ? "opacity-100" : "pointer-events-none opacity-0",
 			)}
 		>
-			{/* Close cross — top-right, aligned with the (reduced) header band height. */}
+			{/* Close cross — top-right, aligned with the (reduced) header band height. Kept
+			    outside the scroll region (shrink-0) so it stays reachable while the entries
+			    scroll on short viewports. */}
 			<div className="flex h-20 shrink-0 items-center justify-end px-5 md:px-10">
 				<button
 					type="button"
@@ -78,63 +86,71 @@ export function NavPanel({
 				</button>
 			</div>
 
-			{/* Entries — stacked, centred, gap 20 (pitch 60). White ghost pills (onDark).
-			    Entries with sub-pages (expertises / univers) list their children just below,
-			    indented and smaller (client request, revue 2026-06, B2/B3). */}
-			<nav
-				aria-label="Navigation principale"
-				className="flex flex-col items-center gap-5"
-			>
-				{items.map((item) => (
-					<div key={item.href} className="flex flex-col items-center gap-2">
-						<NavButton
-							label={item.label}
-							href={item.href}
-							tone="onDark"
-							active={activeHref === item.href}
-							onClick={() => onSelect?.(item.href)}
-						/>
-						{item.children && item.children.length > 0 && (
-							<ul className="flex flex-col items-center gap-1.5">
-								{item.children.map((child) => (
-									<li key={child.href}>
-										<Link
-											href={child.href}
-											onClick={() => onSelect?.(child.href)}
-											aria-current={
-												activeHref === child.href ? "page" : undefined
-											}
-											className={cn(
-												"font-display text-caption lowercase leading-none text-paper/70 transition-colors hover:text-paper focus-visible:text-paper focus-visible:outline-none",
-												activeHref === child.href && "font-semibold text-paper",
-											)}
-										>
-											{child.label}
-										</Link>
-									</li>
-								))}
-							</ul>
-						)}
-					</div>
-				))}
-				<ContactButton
-					label={cta.label}
-					href={cta.href}
-					tone="bleu"
-					active={activeHref === cta.href}
-					onClick={() => onSelect?.(cta.href)}
-				/>
-			</nav>
+			{/* Scroll region — the entries + logo. `flex-1 min-h-0 overflow-y-auto` makes THIS
+			    the scroll container (not the whole panel), top-aligned to match the Figma
+			    "MENU pop-up" (entries near the top, logo below). Since the sub-pages were added
+			    (revue 2026-06) the list can exceed a short viewport; scrolling keeps the CTA,
+			    every sub-link and the logo reachable. `overscroll-contain` stops scroll chaining. */}
+			<div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain pb-8">
+				{/* Entries — stacked, centred, gap 20 (pitch 60). White ghost pills (onDark).
+				    Entries with sub-pages (expertises / univers) list their children just below,
+				    indented and smaller (client request, revue 2026-06, B2/B3). */}
+				<nav
+					aria-label="Navigation principale"
+					className="flex flex-col items-center gap-5"
+				>
+					{items.map((item) => (
+						<div key={item.href} className="flex flex-col items-center gap-2">
+							<NavButton
+								label={item.label}
+								href={item.href}
+								tone="onDark"
+								active={activeHref === item.href}
+								onClick={() => onSelect?.(item.href)}
+							/>
+							{item.children && item.children.length > 0 && (
+								<ul className="flex flex-col items-center gap-1.5">
+									{item.children.map((child) => (
+										<li key={child.href}>
+											<Link
+												href={child.href}
+												onClick={() => onSelect?.(child.href)}
+												aria-current={
+													activeHref === child.href ? "page" : undefined
+												}
+												className={cn(
+													"font-display text-caption lowercase leading-none text-paper/70 transition-colors hover:text-paper focus-visible:text-paper focus-visible:outline-none",
+													activeHref === child.href &&
+														"font-semibold text-paper",
+												)}
+											>
+												{child.label}
+											</Link>
+										</li>
+									))}
+								</ul>
+							)}
+						</div>
+					))}
+					<ContactButton
+						label={cta.label}
+						href={cta.href}
+						tone="bleu"
+						active={activeHref === cta.href}
+						onClick={() => onSelect?.(cta.href)}
+					/>
+				</nav>
 
-			{/* Logo — centred, below the entries (node `logo_header` @ y≈467 → ~62px gap). */}
-			<Link
-				href={brandHref}
-				onClick={() => onSelect?.(brandHref)}
-				aria-label="Estuaire — accueil"
-				className="mt-[62px] flex justify-center text-paper focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-estuaire"
-			>
-				{logo ?? <BrandLogo />}
-			</Link>
+				{/* Logo — centred, below the entries (node `logo_header` @ y≈467 → ~62px gap). */}
+				<Link
+					href={brandHref}
+					onClick={() => onSelect?.(brandHref)}
+					aria-label="Estuaire — accueil"
+					className="mt-[62px] flex justify-center text-paper focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-estuaire"
+				>
+					{logo ?? <BrandLogo />}
+				</Link>
+			</div>
 		</div>
 	);
 }

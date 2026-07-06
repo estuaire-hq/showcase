@@ -13,6 +13,10 @@ project-vs-local frontier rule.
 - [[0004-content-images-in-sanity]] — content images live in Sanity; Figma images are regenerable refs; DS takes a resolved `src`
 - [[0005-connected-components-for-global-sanity-content]] — DS stays presentational; global/singleton content loaded by connected Server Components in `src/components/`
 - [[0012-about-page-build-decisions]] — « Nous découvrir » build: maquette-driven deviations (hero outline/fill + eyebrow, CTA before big image, steps stacked vs carousel, inline statement, shared `imageField`/`mapImage`)
+- [[0025-seo-metadata-structured-data-and-off-page]] — SEO: `buildMetadata` + canonicals/OG/Twitter, JSON-LD (Organization+LocalBusiness/WebSite/Breadcrumb/CreativeWork), dynamic sitemap, generated default OG, off-page cadrage
+
+## SEO
+- [[seo-off-page-action-plan]] — off-page action plan (dated): agent-automated vs Pierre-manual (GSC/Bing, Google Business Profile ready-to-paste, netlinking, `sameAs`)
 
 ## Design
 - [[motion-cinematics]] — the deliberate animation pattern (→ `estuaire-motion` skill)

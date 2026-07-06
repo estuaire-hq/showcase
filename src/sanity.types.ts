@@ -2088,10 +2088,11 @@ export type REALISATION_QUERY_RESULT = {
 
 // Source: src/lib/sanity/queries.ts
 // Variable: REALISATION_SLUGS_QUERY
-// Query: *[_type == "realisation" && status == "published"] | order(order desc, publishedAt desc){    "slug": slug.current,    title  }
+// Query: *[_type == "realisation" && status == "published"] | order(order desc, publishedAt desc){    "slug": slug.current,    title,    _updatedAt  }
 export type REALISATION_SLUGS_QUERY_RESULT = Array<{
   slug: string | null;
   title: string | null;
+  _updatedAt: string;
 }>;
 
 // Source: src/lib/sanity/queries.ts
@@ -2326,7 +2327,7 @@ declare module "@sanity/client" {
     '\n  *[_type == "sectorDetail" && slug.current == $slug][0]{\n    title,\n    "slug": slug.current,\n    heroEyebrow,\n    heroTitleOutline,\n    heroTitleFill,\n    heroImage{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introStatement,\n    introText,\n    introImageMain{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introImagePortrait{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    introImageSquare{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    enjeuxTitleOutline,\n    enjeuxTitleFill,\n    enjeux,\n    contraintesTitleOutline,\n    contraintesTitleFill,\n    contraintes[]{ label, emphasis },\n    argument,\n    citations[]{\n      quote,\n      attribution,\n      image{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n    },\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': SECTOR_DETAIL_QUERY_RESULT;
     '\n  *[_type == "realisation" && status in ["published","upcoming"]] | order(order desc, publishedAt desc){\n    "slug": slug.current,\n    title,\n    client,\n    status,\n    univers,\n    expertises,\n    location,\n    year,\n    area,\n    cover{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n  }\n': REALISATIONS_LIST_QUERY_RESULT;
     '\n  *[_type == "realisation" && slug.current == $slug && status == "published"][0]{\n    "slug": slug.current,\n    title,\n    client,\n    univers,\n    expertises,\n    layout,\n    location,\n    year,\n    area,\n    context,\n    enjeu,\n    interventions,\n    challenges[]{ title, body },\n    skills,\n    photoCredit,\n    cover{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    gallery[]{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip },\n    seoMetaTitle,\n    seoMetaDescription,\n    seoOgImage{ asset, alt }\n  }\n': REALISATION_QUERY_RESULT;
-    '\n  *[_type == "realisation" && status == "published"] | order(order desc, publishedAt desc){\n    "slug": slug.current,\n    title\n  }\n': REALISATION_SLUGS_QUERY_RESULT;
+    '\n  *[_type == "realisation" && status == "published"] | order(order desc, publishedAt desc){\n    "slug": slug.current,\n    title,\n    _updatedAt\n  }\n': REALISATION_SLUGS_QUERY_RESULT;
     '\n  *[_type == "realisation" && status == "published"] | order(order desc, publishedAt desc)[0...6]{\n    "slug": slug.current,\n    title,\n    client,\n    location,\n    year,\n    area,\n    cover{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n  }\n': LATEST_REALISATIONS_QUERY_RESULT;
     '\n  *[_type == "realisation" && status == "published" && $expertise in expertises]\n    | order(order desc, publishedAt desc)[0]{\n    "slug": slug.current,\n    title,\n    location,\n    year,\n    area,\n    cover{ asset, hotspot, crop, alt, "lqip": asset->metadata.lqip }\n  }\n': EXPERTISE_LATEST_REALISATION_QUERY_RESULT;
     '\n  *[_id == "footer"][0]{\n    ctaTitleOutline,\n    ctaTitleFill,\n    ctaButtonLabel,\n    ctaButtonHref,\n    ctaImages[]{\n      asset,\n      hotspot,\n      crop,\n      alt,\n      "lqip": asset->metadata.lqip\n    },\n    tagline,\n    address,\n    contactHref,\n    linkedInUrl,\n    plaquetteLabel,\n    "plaquetteUrl": plaquetteFile.asset->url,\n    navLinks[]{ label, href },\n    legalLinks[]{ label, href }\n  }\n': FOOTER_QUERY_RESULT;

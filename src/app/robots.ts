@@ -1,14 +1,14 @@
 import type { MetadataRoute } from "next";
+import { absoluteUrl } from "@/lib/seo/config";
 
 export default function robots(): MetadataRoute.Robots {
-	const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://estuaire.fr";
-
 	return {
 		rules: {
 			userAgent: "*",
 			allow: "/",
 			disallow: ["/studio/", "/api/", "/lab/"],
 		},
-		sitemap: `${siteUrl}/sitemap.xml`,
+		sitemap: absoluteUrl("/sitemap.xml"),
+		host: absoluteUrl("/"),
 	};
 }

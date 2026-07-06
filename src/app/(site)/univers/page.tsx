@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { BrandText, FeatureBlock, PageHero } from "@/design-system";
 import { getSectorsPageProps } from "@/lib/sanity/sectorsPage";
+import { buildMetadata } from "@/lib/seo/metadata";
 import { cn } from "@/lib/utils";
 
 // « Univers » is page-specific content (Principle VIII): this RSC is the connector — it
@@ -25,17 +26,12 @@ function sectorSlug(href: string, label: string): string {
 
 export async function generateMetadata(): Promise<Metadata> {
 	const { seo } = await getSectorsPageProps();
-	return {
+	return buildMetadata({
 		title: seo.metaTitle,
 		description: seo.metaDescription,
-		openGraph: {
-			title: seo.metaTitle,
-			description: seo.metaDescription,
-			images: seo.ogImage
-				? [{ url: seo.ogImage.src, alt: seo.ogImage.alt }]
-				: undefined,
-		},
-	};
+		path: "/univers",
+		image: seo.ogImage,
+	});
 }
 
 export default async function UniversPage() {

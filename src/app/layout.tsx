@@ -3,7 +3,15 @@ import { Montserrat, Montserrat_Alternates } from "next/font/google";
 import { draftMode } from "next/headers";
 import Script from "next/script";
 import { VisualEditing } from "next-sanity/visual-editing";
+import { JsonLd } from "@/components/JsonLd";
 import { SanityLive } from "@/lib/sanity/live";
+import {
+	DEFAULT_DESCRIPTION,
+	SITE_LOCALE,
+	SITE_NAME,
+	SITE_URL,
+} from "@/lib/seo/config";
+import { organizationJsonLd, websiteJsonLd } from "@/lib/seo/jsonld";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -27,11 +35,23 @@ const umamiScriptUrl = process.env.UMAMI_SCRIPT_URL;
 const umamiWebsiteId = process.env.UMAMI_WEBSITE_ID;
 
 export const metadata: Metadata = {
+	// Resolves relative canonical / OG URLs to absolute (per-page `alternates.canonical`,
+	// `openGraph.url`) and the default `opengraph-image` to an absolute URL.
+	metadataBase: new URL(SITE_URL),
 	title: {
-		default: "Estuaire",
-		template: "%s | Estuaire",
+		default: SITE_NAME,
+		template: `%s | ${SITE_NAME}`,
 	},
-	description: "Estuaire — par Mosaique Production",
+	description: DEFAULT_DESCRIPTION,
+	// Site-wide OG/Twitter defaults; per-page `buildMetadata` fills title/description/image.
+	openGraph: {
+		type: "website",
+		siteName: SITE_NAME,
+		locale: SITE_LOCALE,
+	},
+	twitter: {
+		card: "summary_large_image",
+	},
 };
 
 export const viewport: Viewport = {
@@ -75,6 +95,10 @@ export default async function RootLayout({
 							"(function(){try{if(location.pathname==='/'&&!matchMedia('(prefers-reduced-motion: reduce)').matches){if('scrollRestoration' in history)history.scrollRestoration='manual';window.scrollTo(0,0);var s=document.createElement('style');s.textContent='html[data-hero-entry]::before{content:\"\";position:fixed;inset:0;z-index:100;background:#0e1215;pointer-events:none}';(document.head||document.documentElement).appendChild(s);var e=document.documentElement;e.setAttribute('data-hero-entry','pending');setTimeout(function(){e.removeAttribute('data-hero-entry')},4000)}}catch(_){}})()",
 					}}
 				/>
+				{/* Global structured data: the company (Organization + LocalBusiness, one
+				    entity) and the WebSite — present on every page for the knowledge panel. */}
+				<JsonLd data={organizationJsonLd()} />
+				<JsonLd data={websiteJsonLd()} />
 				{children}
 				{umamiScriptUrl && umamiWebsiteId && (
 					<Script

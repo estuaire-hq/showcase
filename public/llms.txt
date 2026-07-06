@@ -1,0 +1,33 @@
+# Estuaire
+
+> Estuaire (nom commercial de MOSAIQUE PRODUCTION, SAS) est un agenceur-concepteur français qui conçoit et fabrique, dans son propre atelier, de l'agencement, du mobilier et des présentoirs sur mesure.
+
+Full-service, de l'analyse à l'installation multisite : analyse du besoin, co-conception, co-construction en atelier, installation et SAV. Estuaire intervient pour la banque et l'assurance, la culture, la mode, la beauté et le soin, les spiritueux, la joaillerie, l'optique, les parfums, le retail, le bureau, le résidentiel et la scénographie. Atelier et siège à Machecoul-Saint-Même (Loire-Atlantique, France).
+
+## Pages principales
+
+- [Accueil](https://estuaire.fr/): présentation d'Estuaire, expertises, univers et dernières réalisations.
+- [Nous découvrir](https://estuaire.fr/nous-decouvrir): l'entreprise, la vision, l'atelier et le mode opératoire.
+- [Expertises](https://estuaire.fr/expertises): les trois niveaux d'expertise (agencement, mobilier, présentoirs).
+- [Univers](https://estuaire.fr/univers): les secteurs d'intervention (retail, bureau, résidentiel, scénographie).
+- [Réalisations](https://estuaire.fr/realisations): portfolio des projets conçus, fabriqués et déployés.
+- [Contact](https://estuaire.fr/contact): formulaire, coordonnées et localisation de l'atelier.
+
+## Expertises
+
+- [Agencement sur-mesure](https://estuaire.fr/expertises/agencement-sur-mesure): conception et fabrication d'espaces sur mesure.
+- [Mobilier sur-mesure](https://estuaire.fr/expertises/mobiliers-sur-mesure): mobilier conçu et fabriqué en atelier.
+- [Présentoirs sur-mesure](https://estuaire.fr/expertises/presentoirs-sur-mesure): présentoirs et PLV sur mesure.
+
+## Univers
+
+- [Retail](https://estuaire.fr/univers/retail)
+- [Bureau](https://estuaire.fr/univers/bureau)
+- [Résidentiel](https://estuaire.fr/univers/residentiel)
+- [Scénographie](https://estuaire.fr/univers/scenographie)
+
+## Informations
+
+- [Mentions légales](https://estuaire.fr/mentions-legales)
+- [Politique de confidentialité](https://estuaire.fr/confidentialite)
+- [Plan du site (XML)](https://estuaire.fr/sitemap.xml)

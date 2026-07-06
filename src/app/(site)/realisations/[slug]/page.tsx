@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { JsonLd } from "@/components/JsonLd";
 import {
 	Arrow,
 	BrandText,
@@ -12,6 +13,8 @@ import {
 	SectionTitle,
 } from "@/design-system";
 import { getRealisationProps } from "@/lib/sanity/realisation";
+import { breadcrumbJsonLd, realisationJsonLd } from "@/lib/seo/jsonld";
+import { buildMetadata } from "@/lib/seo/metadata";
 import { cn, umamiAttrs } from "@/lib/utils";
 
 // Page détail d'une réalisation (« réalisations / <projet> ») — RSC connecteur (Principe VIII) :
@@ -48,17 +51,13 @@ export async function generateMetadata(props: {
 	const data = await getRealisationProps(slug);
 	if (!data) return {};
 	const { seo } = data;
-	return {
+	return buildMetadata({
 		title: seo.metaTitle,
 		description: seo.metaDescription,
-		openGraph: {
-			title: seo.metaTitle,
-			description: seo.metaDescription,
-			images: seo.ogImage
-				? [{ url: seo.ogImage.src, alt: seo.ogImage.alt }]
-				: undefined,
-		},
-	};
+		path: `/realisations/${slug}`,
+		image: seo.ogImage,
+		type: "article",
+	});
 }
 
 export default async function RealisationDetailPage(props: {
@@ -93,6 +92,23 @@ export default async function RealisationDetailPage(props: {
 			data-nav-links-tone="onLight"
 			data-nav-toggle-tone="onLight"
 		>
+			{/* Structured data: breadcrumb trail + the réalisation as a CreativeWork. */}
+			<JsonLd
+				data={breadcrumbJsonLd([
+					{ name: "Accueil", path: "/" },
+					{ name: "réalisations", path: "/realisations" },
+					{ name: title, path: `/realisations/${slug}` },
+				])}
+			/>
+			<JsonLd
+				data={realisationJsonLd({
+					slug,
+					title,
+					description: data.seo.metaDescription,
+					image: cover?.src,
+					client: data.client,
+				})}
+			/>
 			{/* 1 — Hero (02/ SLIDER) : fil d'ariane (sur blanc) + image quasi pleine largeur (marges
 			    ~3.2%) avec voile 25% + titre/méta blancs superposés en bas-gauche. Maquette 51:4386. */}
 			<section className="bg-paper pt-28 lg:pt-[160px]">

@@ -7,6 +7,7 @@ import {
 	SectionTitle,
 } from "@/design-system";
 import { getRealisationListProps } from "@/lib/sanity/realisation";
+import { buildMetadata } from "@/lib/seo/metadata";
 import { umamiAttrs } from "@/lib/utils";
 import { RealisationsBrowser } from "./RealisationsBrowser";
 
@@ -20,11 +21,12 @@ import { RealisationsBrowser } from "./RealisationsBrowser";
 
 const CONTAINER = "mx-auto w-full max-w-[1920px] px-5 md:px-10 lg:px-[7.29%]";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
 	title: "Réalisations",
 	description:
 		"Le portfolio d'Estuaire : agencement, mobilier et présentoirs sur mesure pour la banque, la culture, la mode, la beauté, les spiritueux et plus.",
-};
+	path: "/realisations",
+});
 
 type SearchParams = {
 	univers?: string | string[];

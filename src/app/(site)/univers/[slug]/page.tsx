@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { JsonLd } from "@/components/JsonLd";
 import {
 	BrandText,
 	Breadcrumb,
@@ -11,6 +12,8 @@ import {
 } from "@/design-system";
 import { Parallax } from "@/lib/motion/Parallax";
 import { getSectorDetailProps } from "@/lib/sanity/sectorDetail";
+import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
+import { buildMetadata } from "@/lib/seo/metadata";
 import { cn } from "@/lib/utils";
 
 // Sector detail page (« univers / <Secteur> ») — the generic template the four sectors
@@ -36,17 +39,12 @@ export async function generateMetadata(props: {
 	const data = await getSectorDetailProps(slug);
 	if (!data) return {};
 	const { seo } = data;
-	return {
+	return buildMetadata({
 		title: seo.metaTitle,
 		description: seo.metaDescription,
-		openGraph: {
-			title: seo.metaTitle,
-			description: seo.metaDescription,
-			images: seo.ogImage
-				? [{ url: seo.ogImage.src, alt: seo.ogImage.alt }]
-				: undefined,
-		},
-	};
+		path: `/univers/${slug}`,
+		image: seo.ogImage,
+	});
 }
 
 export default async function SectorDetailPage(props: {
@@ -64,6 +62,14 @@ export default async function SectorDetailPage(props: {
 			data-nav-links-tone="onLight"
 			data-nav-toggle-tone="onDark"
 		>
+			{/* Breadcrumb structured data — mirrors the visible trail (Accueil → univers → …). */}
+			<JsonLd
+				data={breadcrumbJsonLd([
+					{ name: "Accueil", path: "/" },
+					{ name: "univers", path: "/univers" },
+					{ name: title, path: `/univers/${slug}` },
+				])}
+			/>
 			{/* 1 — Hero (split: dark cartouche + breadcrumb + image), full screen height. */}
 			<PageHero
 				variant="split"

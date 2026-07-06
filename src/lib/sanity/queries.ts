@@ -242,11 +242,14 @@ export const REALISATION_QUERY = defineQuery(/* groq */ `
   }
 `);
 
-// Liste ordonnée des slugs publiés — sert à calculer les voisins précédent/suivant (bornés).
+// Liste ordonnée des slugs publiés — sert à calculer les voisins précédent/suivant (bornés)
+// ET à alimenter le sitemap (`_updatedAt` → lastModified). Le champ supplémentaire est ignoré
+// par la nav voisins.
 export const REALISATION_SLUGS_QUERY = defineQuery(/* groq */ `
   *[_type == "realisation" && status == "published"] | order(order desc, publishedAt desc){
     "slug": slug.current,
-    title
+    title,
+    _updatedAt
   }
 `);
 

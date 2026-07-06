@@ -11,6 +11,7 @@ import { CaseStudies } from "@/lib/motion/CaseStudies";
 import { Parallax } from "@/lib/motion/Parallax";
 import { getHomePageProps } from "@/lib/sanity/homePage";
 import { getLatestRealisations } from "@/lib/sanity/realisation";
+import { buildMetadata } from "@/lib/seo/metadata";
 import { cn } from "@/lib/utils";
 import { HomeHero } from "./_components/HomeHero";
 
@@ -26,18 +27,14 @@ const universHref = (label: string) =>
 
 export async function generateMetadata(): Promise<Metadata> {
 	const { seo } = await getHomePageProps();
-	return {
+	return buildMetadata({
 		// Absolute → bypass the root "%s | Estuaire" template for the home (FR-014).
-		title: { absolute: seo.metaTitle },
+		title: seo.metaTitle,
+		absoluteTitle: true,
 		description: seo.metaDescription,
-		openGraph: {
-			title: seo.metaTitle,
-			description: seo.metaDescription,
-			images: seo.ogImage
-				? [{ url: seo.ogImage.src, alt: seo.ogImage.alt }]
-				: undefined,
-		},
-	};
+		path: "/",
+		image: seo.ogImage,
+	});
 }
 
 export default async function HomePage() {

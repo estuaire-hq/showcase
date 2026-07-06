@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { JsonLd } from "@/components/JsonLd";
 import { EXPERTISE_SLUGS } from "@/content/expertiseSubpages";
 import {
 	BrandText,
@@ -14,6 +15,8 @@ import {
 import { getExpertiseSubpageProps } from "@/lib/sanity/expertiseSubpage";
 import type { ResolvedImage } from "@/lib/sanity/mapImage";
 import { getLatestRealisationForExpertise } from "@/lib/sanity/realisation";
+import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
+import { buildMetadata } from "@/lib/seo/metadata";
 import { cn, umamiAttrs } from "@/lib/utils";
 
 // Expertise sub-pages are page-specific content (Principle VIII): this dynamic RSC is the
@@ -44,17 +47,12 @@ export async function generateMetadata({
 	const props = await getExpertiseSubpageProps(expertise);
 	if (!props) return {};
 	const { seo } = props;
-	return {
+	return buildMetadata({
 		title: seo.metaTitle,
 		description: seo.metaDescription,
-		openGraph: {
-			title: seo.metaTitle,
-			description: seo.metaDescription,
-			images: seo.ogImage
-				? [{ url: seo.ogImage.src, alt: seo.ogImage.alt }]
-				: undefined,
-		},
-	};
+		path: `/expertises/${expertise}`,
+		image: seo.ogImage,
+	});
 }
 
 /** A content image. Positioning (relative/absolute + box) comes from `className`. Graceful
@@ -119,6 +117,16 @@ export default async function ExpertiseSubpage({
 			data-nav-links-tone="onDark"
 			data-nav-toggle-tone="onDark"
 		>
+			{/* Breadcrumb structured data — mirrors the visible trail (Accueil → Expertises → …). */}
+			<JsonLd
+				data={breadcrumbJsonLd([
+					{ name: "Accueil", path: "/" },
+					...breadcrumb.items.map((it) => ({
+						name: it.label,
+						path: it.href ?? `/expertises/${slug}`,
+					})),
+				])}
+			/>
 			{/* 1 — Hero (02/ SLIDER): full-bleed visual + breadcrumb + dark title cartouche */}
 			<PageHero
 				eyebrow={hero.eyebrow}

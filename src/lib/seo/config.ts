@@ -45,7 +45,7 @@ export const LOGO_PATH = "/icon.svg";
  */
 export const DEFAULT_OG_IMAGE = {
 	url: "/opengraph-image",
-	alt: `${SITE_NAME} — agencement, mobilier et présentoirs sur mesure`,
+	alt: `${SITE_NAME} : agencement, mobilier et présentoirs sur mesure`,
 	width: 1200,
 	height: 630,
 } as const;

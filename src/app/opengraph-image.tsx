@@ -6,7 +6,7 @@ import { SITE_NAME } from "@/lib/seo/config";
 // the OG image for every route; `buildMetadata` only overrides it when a CMS image exists.
 // Rendered once at build (no params) → the Google font fetch happens at build, not per request.
 
-export const alt = `${SITE_NAME} — agencement, mobilier et présentoirs sur mesure`;
+export const alt = `${SITE_NAME} : agencement, mobilier et présentoirs sur mesure`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

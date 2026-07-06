@@ -11,6 +11,7 @@ import {
 import { Parallax } from "@/lib/motion/Parallax";
 import { getAboutPageProps } from "@/lib/sanity/aboutPage";
 import type { ResolvedImage } from "@/lib/sanity/mapImage";
+import { buildMetadata } from "@/lib/seo/metadata";
 import { cn } from "@/lib/utils";
 
 // « Nous découvrir » is page-specific content (Principle VIII): this RSC is the
@@ -33,17 +34,12 @@ import { cn } from "@/lib/utils";
 
 export async function generateMetadata(): Promise<Metadata> {
 	const { seo } = await getAboutPageProps();
-	return {
+	return buildMetadata({
 		title: seo.metaTitle,
 		description: seo.metaDescription,
-		openGraph: {
-			title: seo.metaTitle,
-			description: seo.metaDescription,
-			images: seo.ogImage
-				? [{ url: seo.ogImage.src, alt: seo.ogImage.alt }]
-				: undefined,
-		},
-	};
+		path: "/nous-decouvrir",
+		image: seo.ogImage,
+	});
 }
 
 /** A content image. Positioning (relative/absolute + box) comes entirely from

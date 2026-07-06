@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { BrandText, OutlineText } from "@/design-system";
 import { getContactPageProps } from "@/lib/sanity/contactPage";
+import { buildMetadata } from "@/lib/seo/metadata";
 import { cn, umamiAttrs } from "@/lib/utils";
 import { ContactForm } from "./ContactForm";
 import { ContactMap } from "./ContactMap";
@@ -17,17 +18,12 @@ import { ContactMap } from "./ContactMap";
 
 export async function generateMetadata(): Promise<Metadata> {
 	const { seo } = await getContactPageProps();
-	return {
+	return buildMetadata({
 		title: seo.metaTitle,
 		description: seo.metaDescription,
-		openGraph: {
-			title: seo.metaTitle,
-			description: seo.metaDescription,
-			images: seo.ogImage
-				? [{ url: seo.ogImage.src, alt: seo.ogImage.alt }]
-				: undefined,
-		},
-	};
+		path: "/contact",
+		image: seo.ogImage,
+	});
 }
 
 const CONTAINER = "mx-auto w-full max-w-[1920px] px-5 md:px-10 lg:px-[7.29%]";

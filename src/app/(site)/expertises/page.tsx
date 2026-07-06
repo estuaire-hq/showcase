@@ -11,6 +11,7 @@ import {
 import { Parallax } from "@/lib/motion/Parallax";
 import { getExpertisesPageProps } from "@/lib/sanity/expertisesPage";
 import type { ResolvedImage } from "@/lib/sanity/mapImage";
+import { buildMetadata } from "@/lib/seo/metadata";
 import { cn } from "@/lib/utils";
 
 // « Expertises » is page-specific content (Principle VIII): this RSC is the connector — it
@@ -26,17 +27,12 @@ import { cn } from "@/lib/utils";
 
 export async function generateMetadata(): Promise<Metadata> {
 	const { seo } = await getExpertisesPageProps();
-	return {
+	return buildMetadata({
 		title: seo.metaTitle,
 		description: seo.metaDescription,
-		openGraph: {
-			title: seo.metaTitle,
-			description: seo.metaDescription,
-			images: seo.ogImage
-				? [{ url: seo.ogImage.src, alt: seo.ogImage.alt }]
-				: undefined,
-		},
-	};
+		path: "/expertises",
+		image: seo.ogImage,
+	});
 }
 
 /** A content image. Positioning (relative/absolute + box) comes entirely from `className`

@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
 import { confidentialite } from "@/content/legal/confidentialite";
 import { LegalPage } from "@/design-system";
+import { buildMetadata } from "@/lib/seo/metadata";
 
 // Static legal page (content lives in `src/content/legal/`, no Sanity): the RSC is a
 // thin connector that renders the design-system `<LegalPage>`.
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
 	title: "Politique de confidentialité",
 	description:
 		"Politique de confidentialité du site Estuaire : données collectées, finalités, durées de conservation, vos droits (RGPD).",
-};
+	path: "/confidentialite",
+});
 
 export default function ConfidentialitePage() {
 	return (

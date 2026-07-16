@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
 	EXPERTISE_LABELS,
 	type ExpertiseSlug,
@@ -28,26 +28,28 @@ type Dimension = "univers" | "expertises" | "clients";
 
 export function RealisationsBrowser({
 	items,
-	initialUnivers,
-	initialExpertise,
 }: {
 	items: RealisationListItem[];
-	initialUnivers?: string;
-	initialExpertise?: string;
 }) {
-	const [univers, setUnivers] = useState<string | null>(
-		initialUnivers && (UNIVERS as readonly string[]).includes(initialUnivers)
-			? initialUnivers
-			: null,
-	);
-	const [expertise, setExpertise] = useState<string | null>(
-		initialExpertise && EXPERTISE_LABELS[initialExpertise as ExpertiseSlug]
-			? initialExpertise
-			: null,
-	);
+	const [univers, setUnivers] = useState<string | null>(null);
+	const [expertise, setExpertise] = useState<string | null>(null);
 	const [client, setClient] = useState<string | null>(null);
 	const [open, setOpen] = useState<Dimension | null>(null);
 	const [shown, setShown] = useState(PAGE);
+
+	// Deep-link initial filter read from the URL AFTER mount (?univers= / ?expertise=), so the
+	// list page stays statically prerendered (no server-side `searchParams` read → no per-visit
+	// Sanity request). Home & expertise sub-pages link here with a pre-selected filter. Reading
+	// in an effect (rather than `useSearchParams`) keeps the initial render identical on server
+	// and client → no hydration mismatch and no Suspense boundary; the filter applies one frame
+	// after mount.
+	useEffect(() => {
+		const params = new URLSearchParams(window.location.search);
+		const u = params.get("univers");
+		if (u && (UNIVERS as readonly string[]).includes(u)) setUnivers(u);
+		const e = params.get("expertise");
+		if (e && EXPERTISE_LABELS[e as ExpertiseSlug]) setExpertise(e);
+	}, []);
 
 	const clients = useMemo(
 		() =>

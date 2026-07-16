@@ -18,6 +18,11 @@ import { RealisationsBrowser } from "./RealisationsBrowser";
 // composant client `RealisationsBrowser` (filtrage en mémoire, perçu instantané — SC-004).
 // Revue pixel-perfect desktop faite (T030) ; responsive tablette/mobile UNVERIFIED (maquettes
 // desktop only).
+//
+// Prérendu STATIQUE (ISR) : la page ne lit PAS `searchParams` côté serveur (ce qui la rendrait
+// dynamique et déclencherait une requête Sanity par visite). Le deep-link `?univers=`/`?expertise=`
+// (home & sous-pages expertises) est lu côté client par `RealisationsBrowser` après montage, ce
+// qui préserve la grille prérendue dans le HTML statique. Rafraîchie par le webhook (tag « sanity »).
 
 const CONTAINER = "mx-auto w-full max-w-[1920px] px-5 md:px-10 lg:px-[7.29%]";
 
@@ -28,24 +33,8 @@ export const metadata: Metadata = buildMetadata({
 	path: "/realisations",
 });
 
-type SearchParams = {
-	univers?: string | string[];
-	expertise?: string | string[];
-};
-
-/** Next resolves a query value as string | string[] (duplicated param) — take the first. */
-const firstParam = (v: string | string[] | undefined) =>
-	Array.isArray(v) ? v[0] : v;
-
-export default async function RealisationsPage(props: {
-	searchParams: Promise<SearchParams>;
-}) {
-	const [sp, items] = await Promise.all([
-		props.searchParams,
-		getRealisationListProps(),
-	]);
-	const univers = firstParam(sp.univers);
-	const expertise = firstParam(sp.expertise);
+export default async function RealisationsPage() {
+	const items = await getRealisationListProps();
 	const latest = items.filter((i) => i.status === "published").slice(0, 3);
 
 	return (
@@ -147,11 +136,7 @@ export default async function RealisationsPage(props: {
 					/>
 					<div className="mt-6 h-[3px] w-full bg-ink lg:mt-8" />
 					<div className="mt-8 lg:mt-12">
-						<RealisationsBrowser
-							items={items}
-							initialUnivers={univers}
-							initialExpertise={expertise}
-						/>
+						<RealisationsBrowser items={items} />
 					</div>
 				</div>
 			</section>

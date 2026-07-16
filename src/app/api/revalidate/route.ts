@@ -20,15 +20,16 @@ export async function POST(request: NextRequest) {
 			);
 		}
 
-		// defineLive attaches a parent "sanity" tag to every sanityFetch call.
-		// Revalidating it invalidates all Sanity-backed caches at once — simplest
-		// and safest approach for a small site.
-		//
-		// Next 16 requires the two-argument form. The "max" profile gives
-		// stale-while-revalidate semantics (published content may be served stale
-		// for a brief moment while it refreshes) — the right fit for a webhook on a
-		// showcase site (vs "updateTag", which is for read-your-writes Server Actions).
-		revalidateTag("sanity", "max");
+		// Every `sanityFetch` tags its cache entries with a stable "sanity" tag (see
+		// `@/lib/sanity/live`), on top of the per-result `sanity:<syncTag>` tags that
+		// `defineLive` adds automatically. Revalidating that one tag invalidates every
+		// Sanity-backed page at once — the simplest reliable model for a small showcase
+		// site: any publish → all pages refetch ONCE on their next request, then re-cache
+		// (no per-load fetching; Sanity request volume tracks editorial frequency, not
+		// traffic). Next 16 requires the two-argument form; `{ expire: 0 }` = immediate
+		// expiry, so the next request serves fresh content (vs a `cacheLife` profile like
+		// "max", which would serve stale content once more before refreshing).
+		revalidateTag("sanity", { expire: 0 });
 
 		return Response.json({
 			revalidated: true,

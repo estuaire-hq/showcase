@@ -154,6 +154,25 @@ export type RealisationDetailProps = NonNullable<
 	Awaited<ReturnType<typeof getRealisationProps>>
 >;
 
+/**
+ * Slugs des réalisations publiées — alimente `generateStaticParams` pour prérendre chaque
+ * page détail (ISR statique, servie depuis le cache → 0 requête Sanity par visite). Une
+ * réalisation publiée après le build est rendue à la demande une fois (dynamicParams par
+ * défaut), puis mise en cache ; la fraîcheur passe ensuite par le webhook de revalidation.
+ */
+export async function getPublishedRealisationSlugs(): Promise<string[]> {
+	// `perspective`/`stega` are passed explicitly so this can run inside `generateStaticParams`
+	// (build time, no request context): otherwise `defineLive`'s `sanityFetch` calls `draftMode()`
+	// to resolve them, which throws in `generateStaticParams`. Published-only = exactly what we
+	// prerender (the page render itself may still call `draftMode()` — that IS allowed).
+	const { data } = await sanityFetch({
+		query: REALISATION_SLUGS_QUERY,
+		perspective: "published",
+		stega: false,
+	});
+	return (data ?? []).map((r) => r.slug).filter((s): s is string => Boolean(s));
+}
+
 // — Demock (US3) — réalisations « plus récentes » pour la home + les sous-pages d'expertises.
 
 /** Les `limit` réalisations publiées les plus récentes (home : cartes + visuels — FR-023). */

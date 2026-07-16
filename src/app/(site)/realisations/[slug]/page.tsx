@@ -12,7 +12,10 @@ import {
 	type PillEmphasis,
 	SectionTitle,
 } from "@/design-system";
-import { getRealisationProps } from "@/lib/sanity/realisation";
+import {
+	getPublishedRealisationSlugs,
+	getRealisationProps,
+} from "@/lib/sanity/realisation";
 import { breadcrumbJsonLd, realisationJsonLd } from "@/lib/seo/jsonld";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { cn, umamiAttrs } from "@/lib/utils";
@@ -24,11 +27,19 @@ import { cn, umamiAttrs } from "@/lib/utils";
 // + carrousel si `fournie`) → nos missions → défis relevés (1→3) → [crédit photo] → savoir-faire,
 // puis navigation précédent/suivant entre réalisations (bornée).
 //
-// Dynamiquement rendu + ISR via `sanityFetch` (tags), pas de `generateStaticParams` (perspective
-// cookie dynamique) — comme `univers/[slug]`. Revue pixel-perfect : hero détail OK (T030) ;
-// reste la composition éditoriale de l'intro + responsive tablette/mobile (UNVERIFIED).
+// Prérendu STATIQUE (ISR) : `generateStaticParams` liste les réalisations publiées → chaque
+// détail est servi depuis le cache (0 requête Sanity par visite), et rafraîchi uniquement par
+// le webhook de revalidation à la publication (tag « sanity », voir `@/lib/sanity/live`). Une
+// réalisation publiée après le build est rendue à la demande une fois (dynamicParams par
+// défaut), puis mise en cache. Revue pixel-perfect : hero détail OK (T030) ; reste la
+// composition éditoriale de l'intro + responsive tablette/mobile (UNVERIFIED).
 
 const CONTAINER = "mx-auto w-full max-w-[1920px] px-5 md:px-10 lg:px-[7.29%]";
+
+export async function generateStaticParams(): Promise<{ slug: string }[]> {
+	const slugs = await getPublishedRealisationSlugs();
+	return slugs.map((slug) => ({ slug }));
+}
 
 /**
  * « Savoir-faire mobilisés » pill emphasis — a deterministic visual rhythm so SOME chips are

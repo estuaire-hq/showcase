@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/JsonLd";
+import { SECTOR_SLUGS } from "@/content/sectorDetail";
 import {
 	BrandText,
 	Breadcrumb,
@@ -22,13 +23,19 @@ import { cn } from "@/lib/utils";
 // in `@/lib/sanity/sectorDetail.ts`) and composes the design-system components. Source of
 // truth: Figma desktop nodes 51:3520/3661/3797/3929 (responsive adapted per breakpoint).
 //
-// Dynamically rendered + ISR-cached via `sanityFetch` (cache tags, revalidated by the
-// Sanity webhook) — same model as the other site pages (Principle I); an unknown slug
-// resolves to `null` → `notFound()` at request time (FR-009). No `generateStaticParams`:
-// `sanityFetch` reads the perspective cookie (dynamic), so a build-time prerender is
-// neither possible nor needed — content edits reflect via revalidation, not a rebuild.
+// Prérendu STATIQUE (ISR) : les quatre univers forment un ensemble fermé (`SECTOR_SLUGS`),
+// donc `generateStaticParams` les prérend tous et `dynamicParams = false` renvoie 404 pour
+// tout autre slug sans le moindre fetch (FR-009). Chaque page est servie depuis le cache
+// (0 requête Sanity par visite) et rafraîchie uniquement par le webhook de revalidation à
+// la publication (tag « sanity », voir `@/lib/sanity/live`).
 
 const CONTAINER = "mx-auto w-full max-w-[1920px] px-5 md:px-10 lg:px-[7.29%]";
+
+export const dynamicParams = false;
+
+export function generateStaticParams(): { slug: string }[] {
+	return SECTOR_SLUGS.map((slug) => ({ slug }));
+}
 
 type Params = { slug: string };
 

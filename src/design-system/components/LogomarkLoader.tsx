@@ -15,9 +15,9 @@ import { cn } from "@/lib/utils";
  * stroke advances, the ribbon fills with clean edges. A SINGLE cursor `p ∈ [0,1]` is
  * spread across the 5 centerline segments PROPORTIONALLY to their length, so one
  * continuous front travels the whole mark from the top-right hook (start) to the
- * bottom-right hook (end) under one ease — never 5 pieces lighting up separately. The
- * path order red→blue is `TOP1↩ → TOP2 → MID → BOT2 → BOT1` (TOP1 reversed to begin at
- * the top-right hook).
+ * bottom-right strand's TIP (end) under one ease — never 5 pieces lighting up separately.
+ * The path order red→blue is `TOP1↩ → TOP2 → MID → BOT2 → BOT1` (TOP1 reversed to begin
+ * at the top-right hook).
  *
  * Pitfalls it avoids (do NOT reintroduce):
  *  1. Stroke "in fill", not an outline — we stroke the CENTERLINE (width 8.4, clipped),
@@ -38,7 +38,9 @@ import { cn } from "@/lib/utils";
  * site entry: traces once in 1s and stays full (ready for the FLIP into the sticky menu).
  */
 
-// --- 5a. The 3 ribbons (fill shapes), unioned into ONE clip. viewBox 0 0 68.5 75 ---
+// --- 5a. The 3 ribbons (fill shapes) + the tail tip, unioned into ONE clip.
+// viewBox 0 0 68.5 75. The union MUST equal the static `BrandLogo` symbol exactly,
+// otherwise the trace can never complete the mark (see the `tail` note below). ---
 const FILLS = [
 	{
 		name: "top",
@@ -51,6 +53,15 @@ const FILLS = [
 	{
 		name: "mid",
 		d: "M53.2208 44.5527C57.1322 44.5527 60.3027 41.406 60.3027 37.5278C60.3027 33.6495 57.1322 30.5029 53.2208 30.5029L11.0238 30.4817C8.45842 30.4817 6.36857 28.5245 6.36857 26.0072C6.36857 23.49 8.45812 21.4395 11.0238 21.4395H14.7756V15.0862L11.0238 15.0742C4.94748 15.0742 0.0212266 19.8831 0.0212266 25.911C0.0212266 31.9389 4.94718 36.8261 11.0238 36.8261L53.2328 36.8473V36.8503C53.6392 36.8503 53.9673 37.1545 53.9673 37.5278C53.9673 37.901 53.6392 38.2053 53.2328 38.2053L11.0025 38.1904C4.92631 38.1904 0 43.0772 0 49.1054C0 55.1336 4.92601 60.0205 11.0025 60.0205L14.7603 60.0086V53.5859H11.0025C8.4372 53.5859 6.34735 51.5354 6.34735 49.0182C6.34735 46.5009 8.4369 44.5377 11.0025 44.5377L53.2208 44.5527Z",
+	},
+	{
+		// The bottom-right strand's TIP (the mark's "tail"). The strand runs behind the
+		// bottom arm and pokes ~3 units above it, so the two ~0.95 crossing gaps leave it a
+		// detached island. It exists in the Figma `logo_header` node and in `BrandLogo`
+		// (appended to its `mid` path); it was MISSING from this clip, so the trace stopped
+		// one bit short of the static logo. BOT1 now runs up into it (see below).
+		name: "tail",
+		d: "M53.1582 52.6367H46.8164V49.6406H53.1582V52.6367Z",
 	},
 ] as const;
 
@@ -128,10 +139,15 @@ const BOT1 = buildPts([
 	{ t: "M", x: 23, y: 56.75 },
 	{ t: "L", x: 57.62, y: 56.7 },
 	{ t: "A", cx: 57.62, cy: 64.29, r: 7.6, a0: 270, a1: 553 },
-]); // ends at the bottom-right hook (BLUE)
+	// … then back UP the hook's leg to the strand's tip (the `tail` fill). The leg runs
+	// BEHIND the bottom arm, so this last run stays masked by the clip (the arm it
+	// re-crosses is already painted) until the front emerges in the tip, so the trace ends
+	// on the complete mark instead of one bit short.
+	{ t: "L", x: 49.99, y: 49.64 },
+]); // ends at the tail tip, above the bottom arm (BLUE)
 
 // One continuous stroke, red → blue: TOP1 reversed (start at top-right hook), then
-// TOP2 → MID → BOT2 → BOT1 (end at the bottom-right hook).
+// TOP2 → MID → BOT2 → BOT1 (end at the bottom-right strand's tip).
 const SEGS = [
 	{ name: "top1r", d: toD(rev(TOP1)) },
 	{ name: "top2", d: toD(TOP2) },

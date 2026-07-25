@@ -85,7 +85,7 @@ export function FeatureBlock({
 			<div className="absolute inset-0 bg-ink/25" />
 			<div
 				className={cn(
-					"relative z-10 flex h-full flex-col justify-center gap-7 px-5 py-12 text-paper md:gap-8 md:px-10 lg:px-[7.29%]",
+					"relative z-10 flex h-full flex-col justify-center gap-7 px-5 py-8 text-paper md:gap-8 md:px-10 md:py-12 lg:px-[7.29%]",
 					contentClassName,
 				)}
 			>

@@ -452,10 +452,14 @@ export default async function AboutPage() {
 						)}
 						<div className="absolute inset-0 bg-ink/25" />
 						<div className="absolute inset-0 z-10 flex items-center justify-center px-6 lg:px-[4.4%]">
+							{/* Long statement over the big visual: step the mobile size down to the
+							    « phrase phare » mobile scale (text-lead-sm, like the HighlightPanels) so
+							    the image stays visible and the sentence fits the band without clipping;
+							    tablet/desktop keep the maquette title scale. */}
 							<Pullquote
 								size="title"
 								align="center"
-								className="tracking-normal text-paper"
+								className="text-lead-sm leading-snug tracking-normal text-paper md:text-title-sm md:leading-[1.1]"
 							>
 								{statement.text}
 							</Pullquote>

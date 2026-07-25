@@ -73,7 +73,7 @@ export function SplitSection({
 				className={cn(
 					"max-w-[40ch] whitespace-pre-line",
 					isVision
-						? "font-sans font-normal text-body leading-relaxed"
+						? "font-sans font-normal text-body-sm leading-relaxed lg:text-body"
 						: "font-display font-semibold text-body leading-snug lg:text-lead",
 				)}
 			>

@@ -61,7 +61,7 @@ export function CaseStudyPanel({
 			<div className="absolute inset-x-4 bottom-[8%] md:inset-x-[11.2%] lg:inset-x-[6.8%]">
 				<h3
 					data-cs-title
-					className="max-w-[18ch] font-display font-semibold text-title-sm leading-[1.1] lg:text-title"
+					className="max-w-[18ch] font-display font-semibold text-subtitle-sm leading-[1.1] md:text-title-sm lg:text-title"
 				>
 					<BrandText>{title}</BrandText>
 				</h3>

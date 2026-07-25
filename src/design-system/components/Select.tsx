@@ -64,7 +64,7 @@ export function Select({
 	return (
 		<div
 			ref={rootRef}
-			className={cn("font-sans text-body text-ink", className)}
+			className={cn("font-sans text-body-sm text-ink lg:text-body", className)}
 		>
 			{name && <input type="hidden" name={name} value={selected} />}
 			<div className={cn("border", invalid ? "border-danger" : "border-ink")}>
@@ -80,7 +80,7 @@ export function Select({
 					onKeyDown={(e) => {
 						if (e.key === "Escape") setOpen(false);
 					}}
-					className="flex h-[50px] w-full items-center justify-between gap-4 px-5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-estuaire focus-visible:ring-inset"
+					className="flex min-h-[50px] w-full items-center justify-between gap-4 px-5 py-2.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-estuaire focus-visible:ring-inset"
 				>
 					<span className={selected ? "" : "text-ink/50"}>
 						{selected || placeholder}
@@ -96,7 +96,7 @@ export function Select({
 								role="option"
 								aria-selected={opt === selected}
 								onClick={() => choose(opt)}
-								className="flex h-[55px] w-full items-center px-5 text-left transition-colors duration-200 hover:bg-estuaire hover:text-paper focus-visible:bg-estuaire focus-visible:text-paper focus-visible:outline-none aria-selected:font-semibold"
+								className="flex min-h-[55px] w-full items-center px-5 py-2.5 text-left leading-tight transition-colors duration-200 hover:bg-estuaire hover:text-paper focus-visible:bg-estuaire focus-visible:text-paper focus-visible:outline-none aria-selected:font-semibold"
 							>
 								{opt}
 							</button>

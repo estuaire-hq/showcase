@@ -12,7 +12,7 @@ import { CloseIcon } from "./CloseIcon";
  * removes the filter.
  */
 const subFilter = tv({
-	base: "group relative inline-flex h-[61px] w-full items-center justify-center rounded-none px-8 font-display text-body-sm font-semibold leading-none ring-inset transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-estuaire sm:text-body",
+	base: "group relative inline-flex h-[61px] w-full items-center justify-center rounded-none px-8 font-display text-body-sm font-semibold leading-none ring-inset transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-estuaire lg:text-body",
 	variants: {
 		selected: {
 			false:

@@ -1,18 +1,30 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { BrandLogo } from "./BrandLogo";
 import { CloseIcon } from "./CloseIcon";
 import { ContactButton } from "./ContactButton";
-import { NavButton } from "./NavButton";
+import { NavPanelItem } from "./NavPanelItem";
 
 /**
- * Full-screen mobile/tablet navigation panel (presentational, props only). Layout +
- * values read losslessly from Figma "MENU pop-up" (nodes 77:3630 / 87:5893): a
- * 90%-opaque ink backdrop, a close cross top-right (where the toggle sat), the
- * entries stacked + centred (gap 20, white = onDark), the CTA (`bleu`), and the logo
- * centred below them.
+ * Full-screen mobile/tablet navigation panel (presentational, props only). The backdrop,
+ * close cross, CTA and centred logo come from Figma "MENU pop-up" (nodes 77:3630 /
+ * 87:5893): a 90%-opaque ink backdrop, a close cross top-right (where the toggle sat),
+ * the `bleu` CTA, and the logo centred below the entries.
+ *
+ * The ENTRY LIST deliberately departs from those frames (ADR 0027). They predate the
+ * expertises / univers sub-menus (revue 2026-06) and specify centred ghost pills with no
+ * second level at all, so once the children were bolted on as a flat, same-size,
+ * same-position sibling list, the panel read as one undifferentiated 12-item column with
+ * 19px touch targets. The list is now a left-aligned accordion: one full-width row per
+ * entry, sub-pages disclosed by a separate chevron and indented under their parent (see
+ * `NavPanelItem`). Left alignment is what buys the indentation; centring could not.
+ * One section is open at a time, and the current page's section opens on panel open.
+ *
+ * The column is bounded (`max-w-[420px]`, centred) so tablet gets air rather than rows
+ * stretched across 768px.
  *
  * The wrapper owns focus-trap / scroll-lock / background `inert` — this component
  * only provides the markup, the `id` (matches the toggle's `aria-controls`), the
@@ -29,6 +41,7 @@ export function NavPanel({
 	brandHref,
 	logo,
 	activeHref,
+	activeChildHref,
 	onSelect,
 	reducedMotion = false,
 }: {
@@ -46,10 +59,27 @@ export function NavPanel({
 	brandHref: string;
 	logo?: React.ReactNode;
 	activeHref?: string;
+	/** Sub-page href matching the current route, so the open section marks its current child. */
+	activeChildHref?: string;
 	/** Called when an entry is selected — the wrapper navigates then closes (FR-010). */
 	onSelect?: (href: string) => void;
 	reducedMotion?: boolean;
 }) {
+	// Which entry has its sub-pages disclosed, one at a time, so the panel stays short
+	// enough to fit a phone in landscape (the flat list overflowed it by 322px).
+	const [openHref, setOpenHref] = useState<string | null>(null);
+
+	// Open the section the current page belongs to, every time the panel opens: it doubles
+	// as a "you are here" cue, and it re-arms on each open so a toggle from a previous visit
+	// never lingers as a stale state.
+	useEffect(() => {
+		if (!isOpen) return;
+		const section = items.find(
+			(item) => item.href === activeHref && item.children?.length,
+		);
+		setOpenHref(section?.href ?? null);
+	}, [isOpen, activeHref, items]);
+
 	return (
 		<div
 			ref={ref}
@@ -80,7 +110,8 @@ export function NavPanel({
 					type="button"
 					onClick={onClose}
 					aria-label="Fermer le menu"
-					className="inline-flex size-11 items-center justify-center rounded-full text-paper transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-estuaire"
+					// `ring-paper`, not the site-wide `ring-estuaire`: see the CTA note below.
+					className="inline-flex size-11 items-center justify-center rounded-full text-paper transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-paper"
 				>
 					<CloseIcon />
 				</button>
@@ -92,53 +123,47 @@ export function NavPanel({
 			    (revue 2026-06) the list can exceed a short viewport; scrolling keeps the CTA,
 			    every sub-link and the logo reachable. `overscroll-contain` stops scroll chaining. */}
 			<div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain pb-8">
-				{/* Entries — stacked, centred, gap 20 (pitch 60). White ghost pills (onDark).
-				    Entries with sub-pages (expertises / univers) list their children just below,
-				    indented and smaller (client request, revue 2026-06, B2/B3). */}
+				{/* Entries: a left-aligned accordion in a bounded, centred column. Each row is
+				    ≥56px; sub-pages are indented under their parent behind a chevron. The CTA
+				    keeps its centred `bleu` pill (the one element that stays as per the kit). */}
 				<nav
 					aria-label="Navigation principale"
-					className="flex flex-col items-center gap-5"
+					className="mx-auto w-full max-w-[420px] px-5"
 				>
-					{items.map((item) => (
-						<div key={item.href} className="flex flex-col items-center gap-2">
-							<NavButton
+					<ul className="border-paper/15 border-t">
+						{items.map((item) => (
+							<NavPanelItem
+								key={item.href}
 								label={item.label}
 								href={item.href}
-								tone="onDark"
+								items={item.children}
+								open={openHref === item.href}
+								onToggle={() =>
+									setOpenHref((current) =>
+										current === item.href ? null : item.href,
+									)
+								}
 								active={activeHref === item.href}
-								onClick={() => onSelect?.(item.href)}
+								activeChildHref={activeChildHref}
+								onSelect={onSelect}
+								reducedMotion={reducedMotion}
 							/>
-							{item.children && item.children.length > 0 && (
-								<ul className="flex flex-col items-center gap-1.5">
-									{item.children.map((child) => (
-										<li key={child.href}>
-											<Link
-												href={child.href}
-												onClick={() => onSelect?.(child.href)}
-												aria-current={
-													activeHref === child.href ? "page" : undefined
-												}
-												className={cn(
-													"font-display text-caption lowercase leading-none text-paper/70 transition-colors hover:text-paper focus-visible:text-paper focus-visible:outline-none",
-													activeHref === child.href &&
-														"font-semibold text-paper",
-												)}
-											>
-												{child.label}
-											</Link>
-										</li>
-									))}
-								</ul>
-							)}
-						</div>
-					))}
-					<ContactButton
-						label={cta.label}
-						href={cta.href}
-						tone="bleu"
-						active={activeHref === cta.href}
-						onClick={() => onSelect?.(cta.href)}
-					/>
+						))}
+					</ul>
+					<div className="mt-8 flex justify-center">
+						{/* Two overrides scoped to the panel, so the desktop CTA is untouched: `h-11`
+						    lifts the kit's 40px pill to the 44px touch floor every other row now
+						    meets, and the focus ring paints in `paper` (the kit's `estuaire` ring
+						    only reaches ~1.7:1 over this ink backdrop, and WCAG 1.4.11 asks 3:1). */}
+						<ContactButton
+							label={cta.label}
+							href={cta.href}
+							tone="bleu"
+							active={activeHref === cta.href}
+							onClick={() => onSelect?.(cta.href)}
+							className="h-11 focus-visible:ring-paper"
+						/>
+					</div>
 				</nav>
 
 				{/* Logo — centred, below the entries (node `logo_header` @ y≈467 → ~62px gap). */}
@@ -146,7 +171,7 @@ export function NavPanel({
 					href={brandHref}
 					onClick={() => onSelect?.(brandHref)}
 					aria-label="Estuaire — accueil"
-					className="mt-[62px] flex justify-center text-paper focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-estuaire"
+					className="mt-[62px] flex justify-center text-paper focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-paper"
 				>
 					{logo ?? <BrandLogo />}
 				</Link>

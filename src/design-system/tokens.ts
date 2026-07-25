@@ -102,6 +102,13 @@ export const motion = {
 	 */
 	curtainLogoHold: 1.35,
 	/**
+	 * Mobile/tablet nav accordion (NavPanelItem): how long a section's sub-pages take to
+	 * expand or collapse. Short enough to feel like a direct response to the tap, still on
+	 * the site's `expo.out`. Mirrored as `--duration-nav-disclosure` for the chevron's CSS
+	 * rotation, so both halves of the same gesture share one value (ADR 0027).
+	 */
+	navDisclosureDuration: 0.4,
+	/**
 	 * Overlapping image clusters: the FRONT (overlapping) image rises faster than the
 	 * static back image on scroll (`data-parallax` amplitude, `rise` mode) → depth
 	 * (Pierre, 2026-06-23). One value tunes all cluster fronts (expertises + nous-découvrir).

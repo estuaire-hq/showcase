@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { navigation } from "@/content/navigation";
+import { type NavItem, navigation } from "@/content/navigation";
 import {
 	breakpoint,
 	NAV_PANEL_ID,
@@ -27,16 +27,36 @@ import { trackEvent } from "@/lib/utils";
  */
 
 /**
- * Resolve which nav href is "active" for the current pathname (FR-016, data-model §2):
+ * Resolve which nav entry is "active" for the current pathname (FR-016, data-model §2):
  * exact match or sub-route prefix; the brand/home is active only on exactly "/". Returns
  * the matching entry's href (never the raw pathname) so the pills emit `aria-current`.
+ *
+ * `childHref` additionally names the SUB-PAGE that matches, when the route is one:
+ * `/expertises/agencement-sur-mesure` resolves to `href: "/expertises"` (unchanged, so the
+ * desktop pills and dropdowns behave exactly as before) **plus**
+ * `childHref: "/expertises/agencement-sur-mesure"`. The mobile panel needs that second
+ * value to mark the current sub-page, since `href` alone can never equal a child's href, so a
+ * sub-page used to be reachable but never signalled as current.
  */
-function resolveActiveHref(pathname: string): string | undefined {
-	if (pathname === navigation.brandHref) return navigation.brandHref;
-	const match = [...navigation.items, navigation.cta].find(
-		(entry) => pathname === entry.href || pathname.startsWith(`${entry.href}/`),
-	);
-	return match?.href;
+function resolveActive(pathname: string): {
+	href?: string;
+	childHref?: string;
+} {
+	if (pathname === navigation.brandHref) return { href: navigation.brandHref };
+	// The CTA is structurally a childless NavItem, so both lists walk under one type.
+	const entries: NavItem[] = [...navigation.items, navigation.cta];
+	for (const entry of entries) {
+		if (pathname === entry.href) return { href: entry.href };
+		if (pathname.startsWith(`${entry.href}/`)) {
+			const child = entry.children?.find(
+				(candidate) =>
+					pathname === candidate.href ||
+					pathname.startsWith(`${candidate.href}/`),
+			);
+			return { href: entry.href, childHref: child?.href };
+		}
+	}
+	return {};
 }
 
 type CtaTone = "bleu" | "noir";
@@ -77,7 +97,8 @@ function readHeaderTones(): HeaderTones {
 
 export function Navbar() {
 	const pathname = usePathname();
-	const activeHref = resolveActiveHref(pathname);
+	const { href: activeHref, childHref: activeChildHref } =
+		resolveActive(pathname);
 	const reducedMotion = usePrefersReducedMotion();
 	const state = useStickyNav(reducedMotion);
 	// Full-bleed dark sections (pinned case studies) ask the bar to go transparent/onDark.
@@ -160,6 +181,7 @@ export function Navbar() {
 						cta={navigation.cta}
 						brandHref={navigation.brandHref}
 						activeHref={activeHref}
+						activeChildHref={activeChildHref}
 						onSelect={handleSelect}
 						reducedMotion={reducedMotion}
 					/>,

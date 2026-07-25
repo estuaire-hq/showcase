@@ -14,7 +14,7 @@ import { NavPanelItem } from "./NavPanelItem";
  * 87:5893): a 90%-opaque ink backdrop, a close cross top-right (where the toggle sat),
  * the `bleu` CTA, and the logo centred below the entries.
  *
- * The ENTRY LIST deliberately departs from those frames (ADR 0027). They predate the
+ * The ENTRY LIST deliberately departs from those frames (ADR 0028). They predate the
  * expertises / univers sub-menus (revue 2026-06) and specify centred ghost pills with no
  * second level at all, so once the children were bolted on as a flat, same-size,
  * same-position sibling list, the panel read as one undifferentiated 12-item column with

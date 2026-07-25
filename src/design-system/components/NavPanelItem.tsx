@@ -14,7 +14,7 @@ type SubItem = { label: string; href: string };
  * lives here, like `NavDropdown`). A full-width link to the entry's own page, plus (when
  * it has sub-pages) a SEPARATE chevron button that discloses them in place.
  *
- * The row is deliberately SPLIT into two targets (ADR 0027): the label navigates to
+ * The row is deliberately SPLIT into two targets (ADR 0028): the label navigates to
  * the hub page, the chevron expands the children. That is what keeps both destinations
  * reachable without turning a real page into a mute header, and it matches the ARIA APG
  * "Disclosure Navigation" pattern: a real `<button>` with `aria-expanded` /

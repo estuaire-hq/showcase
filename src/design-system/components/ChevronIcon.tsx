@@ -6,7 +6,7 @@
  * Deliberately NOT the kit's `arrow-right-1` (the `Arrow` component): in the nav panel the
  * row's label is already a link to its own page, so a right-pointing arrow beside it reads
  * "go there" and competes with the real link. A down chevron is the unambiguous "expand"
- * signal (ADR 0027; NN/g menu-design guideline 12 asks for a caret or arrow on submenus).
+ * signal (ADR 0028; NN/g menu-design guideline 12 asks for a caret or arrow on submenus).
  */
 export function ChevronIcon({ className }: { className?: string }) {
 	return (

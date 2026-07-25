@@ -1,4 +1,4 @@
-# 0027 : nav mobile / tablette, accordéon aligné à gauche
+# 0028 : nav mobile / tablette, accordéon aligné à gauche
 
 - **Statut** : accepté.
 - **Date** : 2026-07-25

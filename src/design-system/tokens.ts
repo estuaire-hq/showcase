@@ -105,7 +105,7 @@ export const motion = {
 	 * Mobile/tablet nav accordion (NavPanelItem): how long a section's sub-pages take to
 	 * expand or collapse. Short enough to feel like a direct response to the tap, still on
 	 * the site's `expo.out`. Mirrored as `--duration-nav-disclosure` for the chevron's CSS
-	 * rotation, so both halves of the same gesture share one value (ADR 0027).
+	 * rotation, so both halves of the same gesture share one value (ADR 0028).
 	 */
 	navDisclosureDuration: 0.4,
 	/**

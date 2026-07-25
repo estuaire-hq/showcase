@@ -15,7 +15,7 @@ export function TextArea({
 		<textarea
 			aria-invalid={invalid || undefined}
 			className={cn(
-				"w-full border bg-transparent px-[18px] py-3 font-sans text-body text-ink placeholder:text-ink/50 focus-visible:outline-none",
+				"w-full border bg-transparent px-[18px] py-3 font-sans text-body-sm text-ink placeholder:text-ink/50 focus-visible:outline-none lg:text-body",
 				invalid ? "border-danger" : "border-ink focus-visible:border-estuaire",
 				className,
 			)}

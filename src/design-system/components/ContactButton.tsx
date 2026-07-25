@@ -13,7 +13,7 @@ const contactButton = tv({
 	variants: {
 		tone: { bleu: "", noir: "" },
 		// sm = nav (16px Regular) · lg = footer (25px ≈ text-body, SemiBold)
-		size: { sm: "text-caption", lg: "text-body font-semibold" },
+		size: { sm: "text-caption", lg: "text-body-sm font-semibold lg:text-body" },
 		active: { true: "", false: "" },
 	},
 	compoundVariants: [

@@ -25,7 +25,7 @@ const button = tv({
 	// GROW when a long label wraps (e.g. the footer « téléchargez notre plaquette » CTA on
 	// narrow widths) instead of overflowing its fixed height; `py-3` + `text-center` +
 	// `leading-tight` give the wrapped lines breathing room (multi-resolution review, ADR 0022).
-	base: "relative inline-flex min-h-[61px] shrink-0 items-center justify-center rounded-full px-14 py-3 text-center font-display text-body font-semibold leading-tight transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-estuaire focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+	base: "relative inline-flex min-h-[61px] shrink-0 items-center justify-center rounded-full px-8 py-3 text-center font-display text-body-sm font-semibold leading-tight transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-estuaire focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 lg:px-14 lg:text-body",
 	variants: {
 		tone: {
 			light: "bg-paper text-ink hover:bg-estuaire hover:text-paper",
@@ -62,7 +62,7 @@ export function Button(props: ButtonAsButton | ButtonAsLink) {
 		<>
 			<span>{brandCase(children)}</span>
 			{arrow && (
-				<Arrow className="-translate-y-1/2 absolute top-1/2 right-7 size-5" />
+				<Arrow className="-translate-y-1/2 absolute top-1/2 right-4 size-5 lg:right-7" />
 			)}
 		</>
 	);

@@ -43,7 +43,10 @@ function OutlineFillTitle({
 	return (
 		<h2
 			className={cn(
-				"font-display font-semibold text-subtitle-sm text-ink leading-[1.15] lg:text-subtitle",
+				// leading-[1.25] on mobile gives the contour (`-webkit-text-stroke`) title top
+				// headroom (guards against the iOS Safari stroke top-clip the client reported);
+				// desktop keeps the maquette 1.15 (pixel-perfect unchanged).
+				"font-display font-semibold text-subtitle-sm text-ink leading-[1.25] lg:text-subtitle lg:leading-[1.15]",
 				className,
 			)}
 		>

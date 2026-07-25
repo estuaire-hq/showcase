@@ -13,7 +13,7 @@ const footerLink = tv({
 	variants: {
 		variant: {
 			// nav: Montserrat Alternates SemiBold ~25px (text-body) · legal: Montserrat 16px
-			nav: "font-display text-body font-semibold",
+			nav: "font-display text-body-sm font-semibold lg:text-body",
 			legal: "font-sans text-caption",
 		},
 	},

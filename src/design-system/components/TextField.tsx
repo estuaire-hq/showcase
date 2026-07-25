@@ -16,7 +16,7 @@ export function TextField({
 		<input
 			aria-invalid={invalid || undefined}
 			className={cn(
-				"h-[50px] w-full border-b bg-transparent px-[18px] font-sans text-body text-ink leading-none placeholder:text-ink/50 focus-visible:outline-none",
+				"h-[50px] w-full border-b bg-transparent px-[18px] font-sans text-body-sm text-ink leading-none placeholder:text-ink/50 focus-visible:outline-none lg:text-body",
 				invalid ? "border-danger" : "border-ink focus-visible:border-estuaire",
 				className,
 			)}

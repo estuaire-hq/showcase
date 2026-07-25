@@ -27,7 +27,7 @@ export function FileInput({
 	return (
 		<label
 			className={cn(
-				"group flex h-[50px] w-full cursor-pointer items-center gap-3 rounded-none px-[18px] font-sans text-body text-ink ring-1 ring-ink ring-inset transition-colors duration-300 hover:bg-ink hover:text-paper focus-within:ring-2 focus-within:ring-estuaire",
+				"group flex h-[50px] w-full cursor-pointer items-center gap-3 rounded-none px-[18px] font-sans text-body-sm text-ink ring-1 ring-ink ring-inset transition-colors duration-300 hover:bg-ink hover:text-paper focus-within:ring-2 focus-within:ring-estuaire lg:text-body",
 				className,
 			)}
 		>

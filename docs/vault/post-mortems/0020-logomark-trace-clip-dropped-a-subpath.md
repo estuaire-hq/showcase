@@ -2,7 +2,7 @@
 
 - **Date** : 2026-07-25
 - **Branche** : `logomark-trace-completion`
-- **Lien** : [[post-mortems/0015-motion-in-react-gsap-transform-and-theme-tokens]], [[decisions/0021-motion-da-reveal-transition-grammar]]
+- **Lien** : [[post-mortems/0015-motion-in-react-gsap-transform-and-theme-tokens]], [[decisions/0021-motion-art-direction]]
 
 > Numéro 0020 choisi au-dessus du plus haut présent sur `main`. Renuméroter au merge en cas de
 > collision avec un worktree parallèle, skill `estuaire-branch-sync`.

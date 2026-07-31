@@ -56,6 +56,14 @@ export default async function HomePage() {
 		// Header tone over the hero (maquette 51:2221: dark-left / light-right): the
 		// brand logo sits over the dark zone (onDark = white), the links over the white
 		// zone (onLight = ink); the mobile toggle is over the dark zone (onDark).
+		//
+		// Deliberately NOT measured (unlike the photo heroes, ADR 0029): the home hero's
+		// slideshow window starts at 23-31% of its height, so the bar never overlaps a
+		// photo. It floats over `HeroSlideshow`'s own solid split (`bg-ink` panel on the left,
+		// `bg-paper` on the right), which makes every slot's contrast a property
+		// of the layout rather than of the editorial image. Measured on production: 18.8:1
+		// for all of logo, links and toggle, at both 1920 and 768. Sampling here would swap
+		// a guarantee for an estimate.
 		<main
 			data-nav-logo-tone="onDark"
 			data-nav-links-tone="onLight"

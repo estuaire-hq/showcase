@@ -57,7 +57,14 @@ export { SectionTitle } from "./components/SectionTitle";
 export { SectorButton } from "./components/SectorButton";
 export { Select } from "./components/Select";
 export { SiteFooter } from "./components/SiteFooter";
-export { NAV_PANEL_ID, SiteHeader } from "./components/SiteHeader";
+export {
+	CTA_SLOT,
+	LOGO_SLOT,
+	type MeasuredTones,
+	NAV_PANEL_ID,
+	SiteHeader,
+	TOGGLE_SLOT,
+} from "./components/SiteHeader";
 export { Slideshow } from "./components/Slideshow";
 export {
 	SplitSection,
@@ -70,7 +77,18 @@ export {
 } from "./components/Testimonial";
 export { TextArea } from "./components/TextArea";
 export { TextField } from "./components/TextField";
-export type { NavState, NavTone } from "./nav";
+export {
+	BAND_COLUMNS,
+	type CtaTone,
+	decodeHeaderBand,
+	encodeHeaderBand,
+	type HeaderBand,
+	type NavState,
+	type NavTone,
+	resolveToneFromBand,
+	resolveToneFromSamples,
+	TONE_THRESHOLD,
+} from "./nav";
 export * from "./tokens";
 export { BrandText } from "./typography/BrandText";
 export { OutlineText } from "./typography/OutlineText";

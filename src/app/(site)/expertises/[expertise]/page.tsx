@@ -12,6 +12,10 @@ import {
 	PageHero,
 	SectionTitle,
 } from "@/design-system";
+import {
+	pageHeroBandAttributes,
+	TABLET_UP_HERO_VEIL,
+} from "@/lib/nav/luminance";
 import { getExpertiseSubpageProps } from "@/lib/sanity/expertiseSubpage";
 import type { ResolvedImage } from "@/lib/sanity/mapImage";
 import { getLatestRealisationForExpertise } from "@/lib/sanity/realisation";
@@ -111,8 +115,17 @@ export default async function ExpertiseSubpage({
 		ctaLabel: caseStudy.ctaLabel,
 	};
 
+	// This hero veils tablet+desktop instead of mobile (`imageOverlayClassName` below), so
+	// the sample composites the veil on those two breakpoints: the strip the bar sits on is
+	// the veiled image, not the bare photo (ADR 0029).
+	const bands = await pageHeroBandAttributes(
+		hero.image?.blurDataURL,
+		TABLET_UP_HERO_VEIL,
+	);
+
 	return (
 		<main
+			{...bands}
 			data-nav-logo-tone="onDark"
 			data-nav-links-tone="onDark"
 			data-nav-toggle-tone="onDark"

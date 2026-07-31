@@ -10,6 +10,7 @@ import {
 } from "@/design-system";
 import { oversampled } from "@/lib/images";
 import { Parallax } from "@/lib/motion/Parallax";
+import { pageHeroBandAttributes } from "@/lib/nav/luminance";
 import { getAboutPageProps } from "@/lib/sanity/aboutPage";
 import type { ResolvedImage } from "@/lib/sanity/mapImage";
 import { buildMetadata } from "@/lib/seo/metadata";
@@ -126,9 +127,11 @@ const CONTAINER = "mx-auto w-full max-w-[1920px] px-5 md:px-10 lg:px-[7.29%]";
 export default async function AboutPage() {
 	const { hero, intro, vision, atelier, process, statement, cta } =
 		await getAboutPageProps();
+	const bands = await pageHeroBandAttributes(hero.image?.blurDataURL);
 
 	return (
 		<main
+			{...bands}
 			data-nav-logo-tone="onDark"
 			data-nav-links-tone="onLight"
 			data-nav-toggle-tone="onDark"
@@ -139,7 +142,11 @@ export default async function AboutPage() {
 			    78:4626 mobile): logo white over the visual; desktop links INK (over the
 			    light right of the hero); CTA "contact" a black pill (not the default bleu);
 			    the toggle stays white at BOTH mobile and tablet — hence the explicit tablet
-			    override, since it would otherwise inherit the (now ink) links tone. */}
+			    override, since it would otherwise inherit the (now ink) links tone.
+			    These stay as the server-rendered value, but the bar now MEASURES the strip
+			    it floats over (`bands`) and each slot resolves its own tone from it: the
+			    maquette's white logo was drawn over a dark timber rack that the editorial
+			    image no longer frames, which had dropped it to 1.44:1. ADR 0029. */}
 
 			{/* 1 — Hero (static) */}
 			<PageHero

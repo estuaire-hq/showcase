@@ -11,6 +11,7 @@ import {
 } from "@/design-system";
 import { oversampled } from "@/lib/images";
 import { Parallax } from "@/lib/motion/Parallax";
+import { pageHeroBandAttributes } from "@/lib/nav/luminance";
 import { getExpertisesPageProps } from "@/lib/sanity/expertisesPage";
 import type { ResolvedImage } from "@/lib/sanity/mapImage";
 import { buildMetadata } from "@/lib/seo/metadata";
@@ -101,9 +102,14 @@ const CONTAINER = "mx-auto w-full max-w-[1920px] px-5 md:px-10 lg:px-[7.29%]";
 
 export default async function ExpertisesPage() {
 	const { hero, intro, levels, statement } = await getExpertisesPageProps();
+	// Declared tones stay the server-rendered value; the bar measures the strip it floats
+	// over and each slot resolves its own tone from it (ADR 0029). Today's photo is dark
+	// enough for white throughout, but that is a property of the image, not of the code.
+	const bands = await pageHeroBandAttributes(hero.image?.blurDataURL);
 
 	return (
 		<main
+			{...bands}
 			data-nav-logo-tone="onDark"
 			data-nav-links-tone="onDark"
 			data-nav-toggle-tone="onDark"

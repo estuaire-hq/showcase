@@ -91,6 +91,14 @@
 	--duration-reveal: 900ms; /* content scroll-reveal fade-in (mirror; GSAP reads tokens.ts) */
 
 	/*
+	 * Hover "line": a thin 1px underline that draws in left→right on hover/focus and
+	 * retracts toward the right on leave (CSS scaleX + transform-origin switch). Used on
+	 * the bare text links whose hover was a plain underline (footer menu + legal links,
+	 * contact e-mail). Pure CSS (no GSAP), read via `duration-(--duration-line)`.
+	 */
+	--duration-line: 400ms;
+
+	/*
 	 * Mobile/tablet nav accordion (NavPanelItem): a section's sub-pages expanding or
 	 * collapsing. The chevron's CSS rotation reads this var directly
 	 * (`duration-(--duration-nav-disclosure)`; v4 has no `--duration-*` utility namespace,

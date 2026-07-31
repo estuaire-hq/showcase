@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { BrandText, OutlineText } from "@/design-system";
+import { BrandText, LineText, OutlineText } from "@/design-system";
 import { getContactPageProps } from "@/lib/sanity/contactPage";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { cn, umamiAttrs } from "@/lib/utils";
@@ -149,12 +149,15 @@ export default async function ContactPage() {
 								outline={coordinates.contact.titleOutline}
 								fill={coordinates.contact.titleFill}
 							/>
+							{/* `group/line` + LineText: the hover underline is drawn left→right and
+							    recedes to the right on leave (ADR 0021 D3). Keyboard focus keeps the
+							    UA outline (no `outline-none` here) on top of the line. */}
 							<a
 								href={`mailto:${coordinates.email}`}
-								className="font-sans text-lead-sm text-ink underline-offset-4 hover:underline lg:text-lead"
+								className="group/line w-fit font-sans text-lead-sm text-ink lg:text-lead"
 								{...umamiAttrs("contact_email_click")}
 							>
-								{coordinates.email}
+								<LineText text={coordinates.email} />
 							</a>
 						</div>
 					</div>

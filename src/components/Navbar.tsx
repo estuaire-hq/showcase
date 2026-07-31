@@ -16,6 +16,7 @@ import { useScrollLock } from "@/lib/a11y/useScrollLock";
 import { useNavOverlay } from "@/lib/motion/navOverlay";
 import { usePrefersReducedMotion } from "@/lib/motion/usePrefersReducedMotion";
 import { useStickyNav } from "@/lib/motion/useStickyNav";
+import { useMeasuredTones } from "@/lib/nav/useMeasuredTones";
 import { trackEvent } from "@/lib/utils";
 
 /**
@@ -59,13 +60,13 @@ function resolveActive(pathname: string): {
 	return {};
 }
 
-type CtaTone = "bleu" | "noir";
+type DeclaredCtaTone = "bleu" | "noir";
 type HeaderTones = {
 	logo: NavTone;
 	links: NavTone;
 	toggleMobile?: NavTone;
 	toggleTablet?: NavTone;
-	cta?: CtaTone;
+	cta?: DeclaredCtaTone;
 };
 const DEFAULT_TONES: HeaderTones = { logo: "onLight", links: "onLight" };
 
@@ -76,6 +77,10 @@ const DEFAULT_TONES: HeaderTones = { logo: "onLight", links: "onLight" };
  * `data-nav-toggle-tone-tablet` (tablet toggle), each defaulting to the links tone,
  * and `data-nav-cta-tone` (`bleu`|`noir`) for the CTA's rest colour. Safe default
  * `onLight` (dark content on a light surface) for any page that declares nothing.
+ *
+ * These stay the server-rendered value and the sole source where the bar sits on a solid
+ * surface. Where it floats over a photo, the page ALSO emits `data-nav-band-*` and
+ * `useMeasuredTones` refines each slot from the strip behind it (ADR 0029).
  */
 function readHeaderTones(): HeaderTones {
 	const el = document.querySelector(
@@ -103,6 +108,8 @@ export function Navbar() {
 	const state = useStickyNav(reducedMotion);
 	// Full-bleed dark sections (pinned case studies) ask the bar to go transparent/onDark.
 	const overlay = useNavOverlay();
+	// Per-slot tones measured from the strip behind each box, on pages that emit a band.
+	const measured = useMeasuredTones(pathname);
 
 	const [isOpen, setIsOpen] = useState(false);
 	const [mounted, setMounted] = useState(false);
@@ -165,6 +172,7 @@ export function Navbar() {
 				toggleToneMobile={tones.toggleMobile}
 				toggleToneTablet={tones.toggleTablet}
 				ctaToneTop={tones.cta}
+				measured={measured}
 				isMenuOpen={isOpen}
 				onMenuToggle={() => setIsOpen((open) => !open)}
 				onCtaClick={trackContact}

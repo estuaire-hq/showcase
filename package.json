@@ -37,6 +37,7 @@
 		"react-dom": "^19.2.7",
 		"react-leaflet": "^5.0.0",
 		"sanity": "^5.31.1",
+		"sharp": "^0.34.5",
 		"styled-components": "^6.1.15",
 		"tailwind-merge": "^3.5.0",
 		"tailwind-variants": "^3.2.2"

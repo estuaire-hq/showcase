@@ -4,7 +4,12 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/motion/gsap";
 import { cn } from "@/lib/utils";
-import { type NavState, type NavTone, TONE_TEXT_CLASS } from "../nav";
+import {
+	type CtaTone,
+	type NavState,
+	type NavTone,
+	TONE_TEXT_CLASS,
+} from "../nav";
 import { BrandLogo } from "./BrandLogo";
 import { ContactButton } from "./ContactButton";
 import { MenuToggle } from "./MenuToggle";
@@ -13,6 +18,27 @@ import { NavDropdown } from "./NavDropdown";
 
 /** Shared id linking the toggle's `aria-controls` to the `NavPanel` (rendered by the wrapper). */
 export const NAV_PANEL_ID = "site-nav-panel";
+
+/** `data-nav-slot` value for the brand logo and the menu toggle; links use their href. */
+export const LOGO_SLOT = "logo";
+export const TOGGLE_SLOT = "toggle";
+export const CTA_SLOT = "cta";
+
+/**
+ * Tones measured from the strip actually behind each slot, resolved by the wrapper for the
+ * CURRENT viewport (ADR 0029). Overrides the page-declared at-rest tones when present, and
+ * absent until the measurement lands, so the declared tones stay the server-rendered
+ * value, and remain the only source on pages whose bar sits on a solid surface.
+ *
+ * `links` is keyed by href, because a hero can be dark under one pill and light under the
+ * next: each entry answers for its own box.
+ */
+export type MeasuredTones = {
+	logo?: NavTone;
+	links?: Record<string, NavTone>;
+	cta?: NavTone;
+	toggle?: NavTone;
+};
 
 type NavLink = { label: string; href: string; children?: NavLink[] };
 
@@ -63,6 +89,12 @@ const STATE_CLASS: Record<NavState, string> = {
  * studies). It then stays transparent (no solid background, no shadow) even while
  * `pinned`, and content is forced `onDark` (white) with the CTA `bleu`, so the whole
  * dark photo shows through the bar instead of a white band.
+ *
+ * `measured` (ADR 0029) wins over the declared at-rest tones, per slot, once the wrapper
+ * has sampled what is really behind each box. The declared tones remain the
+ * server-rendered value and the only source where the bar sits on a solid surface
+ * (« Univers » cartouche, « Réalisations » blue panel), because there the contrast is
+ * guaranteed by construction and a measurement could only add risk.
  */
 export function SiteHeader({
 	items,
@@ -76,6 +108,7 @@ export function SiteHeader({
 	toggleToneMobile,
 	toggleToneTablet,
 	ctaToneTop = "bleu",
+	measured,
 	activeHref,
 	isMenuOpen,
 	onMenuToggle,
@@ -100,7 +133,10 @@ export function SiteHeader({
 	toggleToneTablet?: NavTone;
 	/** CTA "contact" rest colour at `top` (it doesn't track `linksTone`). Defaults to `bleu`
 	 *  (Home); « Nous découvrir » declares `noir`. Forced `bleu` over `overlay`, `noir` when pinned. */
-	ctaToneTop?: "bleu" | "noir";
+	ctaToneTop?: CtaTone;
+	/** Per-slot tones measured from the strip behind each box; overrides the declared
+	 *  at-rest tones. Absent until the wrapper's measurement lands. */
+	measured?: MeasuredTones;
 	activeHref?: string;
 	isMenuOpen: boolean;
 	onMenuToggle: () => void;
@@ -110,12 +146,19 @@ export function SiteHeader({
 	className?: string;
 }) {
 	const atTop = state === "top";
+	// The measurement only describes the hero strip, so it applies at `top` and never over
+	// `overlay` (forced white over the dark full-bleed section) or when pinned (solid bar).
+	const measuring = atTop && !overlay;
+	const measuredLogo = measuring ? measured?.logo : undefined;
+	const measuredToggle = measuring ? measured?.toggle : undefined;
+	const measuredCta = measuring ? measured?.cta : undefined;
+
 	// Over dark imagery (overlay) the bar is transparent with white content, regardless
 	// of the pinned/hidden state; otherwise the hero tones apply at `top`, ink elsewhere.
 	const resolvedLogoTone: NavTone = overlay
 		? "onDark"
 		: atTop
-			? logoTone
+			? (measuredLogo ?? logoTone)
 			: "onLight";
 	const resolvedLinksTone: NavTone = overlay
 		? "onDark"
@@ -124,16 +167,28 @@ export function SiteHeader({
 			: "onLight";
 	// Overlay forces bleu; pinned/hidden force noir; at rest the page-declared `ctaToneTop`
 	// applies (defaults bleu) — the CTA doesn't track `linksTone` (Home vs « Nous découvrir »).
-	const ctaTone = overlay ? "bleu" : atTop ? ctaToneTop : "noir";
+	// A measured-DARK strip is the one case the kit tones can't serve (both are dark), so the
+	// pill goes `paper` there; on a light strip the declared brand colour is kept.
+	const ctaTone: CtaTone = overlay
+		? "bleu"
+		: atTop
+			? measuredCta === "onDark"
+				? "paper"
+				: ctaToneTop
+			: "noir";
 
 	// The toggle's mobile and tablet tones are independent of each other AND of the desktop
 	// links (each defaults to `linksTone` for back-compat). Key is `${mobileTone}-${tabletTone}`.
+	// A measurement replaces the responsive pair with one value: the wrapper resolved it for
+	// the viewport in force, so no `md:` variant is needed.
 	const toggleClass = overlay
 		? "text-paper"
 		: atTop
-			? TOGGLE_TOP_CLASS[
-					`${toggleToneMobile ?? linksTone}-${toggleToneTablet ?? linksTone}`
-				]
+			? measuredToggle
+				? TONE_TEXT_CLASS[measuredToggle]
+				: TOGGLE_TOP_CLASS[
+						`${toggleToneMobile ?? linksTone}-${toggleToneTablet ?? linksTone}`
+					]
 			: "text-ink";
 
 	const headerRef = useRef<HTMLElement>(null);
@@ -185,6 +240,7 @@ export function SiteHeader({
 				aria-label="Estuaire — accueil"
 				aria-current={activeHref === brandHref ? "page" : undefined}
 				data-brand-logo
+				data-nav-slot={LOGO_SLOT}
 				className={cn(
 					"inline-flex items-center rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-estuaire",
 					TONE_TEXT_CLASS[resolvedLogoTone],
@@ -204,30 +260,42 @@ export function SiteHeader({
 			{/* Desktop list (lg and up) — links + CTA, gap 15 (node 51:2221). */}
 			<nav aria-label="Navigation principale" className="hidden lg:block">
 				<ul className="flex items-center gap-[15px]">
-					{items.map((item) =>
-						item.children && item.children.length > 0 ? (
-							<li key={item.href}>
-								<NavDropdown
-									label={item.label}
-									href={item.href}
-									items={item.children}
-									tone={resolvedLinksTone}
-									active={activeHref === item.href}
-									activeHref={activeHref}
-								/>
+					{items.map((item) => {
+						// Each pill answers for its own box: a hero can be dark under one link and
+						// light under the next (measured 3.6:1 to 18.9:1 across the row on
+						// « Expertises »). The `<li>` carries the slot marker because it wraps the
+						// pill exactly, so its box is the pill's box.
+						const tone =
+							(measuring ? measured?.links?.[item.href] : undefined) ??
+							resolvedLinksTone;
+						return (
+							<li key={item.href} data-nav-slot={item.href}>
+								{item.children && item.children.length > 0 ? (
+									<NavDropdown
+										label={item.label}
+										href={item.href}
+										items={item.children}
+										tone={tone}
+										active={activeHref === item.href}
+										activeHref={activeHref}
+									/>
+								) : (
+									<NavButton
+										label={item.label}
+										href={item.href}
+										tone={tone}
+										active={activeHref === item.href}
+									/>
+								)}
 							</li>
-						) : (
-							<li key={item.href}>
-								<NavButton
-									label={item.label}
-									href={item.href}
-									tone={resolvedLinksTone}
-									active={activeHref === item.href}
-								/>
-							</li>
-						),
-					)}
-					<li>
+						);
+					})}
+					<li data-nav-slot={CTA_SLOT}>
+						{/* The pill keeps its own fill and its label stays legible on it; only its
+						    OUTLINE can dissolve into a background of the same value. Nothing is added
+						    for that: a ring would read as a different component, the same reason the
+						    links carry no rest fill (ADR 0029). What actually mattered, a dark hero
+						    swallowing a dark pill, is handled by the measured `paper` variant. */}
 						<ContactButton
 							label={cta.label}
 							href={cta.href}
@@ -244,6 +312,7 @@ export function SiteHeader({
 				isOpen={isMenuOpen}
 				onClick={onMenuToggle}
 				controls={NAV_PANEL_ID}
+				slot={TOGGLE_SLOT}
 				label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
 				className={cn("lg:hidden", toggleClass)}
 			/>

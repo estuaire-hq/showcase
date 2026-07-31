@@ -17,7 +17,7 @@ type SubItem = { label: string; href: string };
 /**
  * Desktop nav entry WITH a dropdown (kit nav, extended for the client request to surface
  * the expertises / univers sub-pages from the navbar — revue 2026-06, B2/B3). The trigger is
- * the usual ghost-pill `NavButton` linking to the hub page; a panel of sub-links reveals
+ * the usual bare-text `NavButton` linking to the hub page; a panel of sub-links reveals
  * below it on hover / keyboard focus.
  *
  * The reveal is pure CSS (`group-hover` + `group-focus-within`), keyboard-reachable (tabbing

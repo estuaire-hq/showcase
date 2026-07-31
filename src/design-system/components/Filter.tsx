@@ -9,9 +9,16 @@ import { Arrow } from "./Arrow";
  * outline), hover (estuaire fill), selected (ink fill). `hover` is CSS;
  * `selected` is driven by the parent. The label runs through BrandText so the
  * leading capital renders in Montserrat and the rest in Montserrat Alternates.
+ *
+ * Responsive: the maquette geometry (24px label centred on the full tab, chevron
+ * pinned to the right edge) only fits once the tab is wide enough — the portfolio
+ * grid reaches that from `xl`. Below it the tab is narrow (~150px at the sm
+ * 4-column switch), so the label steps down to `text-body-sm` (the DS mobile step,
+ * as on SubFilter) and the chevron sits IN FLOW next to it: overlap then becomes
+ * structurally impossible instead of depending on the label's width.
  */
 const filter = tv({
-	base: "relative inline-flex h-[122px] w-full items-center justify-center rounded-none px-12 font-display text-body font-semibold leading-none ring-inset transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-estuaire",
+	base: "relative inline-flex h-[122px] w-full items-center justify-center gap-2 rounded-none px-4 font-display text-body-sm font-semibold leading-none ring-inset transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-estuaire lg:px-6 lg:text-body xl:px-12",
 	variants: {
 		selected: {
 			false:
@@ -41,7 +48,7 @@ export function Filter({
 			<BrandText>{label}</BrandText>
 			<Arrow
 				direction="down"
-				className="-translate-y-1/2 absolute top-1/2 right-8"
+				className="xl:-translate-y-1/2 xl:absolute xl:top-1/2 xl:right-8"
 			/>
 		</button>
 	);

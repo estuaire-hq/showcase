@@ -1,7 +1,15 @@
 // Public surface of the Estuaire design system. App code imports from here:
 //   import { Button, BrandText, color } from "@/design-system";
 
+export {
+	BAND_IMAGE_HOVER,
+	BAND_PARALLAX,
+	BAND_VEIL,
+	BAND_VEIL_REST,
+} from "./bandLink";
 export { Arrow } from "./components/Arrow";
+export { BandMedia } from "./components/BandMedia";
+export { BandStack } from "./components/BandStack";
 export { BrandLogo } from "./components/BrandLogo";
 export { Breadcrumb, type BreadcrumbItem } from "./components/Breadcrumb";
 export { Button, type ButtonTone, buttonStyles } from "./components/Button";

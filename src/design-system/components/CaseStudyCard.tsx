@@ -1,14 +1,20 @@
-import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { BrandText } from "../typography/BrandText";
+import { BandMedia } from "./BandMedia";
 
 /**
- * Case-study card (kit « CAS STUDY » + survol). Full-bleed image under a ~25%
- * ink veil. The text block sits low-left (kit margins ≈6.8%): the title (Title
- * 75, BrandText) on top, then a 3px white rule, then the meta line (lieu · année
- * · superficie) with tick separators. On hover the image zooms and the veil
- * deepens (the kit's "survol").
+ * Case-study band (kit « CAS STUDY », node 75:3679). Its image, veils, hover and scroll
+ * bleed come from `BandMedia`, so it behaves exactly like the home, univers and expertises
+ * bands (`../bandLink`). The text block sits low-left (kit margins ≈6.8%): the title
+ * (Title 75, BrandText) on top, then a 3px white rule, then the meta line (lieu · année ·
+ * superficie) with tick separators.
+ *
+ * Always rendered inside a padded container, never full-bleed: the portfolio's « Dernières
+ * réalisations » stack keeps the 7.29% margins (the maquette draws those bands full-bleed —
+ * nodes 1558/2281/3004 — but the owner asked for the inset version, 2026-07-31), and the
+ * single band on an expertise detail page is inset by its own maquette (1640×718 at 7.29%,
+ * node 51:3008 « 06/ CAS STUDY »), passing its own `aspect-*`.
  */
 export function CaseStudyCard({
 	image,
@@ -36,21 +42,7 @@ export function CaseStudyCard({
 				className,
 			)}
 		>
-			{/* Survol = LAYER_BLUR on the image (kit 15px), NOT a zoom. Softened to 8px at
-			    the client's request (revue 2026-06: hover blur trop fort). The base
-			    scale-105 bleeds the image past the clip so the blur never reveals edges.
-			    Guarded: a missing cover (dangling asset) degrades to the ink veil + title
-			    rather than a broken `<Image src="">`. */}
-			{image && (
-				<Image
-					src={image}
-					alt={alt}
-					fill
-					sizes="(min-width: 1280px) 1200px, 100vw"
-					className="scale-105 object-cover transition-[filter] duration-500 ease-out group-hover:blur-[8px]"
-				/>
-			)}
-			<div className="absolute inset-0 bg-ink/25" />
+			<BandMedia image={image} alt={alt} />
 			<div className="absolute inset-x-[6.8%] bottom-[9.7%] text-paper">
 				{/* Responsive title scale (DS convention, globals.css): the fixed 75px
 				    `text-title` clipped the overlaid title in the narrow card on mobile —
@@ -62,7 +54,7 @@ export function CaseStudyCard({
 				</h3>
 				<div className="mt-[18px] border-paper border-t-[3px] pt-3">
 					{meta && meta.length > 0 && (
-						<p className="flex flex-wrap items-center gap-x-4 font-display text-body-sm font-semibold lg:gap-x-8 lg:text-body">
+						<p className="flex flex-wrap items-center gap-x-4 font-display font-semibold text-body-sm lg:gap-x-8 lg:text-body">
 							{meta.map((m, i) => (
 								<span key={m} className="flex items-center gap-x-4 lg:gap-x-8">
 									{i > 0 && (

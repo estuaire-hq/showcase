@@ -1,16 +1,16 @@
-import Image from "next/image";
-import { oversampled } from "@/lib/images";
 import { cn, umamiAttrs } from "@/lib/utils";
 import { BrandText } from "../typography/BrandText";
+import { BandMedia } from "./BandMedia";
 import { Button } from "./Button";
 
 /**
  * Full-bleed image feature band — shared by the sectors page « 04/ SECTEURS » bands
  * (node 51:3386) and the expertises « level cards » (kit « Notre vision du métier
- * d'agenceur », nodes 51:2958/2969/2981). A full-bleed image under a ~25% ink veil with
- * overlaid content — a title, an optional separator rule + promise line, and an optional
- * light CTA pill with a trailing arrow. On hover (kit survol): the image blurs (LAYER_BLUR
- * 15px) and the CTA turns cream — not a zoom.
+ * d'agenceur », nodes 51:2958/2969/2981). Its image, veils, hover and scroll bleed come
+ * from `BandMedia`, so it behaves exactly like the réalisations bands (`../bandLink`).
+ * Overlaid content: a title, an optional separator rule + promise line, and an optional
+ * light CTA pill with a trailing arrow. On hover the CTA also turns cream (kit survol,
+ * node 75:3703).
  *
  * Aspect defaults to the kit band 1920/718; pass a responsive `aspect-*` via `className`
  * for a taller stacked layout on small screens (expertises: square mobile / 768·718 tablet;
@@ -71,23 +71,7 @@ export function FeatureBlock({
 				className,
 			)}
 		>
-			{image && (
-				<Image
-					// Full-bleed (and `scale-105`, so painted slightly wider than the viewport):
-					// oversampled so the browser does the last downscale, not Sanity's soft CDN
-					// resize (`@/lib/images`, ADR 0027). No effect while the « univers » band
-					// sources are ~550px wide — the loader never upscales.
-					src={oversampled(image)}
-					alt={alt}
-					fill
-					sizes="100vw"
-					placeholder={blurDataURL ? "blur" : "empty"}
-					blurDataURL={blurDataURL}
-					className="scale-105 object-cover transition-[filter] duration-500 ease-out group-hover:blur-[8px]"
-				/>
-			)}
-			{/* Kit Rectangle 397 veil = ink @ 0.253 (constant) */}
-			<div className="absolute inset-0 bg-ink/25" />
+			<BandMedia image={image} alt={alt} blurDataURL={blurDataURL} />
 			<div
 				className={cn(
 					"relative z-10 flex h-full flex-col justify-center gap-7 px-5 py-8 text-paper md:gap-8 md:px-10 md:py-12 lg:px-[7.29%]",

@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import {
+	BandStack,
 	BrandText,
 	CaseStudyCard,
 	OutlineText,
 	SectionTitle,
 } from "@/design-system";
+import { Parallax } from "@/lib/motion/Parallax";
 import { getRealisationListProps } from "@/lib/sanity/realisation";
 import { buildMetadata } from "@/lib/seo/metadata";
-import { umamiAttrs } from "@/lib/utils";
+import { cn, umamiAttrs } from "@/lib/utils";
 import { RealisationsBrowser } from "./RealisationsBrowser";
 
 // Page liste « Réalisations » — RSC connecteur (Principe VIII) : `getRealisationListProps()`
@@ -106,10 +108,19 @@ export default async function RealisationsPage() {
 						</p>
 						<div className="mt-6 h-[3px] w-full bg-ink lg:mt-8" />
 					</div>
-					<div className="mt-8 flex flex-col gap-6 lg:mt-12 lg:gap-8">
-						{latest.map((item) => (
-							<div key={item.slug} className={CONTAINER}>
+					{/* Bands kept INSIDE the container (margins 7.29%), NOT full-bleed. The
+					    maquette draws them full-bleed (node 51:4064 « 04/ CAS STUDIES » — x=0,
+					    w=1920) and they were switched to it, but Pierre asked for the inset
+					    version back (2026-07-31) — a deliberate, owner-validated departure.
+					    What the pass does keep: the 5px separation shared with every other
+					    stack (`BandStack`, was 24/32px here) and `BandMedia`'s oversampling,
+					    which fixes a real defect — `sizes` used to announce 1200px for a
+					    1640px box, painting a 1.44× upscale at rest. */}
+					<Parallax>
+						<BandStack className={cn(CONTAINER, "mt-8 lg:mt-12")}>
+							{latest.map((item) => (
 								<div
+									key={item.slug}
 									{...umamiAttrs("realisation_card_open", { slug: item.slug })}
 								>
 									<CaseStudyCard
@@ -120,9 +131,9 @@ export default async function RealisationsPage() {
 										href={item.href}
 									/>
 								</div>
-							</div>
-						))}
-					</div>
+							))}
+						</BandStack>
+					</Parallax>
 				</section>
 			)}
 

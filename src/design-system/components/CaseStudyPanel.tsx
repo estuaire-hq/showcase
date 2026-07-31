@@ -1,7 +1,6 @@
-import Image from "next/image";
-import { oversampled } from "@/lib/images";
 import { cn } from "@/lib/utils";
 import { BrandText } from "../typography/BrandText";
+import { BandMedia } from "./BandMedia";
 
 export type CaseStudyPanelData = {
 	image: string;
@@ -13,15 +12,14 @@ export type CaseStudyPanelData = {
 /**
  * Case-study BAND (home « CAS STUDY ») — a full-bleed cinematic strip whose height
  * follows the maquette aspect ratio per breakpoint (mobile/tablet ≈ 1.1:1, desktop
- * 2.67:1 — 1920×718). Full-bleed image under a 25% ink veil; title + a 3px rule +
- * tick-separated meta, low-left. Presentational only: the `data-cs-*` hooks let the
- * `CaseStudies` shell drive the scroll reveal (image parallax, then title, the rule
- * tracing in, then the meta one by one). The shared "voir nos réalisations" pill lives
- * once below all bands (in `CaseStudies`), per the maquette — not per band. The whole
- * band is wrapped in a link to its réalisation (by `CaseStudies`); on hover the image
- * zooms slightly (the cas-study motion signature) — `motion-safe` only, and on the
- * `<Image>` itself, NOT the GSAP-driven parallax layer (post-mortem 0015). Static &
- * readable without JS (reduced motion / no-JS): everything is visible at rest.
+ * 2.67:1 — 1920×718). Its image, veils, hover and scroll bleed come from `BandMedia`, so
+ * this band behaves exactly like the univers/expertises/portfolio ones (`../bandLink`).
+ * Title + a 3px rule + tick-separated meta, low-left. Presentational only: the `data-cs-*`
+ * hooks let the `CaseStudies` shell drive the content reveal (title, the rule tracing in,
+ * then the meta one by one). The shared "voir nos réalisations" pill lives once below all
+ * bands (in `CaseStudies`), per the maquette — not per band. The whole band is wrapped in
+ * a link to its réalisation (by `CaseStudies`). Static & readable without JS (reduced
+ * motion / no-JS): everything is visible at rest.
  */
 export function CaseStudyPanel({
 	image,
@@ -39,25 +37,7 @@ export function CaseStudyPanel({
 				className,
 			)}
 		>
-			{/* Parallax layer — taller than the band (−inset-y-[8%] → 116% height) so the
-			    scrubbed yPercent drift never exposes an edge (no black band). GSAP owns
-			    this element's transform (CaseStudies animates yPercent), so it carries no
-			    CSS transform of its own (post-mortem 0015). A missing image degrades to the
-			    ink panel (`bg-ink`) rather than a broken `<Image src="">`. */}
-			<div data-cs-image className="absolute inset-x-0 -inset-y-[8%]">
-				{image && (
-					<Image
-						// Full-bleed band: oversampled so the browser does the last downscale, not
-						// Sanity's soft CDN resize (`@/lib/images`, ADR 0027).
-						src={oversampled(image)}
-						alt={title}
-						fill
-						sizes="100vw"
-						className="object-cover transition-transform duration-700 ease-out motion-safe:group-hover:scale-105"
-					/>
-				)}
-			</div>
-			<div className="absolute inset-0 bg-ink/25" />
+			<BandMedia image={image} alt={title} />
 
 			{/* Title + rule + meta, low-left (maquette insets: 4.1% mobile / 11.2% tablet /
 			    6.8% desktop; the block sits ~8% from the bottom). */}

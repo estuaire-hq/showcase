@@ -44,7 +44,7 @@ export const contactPageContent = {
 	// 16, not 15: at 15 the industrial estate is an unlabelled block of grey shapes.
 	mapZoom: 16,
 
-	seoMetaTitle: "Contact — Estuaire",
+	seoMetaTitle: "Contact",
 	seoMetaDescription:
 		"Contactez Estuaire : formulaire, coordonnées et localisation de notre atelier à Machecoul.",
 };

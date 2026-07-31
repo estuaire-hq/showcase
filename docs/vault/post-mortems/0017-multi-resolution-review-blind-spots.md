@@ -58,3 +58,32 @@ La sonde objective est nécessaire mais **pas suffisante**, et elle a des **angl
 socle** (ici `overflow-x: clip` + GSAP pin). Toujours **croiser** : sonde par bords réels + largeur de
 la capture full-page + scan visuel ; et **isoler le mouvement** (reduced-motion) pour tout ce qui est
 épinglé/scrubé. Encodé dans `estuaire-pixel-review` (skill + `probe.js`).
+
+## Addendum (2026-07-31) — troisième angle mort : la collision *intra*-composant
+
+**Symptôme.** Sur `/realisations`, la flèche des onglets de filtre (Univers / Expertises / Clients)
+recouvrait le libellé sur **toute la plage 360→1023 px ET à 1024 px** (jusqu'à 44 px de recouvrement
+sur « Expertises »). La sonde de `estuaire-pixel-review` renvoyait pourtant `ok:true` **à chaque
+largeur** — avant comme après correction.
+
+**Cause racine.** La sonde ne cherche que du *débordement* (bord droit hors viewport, texte clippé,
+image distordue, texte < 11 px). Une **collision entre deux enfants du même composant** n'est aucun
+de ces cas : ici un libellé centré sur la boîte pleine (`justify-center`) et une icône sortie du flux
+(`absolute right-8`) se croisent **à l'intérieur** du bouton, sans jamais dépasser sa boîte. Angle
+mort **structurel**, pas un réglage de seuil.
+
+**Correction de méthode.** Dès qu'un composant superpose un élément hors flux (icône, croix, badge)
+à du texte centré, la vérification n'est pas la sonde mais une **mesure explicite du jeu** :
+`arrowLeft - labelRight` à chaque largeur de la matrice, plus la marge de boîte
+(`max(labelRight - boxRight, …)`). Un jeu ≥ 0 est le critère ; la sonde ne dit rien là-dessus.
+
+**Et surtout : le pire cas n'est pas la plus petite largeur.** Les deux largeurs qui cassaient le plus
+sont des **points de bascule**, pas les extrêmes :
+- **640 px** (`sm`) — la grille passe de 2 à 4 colonnes : les onglets **rétrécissent** de 293 px à
+  151 px, donc la barre est plus serrée à 640 qu'à 360 ;
+- **1024 px** (`lg`) — le conteneur passe à un padding **en pourcentage** (`px-[7.29%]`) *et* la police
+  monte à 24 px : la largeur utile **retombe** de 244 px (à 1023) à 222 px.
+
+Corollaire de [[0007-percent-padding-and-thumbnail-signoff]] : une matrice de largeurs « flagship »
+ne suffit pas, il faut **encadrer chaque point de bascule** (639/640, 1023/1024, 1279/1280) sur les
+composants dont la largeur dépend de la grille.

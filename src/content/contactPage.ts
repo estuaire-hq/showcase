@@ -37,9 +37,12 @@ export const contactPageContent = {
 	contactTitleOutline: "Nous",
 	contactTitleFill: "contacter",
 	email: "contact@estuaire.fr",
-	// Machecoul (Loire-Atlantique) — refine the exact pin in the Studio (geopoint).
-	mapLocation: { lat: 46.9931, lng: -1.8221 },
-	mapZoom: 15,
+	// Workshop entrance, 2 rue Henri Giffard (ZI la Seiglerie 3, Machecoul-Saint-Même).
+	// Geocoded and cross-checked against the BAN (api-adresse.data.gouv.fr, housenumber
+	// match) and Nominatim/OSM.
+	mapLocation: { lat: 46.977055, lng: -1.802443 },
+	// 16, not 15: at 15 the industrial estate is an unlabelled block of grey shapes.
+	mapZoom: 16,
 
 	seoMetaTitle: "Contact — Estuaire",
 	seoMetaDescription:

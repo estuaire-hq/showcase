@@ -362,12 +362,15 @@ fonts, radii, or re-implement a button / pill / card. Importing = consuming; edi
 - Before animating: load the **`estuaire-motion`** skill — text static (the anchor); visuals +
   section transitions carry the motion; content reveals on entry; honor `prefers-reduced-motion`.
   The site-wide **motion DA** (a consistent reveal/transition grammar, no ad-hoc animations) is
-  **ADR 0021** (its hover layer — `RollText`/`LineText` — was reverted; nav/footer links use
-  their pre-#22 hover: ghost-pill nav + underlined footer). Reusable primitives: **scroll/page shells
+  **ADR 0021**. Its hover layer is now **half in force**: `RollText` stays reverted (the navbar keeps
+  its ghost-pill), while `LineText` is back (2026-07-31 addendum) on the bare text links whose hover
+  used to be a plain underline: `FooterLink` (menu + legal) and the contact mailto. Reusable
+  primitives: **hover in the DS** (`LineText` = 1px `currentColor` line drawn left→right, receding to
+  the right on leave; the host element MUST carry `group/line`); **scroll/page shells
   in `@/lib/motion`** (`ScrollReveal`
   + `data-reveal-fade` = content fade-in on scroll, `PageTransition` = paper "curtain" between pages,
   `Parallax` + `data-parallax` = cluster depth). Motion tokens: `@theme` + `tokens.ts` (`--ease-expo`,
-  `reveal`, `curtain`, `clusterParallax`). Two load-bearing gotchas (post-mortem 0015):
+  `--duration-line`, `reveal`, `curtain`, `clusterParallax`). Two load-bearing gotchas (post-mortem 0015):
   **(1) GSAP owns the `transform`** — never set an animated transform via React `style` on a
   GSAP-animated element (they stack); use `gsap.set`/`fromTo` for the initial state. **(2) GSAP-only
   motion values are read from `tokens.ts`** — Tailwind v4 tree-shakes unused `@theme` vars (they may

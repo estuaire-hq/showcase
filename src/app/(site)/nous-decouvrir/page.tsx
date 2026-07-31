@@ -8,6 +8,7 @@ import {
 	Pullquote,
 	SectionTitle,
 } from "@/design-system";
+import { oversampled } from "@/lib/images";
 import { Parallax } from "@/lib/motion/Parallax";
 import { getAboutPageProps } from "@/lib/sanity/aboutPage";
 import type { ResolvedImage } from "@/lib/sanity/mapImage";
@@ -441,7 +442,9 @@ export default async function AboutPage() {
 					<div className="relative isolate aspect-[390/308] w-full overflow-hidden md:aspect-[688/519] lg:aspect-[1798/958]">
 						{statement.image && (
 							<Image
-								src={statement.image.src}
+								// Full-bleed: oversampled so the browser does the last downscale, not
+								// Sanity's soft CDN resize (`@/lib/images`, ADR 0027).
+								src={oversampled(statement.image.src)}
 								alt={statement.image.alt}
 								fill
 								sizes="100vw"

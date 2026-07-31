@@ -110,3 +110,36 @@ Le statut de l'ADR reste **« en cours de réglage »** : la grammaire *reveal /
 demeure la DA en vigueur ; seule la **couche feedback hover** est abandonnée (retour au feedback hover
 natif d'avant #22). Le principe constitutionnel « Intentional Motion » (différé) couvrira la DA restante
 une fois figée.
+
+## Addendum (2026-07-31) : réintroduction de D3 seule (`LineText`), périmètre resserré
+
+Sur décision de Pierre (worktree `text-hover-line`, via `/dispatch`), **D3 est rétablie** : les liens
+texte nus dont le hover était un simple soulignement reçoivent le **trait animé**. L'addendum du
+2026-06-23 ci-dessus est donc **partiellement renversé**.
+
+- **D3 (`LineText`) : de nouveau en vigueur.** La primitive est recréée dans le design system depuis
+  l'implémentation d'origine (commit `666e88a`), pas réinventée. Comportement inchangé : trait 1px
+  `currentColor` qui se dessine de gauche à droite au survol et au `:focus-visible`, **persiste** tant
+  que le curseur ou le focus est là, puis se **résorbe vers la droite** à la sortie. Token
+  `--duration-line` (400 ms) restauré dans `@theme` ; pas de miroir dans `tokens.ts` (CSS pur, aucun
+  GSAP ne le lit).
+- **D2 (`RollText`) : reste annulée.** La navbar garde son *ghost-pill*, le menu footer ne roule pas.
+  `RollText` n'est pas recréé.
+- **Périmètre : les hovers actuellement soulignés, et eux seuls.** Deux endroits dans le code :
+  `FooterLink` (variantes `nav` et `legal`) et le lien **mailto** de la page contact. Explicitement
+  **hors périmètre** : liens de nav (`NavButton`, `NavDropdown`, `NavPanelItem`), boutons et pills,
+  cartes et images (blur + scale) ; `Breadcrumb` (son hover est une bascule d'opacité, seul son
+  `focus-visible` souligne) ; les soulignements **permanents** de `LegalPage` et du consentement de
+  `ContactForm` (leur hover est un changement de couleur).
+- **Trois écarts assumés par rapport à l'implémentation #22**, tous imposés par le périmètre élargi
+  au menu footer et au mail 35 px :
+  1. `leading-none` sur le conteneur du texte, sinon la ligne se cale sur le *line-height* du lien
+     (le menu footer porte `leading-[45px]`) et flotte 14 px sous le texte. Corollaire : les libellés
+     doivent tenir sur **une ligne** (vérifié sur les 6 liens, en 390 / 768 / 1440).
+  2. Décalage vertical en **`em`** (`-bottom-[0.15em]`) et non en px : à 35 px un offset fixe fait
+     passer le trait **dans** les descendantes (le `@` de l'e-mail).
+  3. Le `:focus-visible` du footer conserve **en plus** l'anneau DS des surfaces sombres
+     (`ring-2 ring-paper`) : un trait de 1 px seul serait un indicateur de focus plus faible que le
+     soulignement 2 px qu'il remplace.
+- **Règle transverse honorée** : sous `prefers-reduced-motion`, la transition est neutralisée mais le
+  trait s'affiche quand même au survol et au focus (l'affordance survit, seul le dessin disparaît).

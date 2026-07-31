@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { oversampled } from "@/lib/images";
 import { cn } from "@/lib/utils";
 import { BrandText } from "../typography/BrandText";
 
@@ -46,7 +47,9 @@ export function CaseStudyPanel({
 			<div data-cs-image className="absolute inset-x-0 -inset-y-[8%]">
 				{image && (
 					<Image
-						src={image}
+						// Full-bleed band: oversampled so the browser does the last downscale, not
+						// Sanity's soft CDN resize (`@/lib/images`, ADR 0027).
+						src={oversampled(image)}
 						alt={title}
 						fill
 						sizes="100vw"

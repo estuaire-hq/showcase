@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { oversampled } from "@/lib/images";
 import { cn, umamiAttrs } from "@/lib/utils";
 import { BrandText } from "../typography/BrandText";
 import { Button } from "./Button";
@@ -72,7 +73,11 @@ export function FeatureBlock({
 		>
 			{image && (
 				<Image
-					src={image}
+					// Full-bleed (and `scale-105`, so painted slightly wider than the viewport):
+					// oversampled so the browser does the last downscale, not Sanity's soft CDN
+					// resize (`@/lib/images`, ADR 0027). No effect while the « univers » band
+					// sources are ~550px wide — the loader never upscales.
+					src={oversampled(image)}
 					alt={alt}
 					fill
 					sizes="100vw"

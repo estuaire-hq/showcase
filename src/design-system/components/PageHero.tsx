@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
+import { oversampled } from "@/lib/images";
 import { cn } from "@/lib/utils";
 import { BrandText } from "../typography/BrandText";
 import { OutlineText } from "../typography/OutlineText";
@@ -145,7 +146,9 @@ export function PageHero({
 			<div className="relative aspect-[390/259] w-full overflow-hidden bg-ink md:aspect-[768/377] lg:aspect-[1920/943]">
 				{image && (
 					<Image
-						src={image.src}
+						// Full-bleed: oversampled so the browser, not Sanity's soft CDN resize,
+						// does the last downscale (`@/lib/images`, ADR 0027).
+						src={oversampled(image.src)}
 						alt={image.alt}
 						fill
 						priority

@@ -79,7 +79,7 @@ export const homePageContent = {
 	visionCtaHref: "/nous-decouvrir",
 
 	// — SEO (defaults; editable in Studio) —
-	seoMetaTitle: "Estuaire — agenceur-concepteur engagé",
+	seoMetaTitle: "Estuaire, agenceur-concepteur engagé",
 	seoMetaDescription:
 		"Estuaire, agenceur-concepteur engagé : de l'agencement d'espaces à la réalisation de présentoirs, nous transformons les ambitions des designers et architectes en réalisations concrètes.",
 };

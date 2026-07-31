@@ -41,7 +41,7 @@ export const contactPageContent = {
 	mapLocation: { lat: 46.9931, lng: -1.8221 },
 	mapZoom: 15,
 
-	seoMetaTitle: "Contact — Estuaire",
+	seoMetaTitle: "Contact",
 	seoMetaDescription:
 		"Contactez Estuaire : formulaire, coordonnées et localisation de notre atelier à Machecoul.",
 };

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { BrandText, FeatureBlock, PageHero } from "@/design-system";
+import { BandStack, BrandText, FeatureBlock, PageHero } from "@/design-system";
+import { Parallax } from "@/lib/motion/Parallax";
 import { getSectorsPageProps } from "@/lib/sanity/sectorsPage";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { cn } from "@/lib/utils";
@@ -10,8 +11,11 @@ import { cn } from "@/lib/utils";
 // and composes the design-system components. Source of truth: Figma node 51:3386 (desktop
 // only — no tablet/mobile frame; responsive is adapted per breakpoint).
 //
-// MOTION: the page is static — no scroll/appearance animations on the images (removed at
-// the owner's request). The full-height hero is also static (first-screen readability).
+// MOTION: the page carries no APPEARANCE animation on its images — the clip-reveals ADR
+// 0016 planned were removed at the owner's request. The sector bands do carry the site-wide
+// band drift since 2026-07-31 (Pierre asked for the home's scroll effect on every
+// bandeau-lien, at the home's own intensity) — a scrubbed background parallax, not a
+// reveal. The full-height hero stays static (first-screen readability).
 
 const CONTAINER = "mx-auto w-full max-w-[1920px] px-5 md:px-10 lg:px-[7.29%]";
 
@@ -86,25 +90,29 @@ export default async function UniversPage() {
 				</div>
 			</section>
 
-			{/* 3 — Secteurs: four full-bleed bands (image + veil + title + rule + promise + CTA) */}
-			<div className="flex flex-col">
-				{sectors.map((sector) => (
-					<FeatureBlock
-						key={sector.href || sector.label}
-						display
-						image={sector.image?.src}
-						alt={sector.image?.alt ?? `Estuaire — ${sector.label}`}
-						blurDataURL={sector.image?.blurDataURL}
-						title={sector.label}
-						body={sector.promise}
-						rule
-						cta={{ label: SECTOR_CTA_LABEL, href: sector.href }}
-						ctaUmamiEvent="sector_cta_click"
-						ctaUmamiData={{ sector: sectorSlug(sector.href, sector.label) }}
-						className="aspect-[390/470] md:aspect-[768/520] lg:aspect-[1920/718]"
-					/>
-				))}
-			</div>
+			{/* 3 — Secteurs: four full-bleed bands (image + veil + title + rule + promise +
+			    CTA), stacked with the maquette's 5px separation (`BandStack`) and drifting
+			    on scroll (`BandMedia`'s hook, armed by `<Parallax>`). */}
+			<Parallax>
+				<BandStack>
+					{sectors.map((sector) => (
+						<FeatureBlock
+							key={sector.href || sector.label}
+							display
+							image={sector.image?.src}
+							alt={sector.image?.alt ?? `Estuaire — ${sector.label}`}
+							blurDataURL={sector.image?.blurDataURL}
+							title={sector.label}
+							body={sector.promise}
+							rule
+							cta={{ label: SECTOR_CTA_LABEL, href: sector.href }}
+							ctaUmamiEvent="sector_cta_click"
+							ctaUmamiData={{ sector: sectorSlug(sector.href, sector.label) }}
+							className="aspect-[390/470] md:aspect-[768/520] lg:aspect-[1920/718]"
+						/>
+					))}
+				</BandStack>
+			</Parallax>
 
 			{/* 4 — Infos clés: 2×2 grid of figures with cross dividers (static — text anchor) */}
 			<section className="bg-cream">

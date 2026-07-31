@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import {
+	BandStack,
 	BrandText,
 	FeatureBlock,
 	motion,
@@ -19,8 +20,10 @@ import { cn } from "@/lib/utils";
 // fetches via `getExpertisesPageProps()` (mapping isolated in `@/lib/sanity/expertisesPage.ts`)
 // and composes the design-system components.
 //
-// MOTION: intentionally none for now — motion must be placed deliberately, not applied to
-// every image (ADR 0012 §7). The page is fully static; scroll cinematics land in a later pass.
+// MOTION: deliberately sparse — motion is placed, not applied to every image (ADR 0012 §7).
+// Only two things move: the intro cluster's front image (depth) and, since 2026-07-31, the
+// 3 level bands, which carry the site-wide bandeau-lien drift (Pierre asked for the home's
+// scroll effect on every band, at the home's intensity). Everything else is static.
 //
 // Section order follows the maquette (51:2893): hero · intro · « Nos 3 niveaux d'expertise »
 // (a framed section header + 3 full-width FeatureBlock cards) · big-image statement. The
@@ -159,23 +162,29 @@ export default async function ExpertisesPage() {
 					titleFill={levels.titleFill}
 					image={levels.image}
 				/>
-				{/* The 3 full-width level cards (FeatureBlock). Aspect is square on mobile →
+				{/* The 3 full-width level cards (FeatureBlock), stacked with the maquette's 5px
+				    separation (`BandStack`, nodes 3227/3950/4673) and drifting on scroll
+				    (`BandMedia`'s hook, armed by `<Parallax>`). Aspect is square on mobile →
 				    768·718 tablet → 1920·718 desktop; content anchored lower-left (maquette). */}
-				{levels.items.map((level) => (
-					<FeatureBlock
-						key={level.ctaHref || level.title}
-						image={level.image?.src}
-						alt={level.image?.alt ?? level.title.replace(/\n/g, " ")}
-						blurDataURL={level.image?.blurDataURL}
-						title={level.title}
-						titleAs="h3"
-						cta={{ label: level.ctaLabel, href: level.ctaHref }}
-						ctaUmamiEvent="expertise_level_click"
-						ctaUmamiData={{ level: level.slug }}
-						className="aspect-square md:aspect-[768/718] lg:aspect-[1920/718]"
-						contentClassName="justify-end gap-6 pb-9 md:px-[11.7%] md:pb-[13%] lg:px-[6.8%] lg:pb-[9.5%]"
-					/>
-				))}
+				<Parallax>
+					<BandStack>
+						{levels.items.map((level) => (
+							<FeatureBlock
+								key={level.ctaHref || level.title}
+								image={level.image?.src}
+								alt={level.image?.alt ?? level.title.replace(/\n/g, " ")}
+								blurDataURL={level.image?.blurDataURL}
+								title={level.title}
+								titleAs="h3"
+								cta={{ label: level.ctaLabel, href: level.ctaHref }}
+								ctaUmamiEvent="expertise_level_click"
+								ctaUmamiData={{ level: level.slug }}
+								className="aspect-square md:aspect-[768/718] lg:aspect-[1920/718]"
+								contentClassName="justify-end gap-6 pb-9 md:px-[11.7%] md:pb-[13%] lg:px-[6.8%] lg:pb-[9.5%]"
+							/>
+						))}
+					</BandStack>
+				</Parallax>
 			</section>
 
 			{/* 4 — Grand visuel + phrase en incrustation */}

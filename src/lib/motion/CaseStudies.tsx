@@ -3,27 +3,30 @@
 import Link from "next/link";
 import { useRef } from "react";
 import {
+	BandStack,
 	Button,
 	CaseStudyPanel,
 	type CaseStudyPanelData,
 } from "@/design-system";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/motion/gsap";
 import { setNavOverlay } from "@/lib/motion/navOverlay";
+import { Parallax } from "./Parallax";
 import { prefersReducedMotion } from "./usePrefersReducedMotion";
-
-// Subtle background drift while a band crosses the viewport (yPercent, kept within the
-// band image's 8% overflow margin so an edge is never exposed). Scrubbed → ease "none".
-const PARALLAX = 6;
 
 /**
  * Réalisations as a vertical stack of full-bleed case-study BANDS (maquette « CAS
  * STUDY »), laid out in NORMAL FLOW — no pin, no scroll-jacking, the scroll stays 100%
  * native. Each band, on entry, reveals its content once (title rises & fades → the 3px
- * rule traces in → the meta items stagger) while its background image drifts in a light
- * scrubbed parallax tied to the real scroll. A single "voir nos réalisations" pill sits
+ * rule traces in → the meta items stagger). A single "voir nos réalisations" pill sits
  * below all bands (the maquette CTA — not one per band). While the dark bands sit under
  * the sticky navbar, the bar is asked to go onDark/transparent via `setNavOverlay`, so
  * no white band paints over the photos.
+ *
+ * The bands' own layout and background drift are NOT owned here: the 5px separation comes
+ * from `BandStack` and the scrubbed image parallax from `BandMedia`'s `data-parallax`,
+ * driven by the shared `<Parallax>` below. This used to be a bespoke tween on
+ * `[data-cs-image]`, duplicated the shared driver, and ran on the home only — every band
+ * of the site now gets the same drift (revue 2026-07-31).
  *
  * `prefers-reduced-motion`: no parallax, no reveal — bands are shown statically and are
  * fully readable. The nav-overlay tone signal still runs (it is a colour switch, not a
@@ -68,23 +71,6 @@ export function CaseStudies({
 			for (const panel of panels) {
 				const q = gsap.utils.selector(panel);
 
-				// Background parallax — drifts the whole time the band crosses the viewport.
-				gsap.fromTo(
-					q("[data-cs-image]"),
-					{ yPercent: PARALLAX },
-					{
-						yPercent: -PARALLAX,
-						ease: "none",
-						scrollTrigger: {
-							trigger: panel,
-							start: "top bottom",
-							end: "bottom top",
-							scrub: true,
-							invalidateOnRefresh: true,
-						},
-					},
-				);
-
 				// Content reveal on entry (once): the title rises & fades in, the rule
 				// traces from the right, the meta items stagger in — then everything is
 				// static (text is the anchor). Each target is guarded — a réalisation may
@@ -117,28 +103,27 @@ export function CaseStudies({
 
 	return (
 		<div ref={ref}>
-			<div
-				ref={bandsRef}
-				className="mx-auto flex max-w-[1920px] flex-col gap-[5px]"
-			>
-				{cards.map((card, i) => (
-					<Link
-						key={card.title}
-						href={card.href}
-						aria-label={`Voir la réalisation : ${card.title}`}
-						data-cs-layer
-						data-umami-event="home_realisation_click"
-						data-umami-event-card={String(i)}
-						className="block"
-					>
-						<CaseStudyPanel
-							image={card.image}
-							title={card.title}
-							meta={card.meta}
-						/>
-					</Link>
-				))}
-			</div>
+			<Parallax>
+				<BandStack ref={bandsRef}>
+					{cards.map((card, i) => (
+						<Link
+							key={card.title}
+							href={card.href}
+							aria-label={`Voir la réalisation : ${card.title}`}
+							data-cs-layer
+							data-umami-event="home_realisation_click"
+							data-umami-event-card={String(i)}
+							className="block"
+						>
+							<CaseStudyPanel
+								image={card.image}
+								title={card.title}
+								meta={card.meta}
+							/>
+						</Link>
+					))}
+				</BandStack>
+			</Parallax>
 
 			{/* The maquette's single shared CTA, centred below the bands. */}
 			<div className="mt-12 flex justify-center lg:mt-16">

@@ -143,3 +143,116 @@ texte nus dont le hover était un simple soulignement reçoivent le **trait anim
      soulignement 2 px qu'il remplace.
 - **Règle transverse honorée** : sous `prefers-reduced-motion`, la transition est neutralisée mais le
   trait s'affiche quand même au survol et au focus (l'affordance survit, seul le dessin disparaît).
+
+## Addendum (2026-07-31) : D9 — un seul comportement pour les bandeaux-liens
+
+Sur demande du client (revue vocale) puis arbitrage de Pierre (worktree `banner-links-unify`, via
+`/dispatch`), les **bandeaux-liens pleine largeur** — réalisations (home + portfolio), secteurs
+(univers), niveaux (expertises) — reçoivent **un seul** comportement : même espacement, même survol,
+même mouvement au scroll. Motif : « ils ont souvent une manière de s'afficher différente sur chaque
+page », et le survol flou + zoom était jugé laid.
+
+### D9.1 — Espacement : 5 px, et ce n'était pas un arbitrage
+
+La maquette tranche seule : **5 px** entre bandeaux empilés, sur **tous** les breakpoints. Mesuré sur
+chaque frame — home 5228/5951/6674 (tablet 3401/4106/4811, mobile 4185/4545/4905), secteurs
+1951/2674/3397/4120, expertises 3227/3950/4673 (tablet 1579/2302/3025, mobile 2293/2688/3085),
+portfolio 1558/2281/3004 — tous 718 de haut. La **home était déjà conforme** ; univers, expertises et
+le portfolio étaient jointifs. Il n'y avait donc rien à décider, seulement un écart à corriger.
+Porté par **`BandStack`** (design system) ; aucune page ne redéclare l'écart.
+
+**Largeur du portfolio : écart assumé, contre la maquette.** Le portfolio rend ses bandes **dans le
+conteneur** (marges 7,29 %) alors que la maquette les veut **pleine largeur** (x=0, w=1920). Elles ont
+été passées en pleine largeur, puis **Pierre a demandé de revenir à l'encart** (2026-07-31, en cours
+de branche). C'est donc un écart **validé par le propriétaire**, pas un oubli : seul l'**écart de 5 px**
+y est aligné (il était de 24/32 px). Le bandeau **unique** d'une sous-page expertise est, lui, encadré
+par sa propre maquette (1640×718 à 7,29 %, node 51:3008).
+
+Corollaire : `CaseStudyCard` n'est **jamais** pleine largeur, ses ratios mobile/tablette d'origine
+(390/224, 768/384) sont conservés.
+
+### D9.2 — Survol : désaturation, écart assumé vis-à-vis du kit
+
+Le kit Figma décrit le survol comme un **LAYER_BLUR 15** sur l'image, et rien d'autre : voile
+constant à 0,253, seul le CTA passe en crème (nodes 75:3691 « CAS STUDY survol » et 75:3703). Le
+`blur-[8px]` du code en était donc une transposition **fidèle** (≈ 7,5 px CSS), pas une atténuation
+comme le prétendait son commentaire. Doser le flou ne menait nulle part : le client voulait un autre
+effet.
+
+**Retenu (Pierre, après prototypage comparatif sur page lab jetable) : la désaturation.** Au repos
+l'image est à **30 % de saturation** sous un voile d'encre **plus profond** que la maquette ; au
+survol elle retrouve sa **couleur pleine** et le voile revient aux **25 % de la maquette**.
+
+- **Les zooms étaient des inventions du code**, absentes de la maquette : `scale-105` statique
+  (`FeatureBlock`, `CaseStudyCard`), `group-hover:scale-105` (`CaseStudyPanel`), et **les deux à la
+  fois** avec le flou sur `RealisationGridCard` — c'est ce dernier que décrivait littéralement la
+  remarque du client. Tous supprimés.
+- **Règle de contraste** : l'état de **survol EST la maquette** (voile 25 %) et c'est le **repos** qui
+  est plus sombre. Le titre blanc en incrustation n'est donc jamais *moins* lisible que la maquette, à
+  aucun moment de la transition. L'écart est au repos, où le voile supplémentaire ne fait qu'aider.
+- **`prefers-reduced-motion` n'est délibérément pas neutralisé** sur ce fondu : un changement de
+  couleur / filtre n'est pas du mouvement vestibulaire (l'ADR traite `motion-reduce` comme portant sur
+  le déplacement). C'est la **parallaxe** du bandeau qui est du mouvement, et elle est coupée par le
+  driver `Parallax`.
+- Périmètre élargi à **`RealisationGridCard`** (grille portfolio) : ce n'est pas un bandeau, mais
+  laisser le flou là aurait recréé une incohérence sur la page même dont parlait le client.
+
+### D9.3 — Netteté : le zoom n'était pas le coupable principal
+
+Le client redoutait que le zoom fasse « dépasser le 1920 ». Mesuré à 1920 px, DPR 1, la cause réelle
+était ailleurs :
+
+| Bandeau | Avant | Après |
+|---|---|---|
+| Portfolio « Dernières réalisations » | **1,44× d'agrandissement au repos** (1200 px demandés, 1722 peints) | 1640 peints, 3840 livrés → **2,3× de marge** |
+| Sous-page expertise (bandeau unique) | idem 1,44× | 1640 peints, 1909 livrés → **aucun agrandissement** |
+| Home | 1,9× de marge, le zoom ne coûtait rien | inchangé, +5 % (plus de `scale-105`) |
+| Univers / secteurs | **3,4–3,8×** — sources de 531–593 px | inchangé : **problème de source, pas de code** |
+| Expertises / niveaux | 1,48× — sources de 1365 px | 1,41 × — idem |
+
+Deux enseignements :
+1. **`CaseStudyCard` était mal câblé** : `sizes` annonçait 1200 px pour une boîte de 1640, sans
+   `oversampled()`, plus un `scale-105`. Il était mou **au repos**, indépendamment du survol. Corrigé
+   par `BandMedia` (oversampling + `sizes="100vw"`) et le passage en pleine largeur.
+2. **Les sources d'univers et d'expertises sont trop petites**, et ce n'est pas récupérable : dans le
+   Figma lui-même, les images placées dans les slots 1920×718 font 550–593 px
+   (`.design/figma-cache/assets/51-3454.jpg` etc.), et `seed-assets/sectorsPage/*.jpg` les reprend
+   telles quelles — donc la prod aussi, via le seed CI. **Aucun changement de survol ne corrige ça** :
+   il faut de vraies photos du client. Même constat que la branche `hero-image-quality`.
+
+Garantie tenue : **rien dans ce comportement ne met l'image à l'échelle**, donc la boîte peinte ne
+dépasse jamais la largeur réellement demandée au CDN. Vérifié au **pic du survol** (1920 peints,
+`scale: none`), pas seulement au repos.
+
+### D9.4 — Mouvement au scroll : la dérive de la home, généralisée
+
+À la demande de Pierre (inspiration [mxms.studio](https://mxms.studio/fr/)), les bandeaux portent un
+**mouvement de fond au scroll** : le calque image est plus grand que le bandeau et translaté, si bien
+que l'image semble immobile derrière une fenêtre qui défile. C'est exactement le mécanisme de mxms
+(instrumenté : `overflow:hidden` + `translateY` à ~la moitié de la vitesse du scroll, **jamais de
+`scale`**), et exactement ce que la home embarquait déjà.
+
+- **Intensité : celle de la home**, inchangée (Pierre : « actuelle, 8 % ») — calque 16 % plus haut que
+  le bandeau, dérive de ±6 % en `yPercent`. La course `amp × 1,16` reste sous la marge, donc **aucun
+  bord n'est jamais découvert** (vérifié à 0 px d'exposition sur toute la passe de scroll).
+- **Ce qui change, c'est la portée** : seule la home avait du mouvement ; univers, expertises et le
+  portfolio n'en avaient aucun. Tous en ont désormais.
+- Un **vrai pin** (image strictement fixe, comme mxms) n'est **pas atteignable** sur un bandeau de
+  718 px sans upscaler : il faudrait plus de 1800 px de réserve verticale, on en a ~280. Écarté pour
+  cette raison, pas par goût.
+- **Simplification** : `CaseStudies` avait sa **propre** tween de parallaxe sur `[data-cs-image]`, qui
+  dupliquait le driver partagé. Supprimée au profit de `<Parallax>` + `data-parallax` porté par
+  `BandMedia`. Le reveal de contenu (titre, trait, meta) reste dans `CaseStudies`.
+- ⚠️ **Contredit en partie une décision antérieure** : la page univers portait « no scroll/appearance
+  animations on the images (removed at the owner's request) », qui annulait les clip-reveals prévus
+  par l'ADR 0016. La demande du 2026-07-31 est plus récente et explicitement centrée sur les
+  bandeaux ; le retrait portait sur les **apparitions**, ce qu'on ajoute est une **dérive de fond**.
+  Les clip-reveals restent supprimés.
+
+### D9.5 — Frontière respectée (D8)
+
+- **Design system** : `bandLink.ts` (le contrat d'effet : filtre de survol, voiles, marge de calque,
+  amplitude), `BandMedia` (calque image + voiles, déclare le hook `data-parallax`), `BandStack`
+  (l'écart de 5 px). Présentationnel, aucun GSAP, aucun Sanity.
+- **`@/lib/motion`** : le driver `Parallax` qui arme le hook, et `CaseStudies` pour le reveal de la
+  home. Un bandeau sans ancêtre `<Parallax>` (sous-page expertise) reste **inerte, pas cassé**.

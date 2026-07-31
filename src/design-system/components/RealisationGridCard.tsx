@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { BAND_IMAGE_HOVER } from "../bandLink";
 import { BrandText } from "../typography/BrandText";
 
 /**
@@ -8,7 +9,9 @@ import { BrandText } from "../typography/BrandText";
  * `CaseStudyCard` (the full-bleed overlay band used for « Dernières Réalisations »): here the
  * image sits on top in a near-square window, and the caption is rendered BELOW it — title
  * (BrandText) + a 3px ink rule + the meta line (lieu · année · superficie) with tick separators.
- * On hover the image blurs slightly (kit « survol »). Presentational only (Principle VIII).
+ * Not a band, but it shares the bands' hover (`../bandLink`): it was the only component
+ * cumulating BOTH an animated blur and an animated zoom, i.e. literally what the client
+ * described. Presentational only (Principle VIII).
  */
 export function RealisationGridCard({
 	image,
@@ -35,7 +38,7 @@ export function RealisationGridCard({
 						alt={alt}
 						fill
 						sizes="(min-width: 1024px) 42vw, 90vw"
-						className="object-cover transition-[filter,transform] duration-500 ease-out group-hover:scale-105 group-hover:blur-[6px]"
+						className={cn("object-cover", BAND_IMAGE_HOVER)}
 					/>
 				)}
 			</div>

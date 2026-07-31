@@ -59,7 +59,7 @@ The declarations above remain the contract, the server-rendered value, and the *
 pages whose bar sits on a solid surface. But a declaration copied off the maquette is only true while
 the hero image matches the one the maquette was drawn on: on « Nous découvrir » the editorial image
 was replaced by a wider crop, the dark timber rack left the frame, and the white logo dropped to
-**1,44:1** (WCAG 2.2 SC 1.4.11 asks 3:1). See ADR 0029 and post-mortem 0022.
+**1,44:1** (WCAG 2.2 SC 1.4.11 asks 3:1). See ADR 0029 and post-mortem 0023.
 
 So pages whose bar floats over a **photo** additionally emit the sampled luminance of the strip under
 the bar, and each slot resolves its own tone from it:

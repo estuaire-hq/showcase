@@ -14,7 +14,7 @@
   mesure vit dans `@/lib/nav`, pas dans `@/design-system`) et s'appuie sur
   [[0027-image-delivery-via-sanity-loader]] (le LQIP déjà fetché est la source de la mesure).
   Vérifié via la gate [[0022-multi-resolution-pixel-review]]. Post-mortem associé :
-  [[0022-maquette-tone-invalidated-by-editorial-image]].
+  [[0023-maquette-tone-invalidated-by-editorial-image]].
 
 ## Contexte
 
@@ -107,7 +107,7 @@ du viewport.
    panneaux sont dimensionnés en **pourcentage** (`w-[56.8%]`, `lg:right-[48%]`) alors que les pills
    ont une **largeur fixe en px ancrée à droite**. Leur recouvrement se déplace donc avec la largeur
    du viewport, et de 1024 à ~1700 « nous découvrir » se retrouvait en ink sur le cartouche ink,
-   soit **1:1**, sur trois pages, en production. Voir post-mortem 0022.
+   soit **1:1**, sur trois pages, en production. Voir post-mortem 0023.
 
    Le fond solide n'a pas besoin d'une bande : sa couleur **est dans le DOM**. Le hook la lit
    directement (`elementsFromPoint` + composition des couches translucides via un canvas 1×1, car

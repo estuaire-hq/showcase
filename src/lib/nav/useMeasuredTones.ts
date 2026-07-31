@@ -28,7 +28,7 @@ import {
  * The solid case is not a nicety: those panels are sized in **percentages** while the pills
  * have a **fixed px width anchored right**, so their overlap shifts with the viewport. The
  * declared tones happened to be right at 1920 and wrong from 1024 to ~1700, where « nous
- * découvrir » sat ink-on-ink (1:1) on three pages. Measured, not deduced: post-mortem 0022.
+ * découvrir » sat ink-on-ink (1:1) on three pages. Measured, not deduced: post-mortem 0023.
  *
  * Either way the geometry is read here rather than server-side: a pill's width depends on
  * the rendered font, so its box only exists in the browser.

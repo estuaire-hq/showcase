@@ -1,11 +1,13 @@
-# 0022, Logo invisible : une valeur de maquette invalidée par l'image éditoriale
+# 0023, Logo invisible : une valeur de maquette invalidée par l'image éditoriale
 
 - **Date** : 2026-07-31
 - **Branche** : `navbar-logo-tone`
 - **Lien** : [[decisions/0029-navbar-tone-measured-from-content]], [[post-mortems/0017-multi-resolution-review-blind-spots]]
 
-> Numéro 0022 : le 0021 a été pris par `main` (`0021-fix-shipped-without-confirming-the-symptom`)
-> pendant ce worktree, donc renumérotation au merge (skill `estuaire-branch-sync`). ADR 0029 libre.
+> Numéro 0023 : 0021 puis 0022 ont été pris par `main` pendant ce worktree
+> (`0021-fix-shipped-without-confirming-the-symptom`, puis
+> `0022-sharpness-defects-invisible-to-the-pixel-review`), d'où deux renumérotations
+> successives au fil des syncs (skill `estuaire-branch-sync`). ADR 0029 reste libre.
 > Renuméroter au merge si collision avec un worktree parallèle, skill `estuaire-branch-sync`.
 
 ## Symptôme

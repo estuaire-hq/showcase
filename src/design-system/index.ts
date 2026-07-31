@@ -34,6 +34,7 @@ export {
 	type LegalSection,
 	type LegalSubsection,
 } from "./components/LegalPage";
+export { LineText } from "./components/LineText";
 export { LinkedInButton } from "./components/LinkedInButton";
 export { LogomarkLoader } from "./components/LogomarkLoader";
 export { MenuToggle } from "./components/MenuToggle";

@@ -8,6 +8,7 @@ import {
 	Pullquote,
 	SectionTitle,
 } from "@/design-system";
+import { oversampled } from "@/lib/images";
 import { Parallax } from "@/lib/motion/Parallax";
 import { getExpertisesPageProps } from "@/lib/sanity/expertisesPage";
 import type { ResolvedImage } from "@/lib/sanity/mapImage";
@@ -188,7 +189,9 @@ export default async function ExpertisesPage() {
 					<div className="relative isolate flex min-h-[18rem] w-full items-center justify-center overflow-hidden py-14 md:aspect-[688/519] md:min-h-0 md:py-0 lg:aspect-[1798/958]">
 						{statement.image && (
 							<Image
-								src={statement.image.src}
+								// Full-bleed: oversampled so the browser does the last downscale, not
+								// Sanity's soft CDN resize (`@/lib/images`, ADR 0027).
+								src={oversampled(statement.image.src)}
 								alt={statement.image.alt}
 								fill
 								sizes="100vw"

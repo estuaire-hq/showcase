@@ -19,6 +19,7 @@ export function MenuToggle({
 	tone = "onLight",
 	label,
 	controls,
+	slot,
 	className,
 }: {
 	isOpen: boolean;
@@ -28,6 +29,9 @@ export function MenuToggle({
 	label: string;
 	/** id of the controlled panel (matches NavPanel id). */
 	controls?: string;
+	/** Emitted as `data-nav-slot`, so the header's wrapper can measure this button's box
+	 *  against the strip behind it (ADR 0029). */
+	slot?: string;
 	className?: string;
 }) {
 	return (
@@ -37,6 +41,7 @@ export function MenuToggle({
 			aria-expanded={isOpen}
 			aria-controls={controls}
 			aria-label={label}
+			data-nav-slot={slot}
 			className={cn(
 				"inline-flex size-11 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-estuaire",
 				TONE_TEXT_CLASS[tone],

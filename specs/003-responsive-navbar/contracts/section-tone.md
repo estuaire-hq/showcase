@@ -53,7 +53,41 @@ links ink + CTA `noir`). When an optional attribute is absent, the slot falls ba
   decoupling).
 - **Other pages**: declare their own header tones when those pages are built.
 
+## Extension: measured tone (ADR 0029, 2026-07-31)
+
+The declarations above remain the contract, the server-rendered value, and the **only** source on
+pages whose bar sits on a solid surface. But a declaration copied off the maquette is only true while
+the hero image matches the one the maquette was drawn on: on « Nous découvrir » the editorial image
+was replaced by a wider crop, the dark timber rack left the frame, and the white logo dropped to
+**1,44:1** (WCAG 2.2 SC 1.4.11 asks 3:1). See ADR 0029 and post-mortem 0023.
+
+So pages whose bar floats over a **photo** additionally emit the sampled luminance of the strip under
+the bar, and each slot resolves its own tone from it:
+
+| Attribute | Values | Meaning |
+|---|---|---|
+| `data-nav-band-sm` | 32 comma-separated ints 0-255 | Luminance of the header strip, left→right, at the mobile hero aspect. |
+| `data-nav-band-md` | idem | Same at the tablet hero aspect. |
+| `data-nav-band-lg` | idem | Same at the desktop hero aspect. |
+
+Produced by `pageHeroBandAttributes()` (`@/lib/nav/luminance`, server-only) from the image's already
+fetched LQIP, with `PageHero`'s ink veil composited per breakpoint. Consumed by `useMeasuredTones`,
+which reads each slot's box (`data-nav-slot`, the logo, each link's href, `cta`, `toggle`) and picks
+the tone whose side of `TONE_THRESHOLD` the covered columns fall on. A slot straddling the threshold
+also gets a legibility halo. Absent attributes → declared tones apply unchanged.
+
+Emitting pages: `/nous-decouvrir`, `/expertises`, `/expertises/[expertise]`. Deliberately NOT
+emitting (contrast guaranteed by construction, measuring would swap a guarantee for an estimate):
+`/`, `/univers`, `/univers/[slug]`, `/realisations`, `/realisations/[slug]`, the legal pages.
+
 ## Non-goals
 
-- No runtime background sampling / `mix-blend-mode` detection (research §1, rejected).
 - No single-tone-per-bar model (would lose the per-slot split the maquette shows).
+- No `mix-blend-mode` detection: it yields **zero** contrast on mid-tones (~128, precisely the risky
+  band) and turns the logo cyan over warm timber.
+- ~~No runtime background sampling~~ : **reversed by ADR 0029.** The original rejection (research §1)
+  assumed sampling meant decoding the image in the browser at runtime: CORS-dependent, costly, and
+  visible as a colour flash after hydration. The measurement adopted is not that: it happens
+  **server-side** on the LQIP already in hand, so it costs no request and no client image decode, and
+  the resolved tone is server-rendered. Only the box geometry is read client-side, because a pill's
+  width depends on the rendered font.

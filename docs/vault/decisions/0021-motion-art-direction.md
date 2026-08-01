@@ -256,3 +256,32 @@ que l'image semble immobile derrière une fenêtre qui défile. C'est exactement
   (l'écart de 5 px). Présentationnel, aucun GSAP, aucun Sanity.
 - **`@/lib/motion`** : le driver `Parallax` qui arme le hook, et `CaseStudies` pour le reveal de la
   home. Un bandeau sans ancêtre `<Parallax>` (sous-page expertise) reste **inerte, pas cassé**.
+
+## Addendum (2026-07-31, 2) : la nav abandonne le ghost-pill pour `LineText` + un point
+
+Sur décision de Pierre (worktree `navbar-logo-tone`, via `/dispatch`), les entrées de la nav
+desktop perdent le *ghost-pill* que l'addendum précédent avait restauré. Motif énoncé : *« l'effet
+bouton n'est pas moderne »* pour le survol, et *« l'état courant est moche »* pour l'anneau. Les
+propositions ont été comparées dans `src/app/(lab)/lab/nav-hover/` avant arbitrage.
+
+- **Survol** : le mot **monte de 2 px** et le trait **`LineText`** se dessine dessous, sur
+  `--duration-line` / `ease-expo`. C'est **D3 étendue à la nav** : la même primitive que
+  `FooterLink` et le mailto, donc un seul geste de survol sur tout le site, focus clavier compris.
+  `RollText` (D2) **reste annulée**.
+- **Page courante** : un **point** 8 px sous le mot + le label en **gras**, et l'entrée est
+  **inerte** (ni trait ni montée). Elle est un no-op : elle porte un état, pas une invitation à
+  cliquer. Ça règle aussi un conflit constaté à l'écran, le trait (~0,15 em) et le point (8 px)
+  s'empilant sous le même mot à cinq pixels d'écart.
+- **Écart de maquette assumé, sur trois points** : le KIT (node 75:2963) spécifie survol = pilule
+  pleine, actif = anneau 1 px, et label en **400 dans les trois états**. On s'écarte des trois.
+  Même registre que l'écart de tonalité d'[[0029-navbar-tone-measured-from-content]].
+- **Deux pièges rencontrés, à retenir** :
+  1. **La zone de survol ne doit pas bouger.** Translater le `<a>` lui-même sortait sa boîte de
+     sous un pointeur posé sur son bord bas : le survol tombait, le mot redescendait, et l'effet
+     oscillait. La montée est donc portée par un **span interne**, la hit-area reste fixe.
+  2. **Un changement de `@theme` exige un redémarrage du serveur dev.** Après le merge de `main`
+     qui apporte `--duration-line`, Turbopack ne recompile pas le bloc `@theme` à chaud : le token
+     était absent du CSS servi, `duration-(--duration-line)` ne résolvait rien, et les deux
+     transitions paraissaient supprimées alors que le code était juste.
+- **Non retenu** : un fond opaque au repos sur le slot (lu comme un bouton) et un halo
+  `drop-shadow` sur le texte et le logo, tous deux construits puis retirés sur décision de Pierre.

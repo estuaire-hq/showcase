@@ -384,6 +384,25 @@ fonts, radii, or re-implement a button / pill / card. Importing = consuming; edi
 - Pixel-perfect = exact **intrinsic** dims; **dynamic** dims (full-height hero) may deviate;
   responsive **per breakpoint** (Figma frames).
 
+## Security Review (skill)
+
+- Any security question (« revue de sécurité », dependency/CVE audit, secrets handling, contact-form
+  abuse, webhook signature, `/studio` exposure, HTTP headers) → load the **`estuaire-security-review`**
+  skill. **ADR 0030.** Two modes, one grid: `socle` audits the existing code (default), `diff` reviews
+  a branch and hands the diff to Claude Code's built-in `/security-review` (which is diff-only and
+  hard-excludes outdated libraries, hardening, DoS/rate-limiting and secrets on disk, so it cannot
+  replace the grid).
+- **The skill stops at a human gate**: it presents a prioritised state of play and fixes nothing,
+  bumps nothing, until items are picked one by one. Never run `npm audit fix` as part of a review.
+- Deliverables → **`docs/vault/security/`**: `ledger.md` (the persistent register, read *before*
+  every pass, so a knowingly-rejected item is not re-presented as new) + one dated
+  `YYYY-MM-DD-audit.md` per pass.
+- Dependencies are judged on a **reachability cran** (browser / server / `/studio` / tooling), not on
+  the CVSS score: `sanity` is a prod dep for the Studio and drags its whole CLI subtree into the
+  production tree, so "is it in `dependencies`?" answers nothing.
+- ⚠️ **Never open `.env.development` or any `.env*`** (except `.env.example`), least of all for a
+  security audit. Secrets handling is audited by reading the code that *reads* them.
+
 ## Project Memory & Vault
 
 - Durable project knowledge (the *why*) → **`docs/vault/`** (Obsidian): decisions as ADRs in

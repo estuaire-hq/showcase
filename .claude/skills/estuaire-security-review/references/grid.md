@@ -108,12 +108,17 @@ The write token must appear **only** in the seed runner (`src/sanity/seed/`) and
 never under `src/app/**`, and nothing under `src/app/**` may import the seed runner.
 
 Then the dataset's own visibility, which decides what a token protects at all. `aclMode: public`
-means anonymous GROQ reads of the whole dataset. Verify by observation, on the **dev** project:
+means anonymous GROQ reads of the whole dataset. Verify by observation, on **both** projects:
+reading the prod project is part of the audit and needs no authorization (only *writing* to it
+does). List every dataset, not just the one the site uses, since an unused public dataset is still
+an open surface.
 ```bash
-mcp Sanity list_datasets  # projectId wje1fhkq (dev). PROD needs an explicit per-action go.
-B="https://wje1fhkq.api.sanity.io/v2021-06-07/data/query/production"
+mcp Sanity list_datasets   # wje1fhkq = dev, vbuzs69z = prod
+B="https://<projectId>.api.sanity.io/v2021-06-07/data/query/<dataset>"
 curl -sS --get "$B" --data-urlencode 'query=count(*)' --data-urlencode 'perspective=raw'
 ```
+Never probe anonymous *write* access against prod: a public ACL is read-only for unauthenticated
+callers by design, and the test itself would be a mutation attempt on live content.
 A `perspective=raw` count served without a 401 proves unpublished documents are anonymously
 readable when they exist. A count of zero drafts means "none right now", not "protected": say
 which of the two you observed. Note that private datasets are a **paid** Sanity feature, so on the

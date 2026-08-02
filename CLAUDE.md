@@ -219,9 +219,10 @@ See **ADR 0019**.
 
 - **Dev project** = `wje1fhkq` (**showcase-dev**) → write freely (create / update / upload assets),
   no approval needed.
-- **PROD project** = `vbuzs69z` (**showcase**) → ONLY on the owner's **explicit, per-action
-  authorization**. Default every MCP call to the *dev* project; switch to prod solely when told to,
-  for that one action. Never push to prod without a clear go.
+- **PROD project** = `vbuzs69z` (**showcase**) → **reads are free** (GROQ queries, schema, dataset
+  listing: needed to diagnose and to audit). **WRITES only on the owner's explicit, per-action
+  authorization** : create / update / delete / publish / asset upload. Default every *write* to the
+  *dev* project; never mutate prod without a clear go.
 - ⚠️ **Both projects have a dataset literally named `production`** — the dataset name does NOT tell
   dev from prod; **only the `projectId` does**. Always decide dev/prod on the projectId
   (`wje1fhkq` = dev, `vbuzs69z` = prod), never on the dataset name (else you'd write prod thinking

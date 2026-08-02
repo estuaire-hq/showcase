@@ -245,9 +245,10 @@ as a fix.
   makes a review unread.
 - **New direct dependency, so update `CRAN` in `deps.sh`.** An unmapped direct dep defaults to
   cran 2 and is flagged "confirm by hand", failing loud rather than silently optimistic.
-- **Prod Sanity project reads**: default every MCP call to the dev project (`wje1fhkq`). Confirming
-  the prod project's dataset visibility (`vbuzs69z`) needs the owner's explicit per-action go, even
-  read-only.
+- **Prod Sanity project: reads are free, writes are gated.** Querying the prod project
+  (`vbuzs69z`) for a diagnosis, listing its datasets, reading its schema: do it, that is what an
+  audit is for. Only **mutations** need the owner's explicit per-action authorization. Do not test
+  anonymous *write* access against prod as part of a review.
 - **Number collisions**: this repo runs parallel worktrees, so a new ADR or post-mortem number may
   already be taken on `main`. See the `estuaire-branch-sync` skill.
 - References: `references/deps.sh` (the dependency probe), `references/grid.md` (the nine code rows

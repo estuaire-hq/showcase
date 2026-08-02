@@ -21,7 +21,8 @@ Passages : [[2026-08-01-audit]].
 | DEP-next | corrigé | P1 | **0 avis propre** (était 9) / cran 2 | 2026-08-01 | 2026-08-01 | `next@16.2.12`, bump de patch non cassant. `postcss` et `sharp` restent en P3, suivis séparément. |
 | CODE-XPOWEREDBY | corrigé | P3 | en-tête retiré | 2026-08-01 | 2026-08-01 | embarqué avec CODE-HEADERS-BASE |
 | CODE-HEADERS-CSP | ouvert | P2 | pas de CSP | 2026-08-01 | | à mener en report-only d'abord |
-| CODE-SANITY-DATASET | ouvert | P2 | dev `aclMode: public`, raw lisible anonymement | 2026-08-01 | | dataset privé = plan payant ; prod NON VÉRIFIÉ |
+| CODE-SANITY-DATASET | ouvert | P2 | dev + **prod** `aclMode: public` ; prod `production` = 305 docs anonymes, 0 brouillon | 2026-08-01 | | confirmé en prod le 2026-08-02. Aucune fuite active, mais brouillons exposés dès qu'il en existe. Dataset privé = plan Growth payant |
+| CODE-SANITY-STAGING | ouvert | P3 | dataset `staging` sur le projet prod, `public` et **vide** | 2026-08-02 | | surface ouverte inutilisée : supprimer, ou documenter comme public avant que quelqu'un s'en serve |
 | DEP-sanity | ouvert | P2 | 0 avis propre / moderate / cran 3, major 6.8.0 | 2026-08-01 | | solde le stock cran 3 et 4, migration Studio |
 | HEALTH-react-leaflet | ouvert | P2 | publication 2024-12-14, 1 mainteneur, cran 1 | 2026-08-01 | | aucune CVE connue, risque prospectif |
 | DEP-tar | ouvert | P3 | 5 avis / critical / cran 4 | 2026-08-01 | | critique mais hors chemin de requête (CLI Sanity) |

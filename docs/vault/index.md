@@ -15,8 +15,14 @@ project-vs-local frontier rule.
 - [[0012-about-page-build-decisions]] — « Nous découvrir » build: maquette-driven deviations (hero outline/fill + eyebrow, CTA before big image, steps stacked vs carousel, inline statement, shared `imageField`/`mapImage`)
 - [[0025-seo-metadata-structured-data-and-off-page]] — SEO: `buildMetadata` + canonicals/OG/Twitter, JSON-LD (Organization+LocalBusiness/WebSite/Breadcrumb/CreativeWork), dynamic sitemap, generated default OG, off-page cadrage
 
+- [[0030-recurring-security-review]] : revue de sécurité récurrente, deux modes autour du `/security-review` intégré, cran d'atteignabilité des dépendances, supply-chain hors périmètre, gate humain
+
 ## SEO
 - [[seo-off-page-action-plan]] — off-page action plan (dated): agent-automated vs Pierre-manual (GSC/Bing, Google Business Profile ready-to-paste, netlinking, `sameAs`)
+
+## Sécurité
+- [[ledger]] : le registre, statut et motif par finding, lu avant chaque revue
+- [[2026-08-01-audit]] : premier état des lieux (socle), 3 P1, 4 P2, 19 des 25 vulnérabilités hors chemin de requête
 
 ## Design
 - [[motion-cinematics]] — the deliberate animation pattern (→ `estuaire-motion` skill)

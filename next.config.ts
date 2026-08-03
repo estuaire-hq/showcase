@@ -3,6 +3,34 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
 	// Standalone output for Docker deployment (see Dockerfile)
 	output: "standalone",
+	// Don't advertise the framework in every response (ADR 0030, CODE-XPOWEREDBY).
+	poweredByHeader: false,
+	// Baseline security headers (ADR 0030, CODE-HEADERS-BASE). Verified absent in
+	// production before this was added: neither Next nor Cloudflare emitted any of them.
+	// A Content-Security-Policy is deliberately NOT here: it needs the Sanity image CDN,
+	// Umami and OSM tiles enumerated plus the inline styles GSAP and styled-components
+	// inject, so it is its own chantier (CODE-HEADERS-CSP), to run in report-only first.
+	async headers() {
+		return [
+			{
+				source: "/:path*",
+				headers: [
+					// One year, apex only. `includeSubDomains` and `preload` are deliberate
+					// escalations (hard to walk back, and they bind subdomains we have not
+					// inventoried), so decide them separately.
+					{
+						key: "Strict-Transport-Security",
+						value: "max-age=31536000",
+					},
+					{ key: "X-Content-Type-Options", value: "nosniff" },
+					{ key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+					// SAMEORIGIN, not DENY: the Studio's Presentation tool frames the site
+					// from the same origin.
+					{ key: "X-Frame-Options", value: "SAMEORIGIN" },
+				],
+			},
+		];
+	},
 	// Per-worktree dev origins served by portless (http://[<branch>.]estuaire.localhost:1355).
 	// Lets Next's dev server accept their cross-origin HMR/asset requests. See ADR 0013.
 	allowedDevOrigins: ["estuaire.localhost", "*.estuaire.localhost"],

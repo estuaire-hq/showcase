@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 import { sendContactEmail } from "@/lib/contact/mailer";
+import { checkContactRateLimit } from "@/lib/contact/rateLimit";
 import {
 	contactSchema,
 	fieldErrors,
@@ -21,6 +22,19 @@ const str = (v: FormDataEntryValue | null): string =>
 	typeof v === "string" ? v : "";
 
 export async function POST(request: NextRequest) {
+	// Rate limit FIRST, before the body is read: that is what stops a flood of 10 Mo
+	// attachments from being buffered at all (ADR 0030, CODE-CONTACT-ABUSE).
+	const rate = checkContactRateLimit(request.headers);
+	if (!rate.ok) {
+		return Response.json(
+			{ ok: false, error: "rate_limited" },
+			{
+				status: 429,
+				headers: { "Retry-After": String(rate.retryAfterSeconds) },
+			},
+		);
+	}
+
 	let form: FormData;
 	try {
 		form = await request.formData();

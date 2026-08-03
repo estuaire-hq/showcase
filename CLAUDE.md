@@ -219,9 +219,10 @@ See **ADR 0019**.
 
 - **Dev project** = `wje1fhkq` (**showcase-dev**) → write freely (create / update / upload assets),
   no approval needed.
-- **PROD project** = `vbuzs69z` (**showcase**) → ONLY on the owner's **explicit, per-action
-  authorization**. Default every MCP call to the *dev* project; switch to prod solely when told to,
-  for that one action. Never push to prod without a clear go.
+- **PROD project** = `vbuzs69z` (**showcase**) → **reads are free** (GROQ queries, schema, dataset
+  listing: needed to diagnose and to audit). **WRITES only on the owner's explicit, per-action
+  authorization** : create / update / delete / publish / asset upload. Default every *write* to the
+  *dev* project; never mutate prod without a clear go.
 - ⚠️ **Both projects have a dataset literally named `production`** — the dataset name does NOT tell
   dev from prod; **only the `projectId` does**. Always decide dev/prod on the projectId
   (`wje1fhkq` = dev, `vbuzs69z` = prod), never on the dataset name (else you'd write prod thinking
@@ -383,6 +384,25 @@ fonts, radii, or re-implement a button / pill / card. Importing = consuming; edi
   Loop fix→recapture→re-diff until zero gap; name any remaining gap as UNVERIFIED.
 - Pixel-perfect = exact **intrinsic** dims; **dynamic** dims (full-height hero) may deviate;
   responsive **per breakpoint** (Figma frames).
+
+## Security Review (skill)
+
+- Any security question (« revue de sécurité », dependency/CVE audit, secrets handling, contact-form
+  abuse, webhook signature, `/studio` exposure, HTTP headers) → load the **`estuaire-security-review`**
+  skill. **ADR 0030.** Two modes, one grid: `socle` audits the existing code (default), `diff` reviews
+  a branch and hands the diff to Claude Code's built-in `/security-review` (which is diff-only and
+  hard-excludes outdated libraries, hardening, DoS/rate-limiting and secrets on disk, so it cannot
+  replace the grid).
+- **The skill stops at a human gate**: it presents a prioritised state of play and fixes nothing,
+  bumps nothing, until items are picked one by one. Never run `npm audit fix` as part of a review.
+- Deliverables → **`docs/vault/security/`**: `ledger.md` (the persistent register, read *before*
+  every pass, so a knowingly-rejected item is not re-presented as new) + one dated
+  `YYYY-MM-DD-audit.md` per pass.
+- Dependencies are judged on a **reachability cran** (browser / server / `/studio` / tooling), not on
+  the CVSS score: `sanity` is a prod dep for the Studio and drags its whole CLI subtree into the
+  production tree, so "is it in `dependencies`?" answers nothing.
+- ⚠️ **Never open `.env.development` or any `.env*`** (except `.env.example`), least of all for a
+  security audit. Secrets handling is audited by reading the code that *reads* them.
 
 ## Project Memory & Vault
 

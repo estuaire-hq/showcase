@@ -1,7 +1,7 @@
 # 0012 — `/end-session` a tué la mauvaise fenêtre tmux (`kill-window` sans cible)
 
 > [!info] Contexte devenu historique (2026-08-24)
-> `/end-session` et tout le pilotage tmux ont été retirés du dépôt ([[decisions/0030-parallel-dev-leaves-the-project|ADR 0030]]) :
+> `/end-session` et tout le pilotage tmux ont été retirés du dépôt ([[decisions/0031-parallel-dev-leaves-the-project|ADR 0031]]) :
 > une session Claude entre et sort d'un worktree elle-même. La leçon, elle, reste entière —
 > **jamais de commande destructrice sans cible explicite**.
 

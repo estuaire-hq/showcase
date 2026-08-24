@@ -5,7 +5,7 @@ date: 2026-08-24
 supersedes: ["0014", "0015"]
 amends: ["0013"]
 ---
-# 0030 — Le développement parallèle sort du dépôt
+# 0031 — Le développement parallèle sort du dépôt
 
 ## Context
 Les ADR 0013, 0014 et 0015 ont installé **dans le dépôt** tout un dispositif de développement

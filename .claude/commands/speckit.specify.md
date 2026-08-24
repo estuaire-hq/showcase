@@ -179,7 +179,7 @@ Given that feature description, do this:
 
    If `EnterWorktree` refuses (a session can only jump once, and not while already inside a worktree), do NOT plan or implement here: tell the user to continue with `wt switch <BRANCH_NAME> -x claude`, which opens a fresh session rooted in the worktree.
 
-**NOTE:** The script creates a dedicated git **worktree** (via worktrunk) for the feature and initializes the spec file inside it; this checkout (main) is left untouched. See ADR 0030 (which supersedes the tmux handoff of ADR 0014).
+**NOTE:** The script creates a dedicated git **worktree** (via worktrunk) for the feature and initializes the spec file inside it; this checkout (main) is left untouched. See ADR 0031 (which supersedes the tmux handoff of ADR 0014).
 
 ## General Guidelines
 

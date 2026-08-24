@@ -330,7 +330,7 @@ the site is fully open and indexable regardless of any env var. The historical d
 
 The `SITE_PREVIEW_TOKEN` Coolify variable is now a dead no-op (nothing reads it) — it can be
 removed at convenience, but leaving it has no effect. The empty `SITE_PREVIEW_TOKEN=` that
-`.config/wt.toml` used to export has been dropped (ADR 0030).
+`.config/wt.toml` used to export has been dropped (ADR 0031).
 
 ## Lab (temporary)
 

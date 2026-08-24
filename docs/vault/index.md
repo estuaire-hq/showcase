@@ -16,6 +16,7 @@ project-vs-local frontier rule.
 - [[0025-seo-metadata-structured-data-and-off-page]] — SEO: `buildMetadata` + canonicals/OG/Twitter, JSON-LD (Organization+LocalBusiness/WebSite/Breadcrumb/CreativeWork), dynamic sitemap, generated default OG, off-page cadrage
 
 - [[0030-recurring-security-review]] : revue de sécurité récurrente, deux modes autour du `/security-review` intégré, cran d'atteignabilité des dépendances, supply-chain hors périmètre, gate humain
+- [[0031-parallel-dev-leaves-the-project]] : le dev parallèle sort du dépôt — doc, commandes de handoff et tmux supprimés ; ne restent que les hooks `wt.toml`, le script `dev` portless et `docs/dev-setup.md`
 
 ## SEO
 - [[seo-off-page-action-plan]] — off-page action plan (dated): agent-automated vs Pierre-manual (GSC/Bing, Google Business Profile ready-to-paste, netlinking, `sameAs`)

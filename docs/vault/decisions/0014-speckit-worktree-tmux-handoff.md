@@ -5,7 +5,7 @@ date: 2026-06-17
 ---
 # 0014 — `/speckit.specify` crée un worktree + handoff de session via tmux
 
-> [!warning] Superseded par [[decisions/0030-parallel-dev-leaves-the-project|ADR 0030]] (2026-08-24)
+> [!warning] Superseded par [[decisions/0031-parallel-dev-leaves-the-project|ADR 0031]] (2026-08-24)
 > La contrainte fondatrice de cette ADR — une session Claude Code ne peut pas changer son cwd —
 > n'existe plus (`EnterWorktree` + hooks `WorktreeCreate`/`WorktreeRemove` du plugin worktrunk).
 > Le handoff tmux a été retiré du dépôt ; `/speckit.specify` déplace la session elle-même.

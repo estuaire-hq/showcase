@@ -5,7 +5,7 @@ date: 2026-06-18
 ---
 # 0015 — `/dispatch` : handoff worktree + tmux pour le travail ad-hoc (hors speckit)
 
-> [!warning] Superseded par [[decisions/0030-parallel-dev-leaves-the-project|ADR 0030]] (2026-08-24)
+> [!warning] Superseded par [[decisions/0031-parallel-dev-leaves-the-project|ADR 0031]] (2026-08-24)
 > `/dispatch`, son script, `.dispatch/` et la règle d'offre proactive ont été supprimés : sans
 > frontière de session à franchir, le brief n'a plus d'objet. Ouvrir un worktree et y travailler
 > est devenu une action native de la session.

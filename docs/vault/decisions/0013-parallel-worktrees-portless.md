@@ -5,7 +5,7 @@ date: 2026-06-17
 ---
 # 0013 — Développement parallèle : worktrees (worktrunk) + URLs nommées (portless)
 
-> [!info] Portée réduite par [[decisions/0030-parallel-dev-leaves-the-project|ADR 0030]] (2026-08-24)
+> [!info] Portée réduite par [[decisions/0031-parallel-dev-leaves-the-project|ADR 0031]] (2026-08-24)
 > Le dispositif de dev parallèle a quitté le dépôt : il ne reste ici que ce qui y est incarné —
 > le script `dev` via portless (§1, §3), les hooks de `.config/wt.toml` (§4) et les filtres
 > git-crypt (§6). Le proxy `:1355` (§2), les logs (§5), les approbations (§7) et la disposition

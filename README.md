@@ -8,7 +8,7 @@ Site vitrine pour Mosaique Production / marque Estuaire. Construit avec Next.js 
 - **npm** 10+
 - **git-crypt** (`sudo apt install git-crypt` ou `brew install git-crypt`)
 - Cle symetrique git-crypt (demander au lead dev)
-- **portless** (`npm i -g portless`) — proxy de dev requis par `npm run dev` (voir « Développement parallèle »)
+- **portless** (`npm i -g portless`) — proxy de dev requis par `npm run dev` (voir [`docs/dev-setup.md`](docs/dev-setup.md))
 
 ## Installation
 
@@ -42,20 +42,6 @@ Le serveur démarre sur **`http://estuaire.localhost:1355`** (via portless). Le 
 | `npm run start` | Demarrer le serveur de production |
 | `npm run lint` | Verification Biome (lint + format) |
 | `npm run format` | Correction automatique Biome |
-
-## Développement parallèle (worktrees)
-
-Pour mener plusieurs features de front sans que les serveurs de dev se marchent dessus, on combine **worktrunk** (`wt` — `cargo install worktrunk` ou `brew install worktrunk`) et **portless**. Chaque worktree obtient une URL nommée stable : `http://<branche>.estuaire.localhost:1355`.
-
-Setup machine (une seule fois) : voir le guide [`docs/worktrees-portless-setup.md`](docs/worktrees-portless-setup.md).
-
-```bash
-wt switch -c ma-feature   # cree branche + worktree, installe les deps, demarre le serveur
-wt list                   # liste les worktrees et leur URL de dev
-wt remove                 # supprime le worktree (son serveur est arrete automatiquement)
-```
-
-Logs du serveur, restart et autres détails : voir la section « Parallel Dev — Worktrees » de [`CLAUDE.md`](CLAUDE.md) et l'[ADR 0013](docs/vault/decisions/0013-parallel-worktrees-portless.md).
 
 ## Structure du projet
 

@@ -23,104 +23,7 @@ npm run lint      # Biome check (lint + format)
 
 **Deploy**: `git push` on main → Coolify auto-deploys on OVH VPS. No manual Docker/Coolify config changes without explicit mention.
 
-## Parallel Dev — Worktrees (worktrunk + portless)
-
-Run several features/agents at once, each in its own git worktree, **without dev servers
-fighting over port 3000**. Two complementary tools (see **ADR 0013**):
-
-- **worktrunk** (`wt`) — git worktree lifecycle (create / switch / list / remove) + hooks.
-- **portless** — local reverse proxy on `:1355` giving each worktree a **named, stable URL**
-  instead of a port. `npm run dev` is wired to `portless run next dev`.
-
-### Dev URL changed — `npm run dev` no longer uses `localhost:3000`
-
-portless routes by **name** (stable across restarts — by name, not port):
-
-- main checkout → `http://estuaire.localhost:1355` (Studio: append `/studio`)
-- worktree on branch `feat-x` → `http://feat-x.estuaire.localhost:1355`
-
-**Escape hatch**: `PORTLESS=0 npm run dev` bypasses the proxy → classic `http://localhost:3000`
-(use this for tooling that still assumes `:3000`, e.g. the pixel-review / run / verify skills).
-**portless must be installed** for `npm run dev` to work at all (dev prerequisite).
-
-### One-time machine setup
-
-Install (worktrunk + portless), the `:1355` proxy, the git-crypt×worktree fix, worktrunk hook
-approvals, and the **dev** Sanity CORS origins — all documented in
-**[`docs/worktrees-portless-setup.md`](docs/worktrees-portless-setup.md)**.
-
-### Worktree workflow
-
-```bash
-wt switch -c feat-x     # new branch+worktree → hook runs `npm ci`, then starts the dev server
-wt list                 # all worktrees + their portless dev URL
-wt switch feat-x        # jump into an existing worktree
-wt remove               # delete worktree (its tethered dev server is killed automatically)
-```
-
-The `post-start` hook in `.config/wt.toml` installs deps then starts the server **tethered**
-(`wt step tether`), so it dies on `wt remove`. The first `wt switch -c` per machine asks to approve
-those hook commands — pre-approve once with `wt config approvals add` (see setup), or pass `--yes`.
-
-### Spec-driven features get their own worktree (`/speckit.specify`)
-
-`/speckit.specify` is wired (ADR 0014) to create a **worktree** (not just a branch) via worktrunk,
-write the spec inside it, and — when Claude runs **inside tmux** — open a new tmux window with Claude
-rooted in that worktree, ready to continue `/speckit.plan → /speckit.tasks → /speckit.implement` there.
-Out of tmux it prints `wt switch <slug> -x claude` instead. The session boundary is inherent (Claude
-can't move its own cwd); the spec/plan/tasks files carry the context across it. So: **run Claude inside
-tmux** to get the auto-opened worktree session (see the setup guide).
-
-### Ad-hoc work gets its own worktree too (`/dispatch`)
-
-`/speckit.specify` is the spec-driven path; **`/dispatch`** is the **same worktree+tmux handoff for
-ad-hoc work** — a feature or change that doesn't warrant a full spec (ADR 0015, generalizes ADR 0014).
-It derives a slug, creates a worktree via worktrunk, writes a **brief** to `<worktree>/.dispatch/brief.md`
-(the context carrier across the session boundary — there is no spec.md), and — inside tmux — opens a
-new tmux window with a fresh Claude rooted in the worktree that reads the brief and works. Out of tmux
-it prints the `wt switch <slug> -x claude` fallback. The command itself decides:
-
-- **pass-through vs enriched brief** — a clean one-shot request → the raw prompt; a request refined
-  through discussion → a synthesized brief capturing the decisions made;
-- **`direct` vs `reflect` mode** — a clear mechanical task → the new session implements straight away;
-  a task needing design/trade-offs → it proposes its approach first, then implements.
-
-**Proactively offer `/dispatch`** when, in a normal conversation, a **substantial** implementation is
-ready to start (a feature or a multi-file change — NOT a one-line fix, a quick question, or a tweak to
-the current diff): before editing, ask whether to run it in a worktree + tmux session via `/dispatch`,
-so this session stays free and the work runs in parallel. If they decline, implement here as usual.
-
-### Driving the dev server (as the agent)
-
-- **Find the URL**: `wt list` or `portless list`.
-- **Read its logs** (compile errors, runtime, HMR) of the auto-started server:
-  `tail -f "$(wt config state logs get --hook=user:post-start:server)"`
-- **Restart** — required after a Tailwind **`@theme`** change (Turbopack won't recompile it live)
-  or a crash. Prefer a **clean restart**: stop the running server, then `npm run dev` (re-registers
-  the portless route reliably). `portless run --force next dev` can leave the route **unregistered**
-  after killing a tethered server — the dev server then answers on its raw `localhost:<port>` but the
-  named URL 404s (see next point). If you instead launch it in your own background shell, read its
-  logs from that shell.
-- **A 404 on `*.estuaire.localhost:1355` means NO portless route**, not a broken app — the
-  machine-wide proxy 404s any subdomain it has no live route for. Check `portless list`; if the
-  route is missing, restart cleanly (above). Don't conclude the page is broken and bypass via the
-  raw port — that abandons the named-URL convention. (Post-mortem 0011.)
-- **Gate is OFF in worktree dev servers** — the `.config/wt.toml` server hook runs with
-  `SITE_PREVIEW_TOKEN=` empty, so the named URL serves the **real** site (not `/coming-soon`), even
-  when the shared `.env.development` carries a token. No restart needed to review. (Post-mortem 0011.)
-- **Cleanup**: `portless prune` kills orphaned dev servers from crashed sessions.
-
-### Gotchas
-
-- **Shared dev dataset** — every worktree uses the same `.env.development` → the **same dev
-  Sanity project**. Don't `npm run seed -- --reset` while another worktree is working.
-- `.env.development` (git-crypt) decrypts in a fresh worktree **thanks to the one-time git-crypt
-  filter config above** — without it, `git worktree add` aborts on the smudge filter. ADR 0013.
-- New origins are already in `allowedDevOrigins` (`next.config.ts`); they must also be in the
-  dev project's Sanity CORS (above) for the embedded Studio to authenticate.
-- A worktree checks out the **committed** branch state — the portless wiring (`package.json`'s
-  `dev` script, `.config/wt.toml`) must be **committed** on the base branch, else `npm run dev`
-  in a worktree falls back to plain `next dev` on `:3000` (no portless route).
+**First run on a machine** (git-crypt key, portless, dev Sanity CORS): [`docs/dev-setup.md`](docs/dev-setup.md).
 
 ## Project Structure
 
@@ -196,6 +99,9 @@ Reuse what is already installed before reaching for a new package.
   *dev* Sanity project (`npm run seed [-- <doc>] [--reset]`) without ever opening the file.
   Forbidden: `cat`/Read/`grep`/`source` of `.env*` (except `.env.example`) — anything that surfaces
   a secret value. (Prod write token stays CI-only — no local path to write prod.)
+- **One dev dataset for every checkout**: `.env.development` is committed, so every clone and
+  every worktree points at the **same** dev Sanity project. Don't `npm run seed -- --reset`
+  while another checkout is working.
 - **Prod source**: Coolify UI only — no `.env.production` file in the repo
 - **Two separate Sanity projects**: local dev and prod point at **different Sanity
   projects** (distinct `projectId`), not just different datasets. `NEXT_PUBLIC_SANITY_PROJECT_ID`
@@ -403,8 +309,8 @@ the site is fully open and indexable regardless of any env var. The historical d
 **ADR 0007** (`docs/vault/decisions/0007-coming-soon-preview-gate.md`) for reference.
 
 The `SITE_PREVIEW_TOKEN` Coolify variable is now a dead no-op (nothing reads it) — it can be
-removed at convenience, but leaving it has no effect. `.config/wt.toml` still exports an empty
-`SITE_PREVIEW_TOKEN=` for worktree dev servers; harmless, can be cleaned up later.
+removed at convenience, but leaving it has no effect. The empty `SITE_PREVIEW_TOKEN=` that
+`.config/wt.toml` used to export has been dropped (ADR 0030).
 
 ## Lab (temporary)
 

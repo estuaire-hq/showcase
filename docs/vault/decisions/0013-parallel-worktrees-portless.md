@@ -5,6 +5,14 @@ date: 2026-06-17
 ---
 # 0013 — Développement parallèle : worktrees (worktrunk) + URLs nommées (portless)
 
+> [!info] Portée réduite par [[decisions/0030-parallel-dev-leaves-the-project|ADR 0030]] (2026-08-24)
+> Le dispositif de dev parallèle a quitté le dépôt : il ne reste ici que ce qui y est incarné —
+> le script `dev` via portless (§1, §3), les hooks de `.config/wt.toml` (§4) et les filtres
+> git-crypt (§6). Le proxy `:1355` (§2), les logs (§5), les approbations (§7) et la disposition
+> des worktrees sont devenus des affaires de poste, décrites hors dépôt.
+
+
+
 ## Context
 Le travail en parallèle (plusieurs features, plusieurs agents IA simultanés) passe par les
 **git worktrees** : chacun son répertoire de travail, aucun conflit de fichiers. Deux

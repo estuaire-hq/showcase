@@ -53,9 +53,6 @@ schema.json
 # Playwright
 .playwright-mcp/
 
-# /dispatch — per-worktree briefing scratch file (ADR 0015), never committed
-.dispatch/
-
 # Obsidian local vault config (UI state, per-machine settings). The vault notes
 # themselves are committed; its .obsidian/ folder is not.
 docs/vault/.obsidian/

@@ -173,21 +173,13 @@ Given that feature description, do this:
 
 7. Report completion with branch name, spec file path, checklist results, and the worktree's dev URL.
 
-8. **Hand off to the feature's worktree session.** The script created a dedicated git **worktree** for this feature (`WORKTREE_PATH` from the JSON), with its portless dev server starting in the background. Planning/implementation must run in a Claude session rooted **inside that worktree** — this (main) session cannot move there. Open it:
+8. **Move this session into the feature's worktree.** The script created a dedicated git **worktree** (`WORKTREE_PATH` from the JSON), with its portless dev server starting in the background. Planning and implementation must run **inside it** — call `EnterWorktree` with `path: <WORKTREE_PATH>` (the absolute path from the JSON). The worktrunk Claude plugin routes worktree lifecycle through `wt`, and the session's working directory becomes the worktree: `CLAUDE.md`, skills and hooks reload from there.
 
-   - **If inside tmux** (check: `printenv TMUX` is non-empty): open a new tmux window rooted in the worktree and launch Claude there with a bootstrap prompt. Substitute `<WORKTREE_PATH>` and `<BRANCH_NAME>`; keep the prompt apostrophe-free (it is single-quoted):
+   Once inside, continue the flow in THIS session: `/speckit.plan` → `/speckit.tasks` → `/speckit.implement`. Dev URL: `http://<BRANCH_NAME>.estuaire.localhost:1355` (`PORTLESS=0 npm run dev` for `localhost:3000`).
 
-     ```bash
-     tmux new-window -c "<WORKTREE_PATH>" "claude 'Worktree de la feature <BRANCH_NAME>. Le spec est pret: specs/<BRANCH_NAME>/spec.md. Enchaine le flux spec-driven en lancant la commande /speckit.plan, puis /speckit.tasks, puis /speckit.implement. Dev: http://<BRANCH_NAME>.estuaire.localhost:1355 (PORTLESS=0 npm run dev pour localhost:3000).'"
-     ```
+   If `EnterWorktree` refuses (a session can only jump once, and not while already inside a worktree), do NOT plan or implement here: tell the user to continue with `wt switch <BRANCH_NAME> -x claude`, which opens a fresh session rooted in the worktree.
 
-     A new tmux window opens (auto-focused) with Claude already running in the worktree, ready to continue.
-
-   - **If NOT inside tmux**: do not spawn anything — tell the user to continue with `wt switch <BRANCH_NAME> -x claude`.
-
-   **Then STOP.** Do NOT run `/speckit.plan`, `/speckit.tasks`, or `/speckit.implement` in THIS session — the worktree session owns them. This session's job ends after the hand-off.
-
-**NOTE:** The script creates a dedicated git **worktree** (via worktrunk) for the feature and initializes the spec file inside it; this checkout (main) is left untouched. See ADR 0014.
+**NOTE:** The script creates a dedicated git **worktree** (via worktrunk) for the feature and initializes the spec file inside it; this checkout (main) is left untouched. See ADR 0030 (which supersedes the tmux handoff of ADR 0014).
 
 ## General Guidelines
 

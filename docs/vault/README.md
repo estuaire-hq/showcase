@@ -27,6 +27,8 @@ Obsidian vault.
 - `design/` — design-system & motion notes (cinematics, pixel-perfect method).
 - `research/` — R&D logs (ocitocine decode, parallax craft).
 - `content/` — sitemap, case-study model, contact routing, copy.
+- `security/` : `ledger.md` (the persistent register consulted before every review) + one dated
+  `YYYY-MM-DD-audit.md` per pass of the `estuaire-security-review` skill. See ADR 0030.
 - `index.md` — map of content (MOC).
 
 ## Conventions

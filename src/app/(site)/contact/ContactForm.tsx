@@ -17,7 +17,7 @@ import {
 } from "@/lib/contact/schema";
 import { cn, trackEvent, umamiAttrs } from "@/lib/utils";
 
-type Status = "idle" | "submitting" | "success" | "error";
+type Status = "idle" | "submitting" | "success" | "error" | "rate-limited";
 type Errors = Record<string, string>;
 
 /**
@@ -84,6 +84,11 @@ export function ContactForm({
 				setErrors(data.errors ?? {});
 				setStatus("idle");
 				trackEvent("contact_form_submit", { status: "error" });
+			} else if (res.status === 429) {
+				// Rate limited: a distinct message, because "réessayez" is exactly the
+				// wrong advice here (ADR 0030, CODE-CONTACT-ABUSE).
+				setStatus("rate-limited");
+				trackEvent("contact_form_submit", { status: "rate_limited" });
 			} else {
 				setStatus("error");
 				trackEvent("contact_form_submit", { status: "error" });
@@ -238,6 +243,21 @@ export function ContactForm({
 					</p>
 				)}
 			</div>
+
+			{status === "rate-limited" && (
+				<p role="alert" className="font-sans text-body-sm text-danger">
+					Vous avez envoyé plusieurs messages coup sur coup. Patientez quelques
+					minutes, ou écrivez-nous directement à{" "}
+					<a
+						className="underline"
+						href={`mailto:${directEmail}`}
+						{...umamiAttrs("contact_email_click")}
+					>
+						{directEmail}
+					</a>
+					.
+				</p>
+			)}
 
 			{status === "error" && (
 				<p role="alert" className="font-sans text-body-sm text-danger">

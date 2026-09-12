@@ -1,6 +1,9 @@
 import type { NextRequest } from "next/server";
 import { sendContactEmail } from "@/lib/contact/mailer";
-import { checkContactRateLimit } from "@/lib/contact/rateLimit";
+import {
+	checkContactRateLimit,
+	checkContactSendQuota,
+} from "@/lib/contact/rateLimit";
 import {
 	contactSchema,
 	fieldErrors,
@@ -102,6 +105,23 @@ export async function POST(request: NextRequest) {
 		return Response.json(
 			{ ok: false, error: "mail_unavailable" },
 			{ status: 503 },
+		);
+	}
+
+	// — Global send quota: the tier that still holds when the per-IP key above was
+	//   chosen by the caller (CODE-ORIGIN-EXPOSURE). Checked here, after validation, so
+	//   only a message that would really be sent can consume it. —
+	const quota = checkContactSendQuota();
+	if (!quota.ok) {
+		console.warn(
+			`[contact] global send quota reached, retry in ${quota.retryAfterSeconds}s`,
+		);
+		return Response.json(
+			{ ok: false, error: "rate_limited" },
+			{
+				status: 429,
+				headers: { "Retry-After": String(quota.retryAfterSeconds) },
+			},
 		);
 	}
 
